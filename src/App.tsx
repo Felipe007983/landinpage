@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Layout } from './components/Layout/Layout';
+import { RedirectToHome } from './components/RedirectToHome';
 import { StandardPage } from './pages/StandardPage';
 
 // Imports of images
@@ -81,6 +82,7 @@ export default function App() {
 
     return (
         <Router>
+            <RedirectToHome />
             <Layout>
                 <Routes>
                     {/* Duelo Central */}
