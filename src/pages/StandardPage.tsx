@@ -38,7 +38,7 @@ interface StandardPageProps {
     variant?: 'default' | 'duelo';
 }
 
-export function StandardPage({ title, subtitle, image, video, events, products, mvv, contacts, color, secondaryColor, history, secondaryVideo, historyTitle, portfolio, team, variant = 'default' }: StandardPageProps) {
+export function StandardPage({ title, subtitle, image, video, /* events, */ products, mvv, contacts, color, secondaryColor, history, secondaryVideo, historyTitle, /* portfolio, */ team, variant = 'default' }: StandardPageProps) {
     const location = useLocation();
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
@@ -194,7 +194,7 @@ export function StandardPage({ title, subtitle, image, video, events, products, 
         </section>
     );
 
-    const renderEvents = () => events && events.length > 0 && (
+    /* const renderEvents = () => events && events.length > 0 && (
         <section className="py-24 bg-white relative z-10">
             <div className="container mx-auto px-6">
                 <div className="text-center mb-16">
@@ -219,7 +219,7 @@ export function StandardPage({ title, subtitle, image, video, events, products, 
                 </div>
             </div>
         </section>
-    );
+    ); */
 
     const renderProducts = () => products && products.length > 0 && (
         <section className="py-24 bg-white relative z-10 border-t border-gray-100">
@@ -235,7 +235,7 @@ export function StandardPage({ title, subtitle, image, video, events, products, 
         </section>
     );
 
-    const renderPortfolio = () => portfolio && (
+    /* const renderPortfolio = () => portfolio && (
         <section className="py-20 relative z-10 bg-white">
             <div className="container mx-auto px-6 text-center">
                 <h2 className="text-3xl font-bold mb-8 text-gray-900">Portfolio Comercial</h2>
@@ -252,7 +252,7 @@ export function StandardPage({ title, subtitle, image, video, events, products, 
                 </a>
             </div>
         </section>
-    );
+    ); */
 
     return (
         <div className="min-h-screen bg-gray-50 text-gray-800 pt-16 font-sans flex flex-col">
