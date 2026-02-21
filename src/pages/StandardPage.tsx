@@ -1,6 +1,5 @@
-import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Carousel, Collaborator } from '../components/Carousel';
 import { Footer } from '../components/Layout/Footer';
 import { PreFooter } from '../components/PreFooter';
@@ -38,9 +37,8 @@ interface StandardPageProps {
     variant?: 'default' | 'duelo';
 }
 
-export function StandardPage({ title, subtitle, image, video, /* events, */ products, mvv, contacts, color, secondaryColor, history, secondaryVideo, historyTitle, /* portfolio, */ team, variant = 'default' }: StandardPageProps) {
+export function StandardPage({ title, subtitle, image, video, products, mvv, contacts, color, secondaryColor, history, secondaryVideo, historyTitle, team, variant = 'default' }: StandardPageProps) {
     const location = useLocation();
-    const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
     const renderHero = () => (
         <section className="h-[70vh] bg-zinc-900 relative flex items-center p-6 md:p-20 overflow-hidden">
@@ -194,32 +192,6 @@ export function StandardPage({ title, subtitle, image, video, /* events, */ prod
         </section>
     );
 
-    /* const renderEvents = () => events && events.length > 0 && (
-        <section className="py-24 bg-white relative z-10">
-            <div className="container mx-auto px-6">
-                <div className="text-center mb-16">
-                    <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-gray-400 mb-2" style={{ color }}>Galeria</h3>
-                    <h2 className="text-3xl md:text-5xl font-black text-gray-900">Nossos Eventos</h2>
-                </div>
-                <div className="grid md:grid-cols-1 gap-8 max-w-4xl mx-auto">
-                    {events.map((eventImage, index) => (
-                        <div key={index} className="rounded-3xl overflow-hidden shadow-2xl border-4 border-white hover:shadow-3xl transition-all duration-300 group cursor-pointer" onClick={() => setSelectedImage(eventImage)}>
-                            <div className="relative aspect-video">
-                                <img
-                                    src={eventImage}
-                                    alt={`Evento ${index + 1}`}
-                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                                    <span className="text-white text-lg font-bold tracking-widest uppercase border border-white px-6 py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">Ver Ampliado</span>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </section>
-    ); */
 
     const renderProducts = () => products && products.length > 0 && (
         <section className="py-24 bg-white relative z-10 border-t border-gray-100">
@@ -235,24 +207,6 @@ export function StandardPage({ title, subtitle, image, video, /* events, */ prod
         </section>
     );
 
-    /* const renderPortfolio = () => portfolio && (
-        <section className="py-20 relative z-10 bg-white">
-            <div className="container mx-auto px-6 text-center">
-                <h2 className="text-3xl font-bold mb-8 text-gray-900">Portfolio Comercial</h2>
-                <a
-                    href={portfolio}
-                    download="Portfolio_Zeus_Evolution_2026.pdf"
-                    className="inline-flex items-center gap-3 px-8 py-4 text-white font-bold rounded-full text-lg shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
-                    style={{ backgroundColor: color }}
-                >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                    </svg>
-                    Baixar Portfolio 2026
-                </a>
-            </div>
-        </section>
-    ); */
 
     return (
         <div className="min-h-screen bg-gray-50 text-gray-800 pt-16 font-sans flex flex-col">
@@ -281,34 +235,6 @@ export function StandardPage({ title, subtitle, image, video, /* events, */ prod
                 </>
             )}
 
-            <AnimatePresence>
-                {selectedImage && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        onClick={() => setSelectedImage(null)}
-                        className="fixed inset-0 z-[9999] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 cursor-zoom-out"
-                    >
-                        <motion.img
-                            initial={{ scale: 0.9, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            exit={{ scale: 0.9, opacity: 0 }}
-                            src={selectedImage}
-                            alt="Evento ampliado"
-                            className="max-w-full max-h-[80vh] rounded-xl shadow-2xl border-2 border-white/10 object-contain mt-16"
-                        />
-                        <button
-                            onClick={() => setSelectedImage(null)}
-                            className="absolute top-8 right-8 text-white hover:text-gray-300 transition-colors"
-                        >
-                            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </motion.div>
-                )}
-            </AnimatePresence>
 
             {/* Contacts Section */}
             {/* Fixed Contacts */}
