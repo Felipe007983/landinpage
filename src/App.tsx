@@ -87,7 +87,7 @@ export default function App() {
                 <Routes>
                     {/* Duelo Central */}
                     <Route path="/" element={<StandardPage
-                        title="Duelo de Gigantes Evolution"
+                        title="Zeus Evolution"
                         subtitle="Expo Fitness e Campeonato de Fisiculturismo"
                         image={DueloPrincipal}
                         secondaryVideo={Video1}
@@ -102,17 +102,17 @@ export default function App() {
                             whatsapp: "https://wa.me/553492440149"
                         }}
                         portfolio={DueloPortfolio}
-                        historyTitle="A História do Duelo de Gigantes Evolution"
+                        historyTitle="A História do Zeus Evolution"
                         team={dueloTeam}
-                        history={`O Duelo de Gigantes nasceu em 2004, dentro de uma academia no bairro Brasil, em Uberlândia, sob a liderança do mestre Babu. Ao lado dos amigos Thor e Coruja, surgiu a ideia de criar um campeonato de fisiculturismo que, inicialmente, se chamaria Copa Morumbi de Fisiculturismo.
-
-Foi o próprio Babu quem definiu o nome que marcaria gerações: Duelo de Gigantes.
-
+                        history={`O Zeus Evolution nasceu em 2004, dentro de uma academia no bairro Brasil, em Uberlândia, sob a liderança do mestre Babu. Ao lado dos amigos Thor e Coruja, surgiu a ideia de criar um campeonato de fisiculturismo que, inicialmente, se chamaria Copa Morumbi de Fisiculturismo.
+ 
+Foi o próprio Babu quem definiu o nome que marcaria gerações: Zeus Evolution.
+ 
 Desde então, o campeonato construiu uma trajetória sólida, atravessando duas décadas de história, chegando à sua 18ª edição, sempre valorizando o atleta e o verdadeiro espírito do esporte.
-
-Com o tempo, o projeto evoluiu. A união entre o visionário Luciano e o presidente da Federação, Coruja, mantendo no conselho os mestres Thor e Babu, elevou o evento a um novo patamar. Assim nasceu o Duelo de Gigantes Evolution — uma nova fase, que transforma o campeonato em uma experiência completa, incorporando a Expo Fitness, profissionalizando o evento e fortalecendo o fisiculturismo em Uberlândia e região.
-
-O Duelo de Gigantes Evolution não é apenas um campeonato.
+ 
+Com o tempo, o projeto evoluiu. A união entre o visionário Luciano e o presidente da Federação, Coruja, mantendo no conselho os mestres Thor e Babu, elevou o evento a um novo patamar. Assim nasceu o Zeus Evolution — uma nova fase, que transforma o campeonato em uma experiência completa, incorporando a Expo Fitness, profissionalizando o evento e fortalecendo o fisiculturismo em Uberlândia e região.
+ 
+O Zeus Evolution não é apenas um campeonato.
 É a evolução de uma história construída no palco.`}
                         color="#D4AF37"
                         secondaryColor="#000000"
@@ -179,7 +179,7 @@ Emerson Coruja já era competidor e organizador de campeonatos. Do outro lado, L
 
 Com o tempo, essa amizade evoluiu. Vieram as competições, o aprendizado e a confiança mútua. Hoje, somos parceiros.
 
-Entrei para somar no projeto que viria a se tornar o Duelo de Gigantes Evolution, ajudando a fortalecer o campeonato e elevar o nível do evento. E foi dentro desse processo que surgiu a ideia de criar nossa própria marca de pintura de atletas.
+Entre para somar no projeto que viria a se tornar o Zeus Evolution, ajudando a fortalecer o campeonato e elevar o nível do evento. E foi dentro desse processo que surgiu a ideia de criar nossa própria marca de pintura de atletas.
 
 Assim nasceu a Dark Tan Pro: criada por quem vive o palco, entende o atleta e respeita cada detalhe da competição.
 

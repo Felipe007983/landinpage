@@ -34,7 +34,7 @@ export function GenericPage({ title, subtitle }: GenericPageProps) {
                         <h3 className="text-2xl font-semibold text-blue-400">Detalhes da Seção</h3>
                         <p className="text-gray-400 leading-relaxed">
                             Nesta seção de {title}, exploramos os aspectos fundamentais que compõem a excelência.
-                            Aqui detalhamos tudo o que você precisa saber para se aprofundar no universo de Duelo de Gigantes.
+                            Aqui detalhamos tudo o que você precisa saber para se aprofundar no universo de Zeus Evolution.
                         </p>
                         <ul className="space-y-4 text-gray-400">
                             <li className="flex items-center gap-3">

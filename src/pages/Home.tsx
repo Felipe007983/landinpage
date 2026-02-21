@@ -23,7 +23,7 @@ export function Home() {
                         className="text-[12vw] leading-none font-black mb-6 text-white tracking-tighter drop-shadow-2xl uppercase"
                         style={{ textShadow: '0 0 40px rgba(0,0,0,0.5)' }}
                     >
-                        Duelo de<br />Gigantes Evolution
+                        Zeus<br />Evolution
                     </motion.h1>
 
                     <motion.p
@@ -58,7 +58,7 @@ export function Home() {
                     >
                         <h2 className="text-4xl font-bold bg-gradient-to-l from-blue-400 to-cyan-300 bg-clip-text text-transparent">O Que É O Projeto?</h2>
                         <p className="text-gray-400 leading-relaxed text-lg">
-                            O "Duelo de Gigantes Evolution" não é apenas uma competição; é um ecossistema de elite onde os maiores talentos se enfrentam em desafios de alto nível. Projetado para testar limites, inovar estratégias e coroar a verdadeira excelência.
+                            O "Zeus Evolution" não é apenas uma competição; é um ecossistema de elite onde os maiores talentos se enfrentam em desafios de alto nível. Projetado para testar limites, inovar estratégias e coroar a verdadeira excelência.
                         </p>
                         <p className="text-gray-400 leading-relaxed text-lg">
                             Nossa plataforma unifica dados em tempo real, inteligência competitiva e uma comunidade vibrante para criar experiências inesquecíveis.

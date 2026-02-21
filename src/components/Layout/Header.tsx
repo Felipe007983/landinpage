@@ -59,7 +59,7 @@ export function Header() {
                         className={`text-lg font-black px-6 tracking-tighter hover:text-amber-500 transition-colors duration-300 ${location.pathname === '/' ? 'text-amber-500' : 'text-white'}`}
                         style={{ textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}
                     >
-                        DUELO DE GIGANTES EVOLUTION
+                        ZEUS EVOLUTION
                     </Link>
 
                     {companiesRight.map(c => (
@@ -132,7 +132,7 @@ export function Header() {
                         onClick={() => setIsMobileMenuOpen(false)}
                         className={`text-xl font-black uppercase tracking-wider ${location.pathname === '/' ? 'text-amber-500' : 'text-white'}`}
                     >
-                        Duelo de Gigantes Evolution
+                        Zeus Evolution
                     </Link>
 
                     <div className="h-px bg-white/10 w-20 mx-auto"></div>

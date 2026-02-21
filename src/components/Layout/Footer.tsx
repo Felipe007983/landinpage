@@ -43,7 +43,7 @@ export function Footer() {
             <div className="container mx-auto px-6 grid md:grid-cols-4 gap-12">
                 {/* About */}
                 <div className="space-y-6">
-                    <h4 className="text-white text-lg font-bold uppercase tracking-wider">Duelo de Gigantes</h4>
+                    <h4 className="text-white text-lg font-bold uppercase tracking-wider">Zeus Evolution</h4>
                     <p className="text-sm leading-relaxed">
                         O palco definitivo para a excelência no fisiculturismo.
                         Onde a história é escrita e lendas são consagradas.
@@ -97,7 +97,7 @@ export function Footer() {
             </div>
 
             <div className="container mx-auto px-6 pt-8 mt-16 border-t border-white/5 flex flex-col md:flex-row justify-between items-center text-sm opacity-60">
-                <p>&copy; 2024 Duelo de Gigantes. Todos os direitos reservados.</p>
+                <p>&copy; 2024 Zeus Evolution. Todos os direitos reservados.</p>
                 <div className="flex gap-6 mt-4 md:mt-0">
                     <a href="#" className="hover:text-[#D4AF37] transition-colors">Termos</a>
                     <a href="#" className="hover:text-[#D4AF37] transition-colors">Privacidade</a>
