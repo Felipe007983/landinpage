@@ -214,8 +214,6 @@ export function StandardPage({ title, subtitle, image, video, products, mvv, con
 
             {variant === 'duelo' ? (
                 <>
-                    {/* {renderEvents()} */}
-                    {/* {renderPortfolio()} */}
                     {renderTeam()}
                     {renderVideo()}
                     {renderHistory()}
@@ -228,8 +226,6 @@ export function StandardPage({ title, subtitle, image, video, products, mvv, con
                     {renderMVV()}
                     {renderHistory()}
                     {renderVideo()}
-                    {/* {renderEvents()} */}
-                    {/* {renderPortfolio()} */}
                     {renderProducts()}
                     {renderTeam()}
                 </>
