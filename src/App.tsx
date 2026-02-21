@@ -98,7 +98,7 @@ export default function App() {
                             values: "Respeito ao atleta, Crescimento dos Patrocinadores, Compromisso com o esporte, Profissionalismo, Organização, Evolução constante, Paixão pelo fisiculturismo"
                         }}
                         contacts={{
-                            instagram: "https://www.instagram.com/duelodegigantes18?igsh=YzI3bGNoYWU3bnV5",
+                            // instagram: "https://www.instagram.com/duelodegigantes18?igsh=YzI3bGNoYWU3bnV5",
                             whatsapp: "https://wa.me/553492440149"
                         }}
                         portfolio={DueloPortfolio}

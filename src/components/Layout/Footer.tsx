@@ -12,9 +12,9 @@ export function Footer() {
     };
 
     // Contacts Map defined inside component for simplicity
-    const contactsMap: Record<string, { instagram: string; whatsapp: string }> = {
+    const contactsMap: Record<string, { instagram?: string; whatsapp: string }> = {
         '/': {
-            instagram: 'https://www.instagram.com/duelodegigantes18?igsh=YzI3bGNoYWU3bnV5',
+            // instagram: 'https://www.instagram.com/duelodegigantes18?igsh=YzI3bGNoYWU3bnV5',
             whatsapp: 'https://wa.me/553492440149'
         },
         '/trophy-gonzales': {
