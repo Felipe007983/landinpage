@@ -104,16 +104,51 @@ export default function App() {
                         portfolio={DueloPortfolio}
                         historyTitle="A História do Zeus Evolution"
                         team={dueloTeam}
-                        history={`O Zeus Evolution nasceu em 2004, dentro de uma academia no bairro Brasil, em Uberlândia, sob a liderança do mestre Babu. Ao lado dos amigos Thor e Coruja, surgiu a ideia de criar um campeonato de fisiculturismo que, inicialmente, se chamaria Copa Morumbi de Fisiculturismo.
- 
-Foi o próprio Babu quem definiu o nome que marcaria gerações: Zeus Evolution.
- 
-Desde então, o campeonato construiu uma trajetória sólida, atravessando duas décadas de história, chegando à sua 18ª edição, sempre valorizando o atleta e o verdadeiro espírito do esporte.
- 
-Com o tempo, o projeto evoluiu. A união entre o visionário Luciano e o presidente da Federação, Coruja, mantendo no conselho os mestres Thor e Babu, elevou o evento a um novo patamar. Assim nasceu o Zeus Evolution — uma nova fase, que transforma o campeonato em uma experiência completa, incorporando a Expo Fitness, profissionalizando o evento e fortalecendo o fisiculturismo em Uberlândia e região.
- 
-O Zeus Evolution não é apenas um campeonato.
-É a evolução de uma história construída no palco.`}
+                        history={`O Zeus Evolution não nasceu apenas como um campeonato.
+Nasceu de uma decisão.
+
+Tudo começou quando participei de um campeonato acreditando em um projeto. Acreditei na proposta, na visão e no propósito. Porém, durante o processo, percebi que aquele caminho não representava o que eu defendia para o esporte.
+
+Foi naquele momento que entendi: se eu queria algo diferente, eu teria que construir.
+
+Sozinho, dei o primeiro passo. Conquistei a filiação da Federação e, mais que isso, o título nobre de Embaixador, além da confiança do presidente para colocar minhas ideias em prática em nome da Federação em âmbito nacional.
+
+Ali, fiz uma promessa pessoal: criar um campeonato que realmente valorizasse o atleta. Um evento onde respeito, reconhecimento e profissionalismo não fossem apenas discurso — fossem prática.
+
+Foi assim que nasceu o Zeus Evolution.
+
+Muito além de um evento
+O Zeus Evolution foi criado com a missão de elevar o padrão dos eventos de fisiculturismo. Cada detalhe passou a ser pensado para entregar algo diferente do comum:
+
+• Troféus exclusivos e estilizados, desenvolvidos especialmente para cada categoria.
+• Premiações em dinheiro para os campeões overall.
+• Troféu de participação para todos os atletas, reconhecendo que subir ao palco já é uma vitória.
+• Estrutura profissional de pintura com a Dark Tan, garantindo excelência no palco.
+• Organização estratégica, produção própria e reinvestimento constante na experiência do atleta.
+
+Aqui, o atleta não é número.
+Ele é protagonista.
+
+Inovação como base
+Desde o início, o Zeus Evolution foi estruturado com visão empresarial e estratégica. A produção própria de troféus, o controle de qualidade e o planejamento financeiro inteligente permitem que o evento cresça mantendo alto padrão.
+
+Cada edição não é apenas um campeonato.
+É uma evolução.
+
+Expansão e legado
+Com edições em diferentes estados, o Zeus Evolution vem se consolidando como uma proposta ousada, profissional e respeitada dentro do cenário.
+
+Mais que um campeonato, é uma marca.
+Mais que uma marca, é um compromisso.
+
+Nosso compromisso
+• Valorizar o esforço.
+• Premiar com respeito.
+• Entregar excelência.
+• Garantir que cada atleta saia do palco com orgulho de ter feito parte.
+
+Zeus Evolution não é apenas sobre competir.
+É sobre evoluir.`}
                         color="#D4AF37"
                         secondaryColor="#000000"
                         variant="duelo"
