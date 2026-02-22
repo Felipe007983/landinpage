@@ -56,9 +56,9 @@ export default function App() {
     const dueloTeam = [
         { id: 2, name: 'Luciano Gonzales', role: '•Embaixador da WBPF Brasil \n•Presidente WBPF Goiás \n•Vice-Presidente Liga WBPF Minas \n•CEO. Fundador. Diretor do Zeus Evolution Brasil', image: Team2 },
         { id: 7, name: 'Reginaldo Gomes', role: 'Presidente WBPF Brasil / Presidente WBPF South America', image: ReginaldoGomes },
-        { id: 6, name: 'Diego Maradona', role: 'Vice-Presidente WBPF Goiás / Representante ZEUS Goiás', image: ColabGoias },
-        { id: 8, name: 'Léo Pestana', role: 'Representante ZEUS São Paulo', image: LeoPestana },
-        { id: 9, name: 'Carolina Barone', role: '•Diretora Oficial de Tanning – Zeus Evolution\n•Representante Oficial Dark Tan Brasil', image: CarolinaBarone },
+        { id: 6, name: 'Diego Maradona', role: 'Vice-Presidente WBPF Goiás / Representante Zeus Evolution Goiás', image: ColabGoias },
+        { id: 8, name: 'Léo Pestana', role: 'Representante Zeus Evolution São Paulo', image: LeoPestana },
+        { id: 9, name: '**Russa** (Carolina Barone)', role: '•Diretora Oficial de Tanning – Zeus Evolution\n•Representante Oficial Dark Tan Brasil', image: CarolinaBarone },
     ];
 
     const darkTanTeam = [

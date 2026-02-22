@@ -74,7 +74,11 @@ export function Carousel({ color, collaborators = defaultCollaborators }: Carous
                             </div>
                             <div className="space-y-4">
                                 <h4 className="text-2xl font-black uppercase tracking-tight text-white">
-                                    {collaborators[index].name}
+                                    {collaborators[index].name.split(/(\*\*.*?\*\*)/g).map((part, i) =>
+                                        part.startsWith('**') && part.endsWith('**')
+                                            ? <span key={i} style={{ color: color }}>{part.slice(2, -2)}</span>
+                                            : part
+                                    )}
                                 </h4>
                                 <p className="text-sm text-white/90 leading-relaxed whitespace-pre-line text-left border-t border-white/10 pt-4 inline-block">
                                     {collaborators[index].role}
