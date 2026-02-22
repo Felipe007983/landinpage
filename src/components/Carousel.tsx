@@ -72,7 +72,7 @@ export function Carousel({ color, collaborators = defaultCollaborators }: Carous
                                     <img src={collaborator.image} alt={collaborator.name} className="w-16 h-16 rounded-full object-cover" />
                                     <div>
                                         <h4 className="font-bold text-gray-800">{collaborator.name}</h4>
-                                        <p className="text-sm text-gray-500">{collaborator.role}</p>
+                                        <p className="text-sm text-gray-500 whitespace-pre-line">{collaborator.role}</p>
                                     </div>
                                 </div>
                             </motion.div>

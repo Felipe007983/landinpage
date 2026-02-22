@@ -52,7 +52,7 @@ import Team4 from './assets/images/duelo/4.jpeg';
 export default function App() {
     const dueloTeam = [
         { id: 7, name: 'Reginaldo Gomes', role: 'Presidente WBPF Brasil / Presidente WBPF South America', image: ReginaldoGomes },
-        { id: 2, name: 'Luciano Gonzales', role: 'Vice-Presidente WBPF Triângulo Mineiro', image: Team2 },
+        { id: 2, name: 'Luciano Gonzales', role: '•Embaixador da WBPF Brasil \n•Presidente WBPF Goiás \n•Vice-Presidente Liga WBPF Minas \n•CEO. Fundador. Diretor do Zeus Evolution Brasil', image: Team2 },
         { id: 6, name: 'Diego Maradona', role: 'Vice-Presidente WBPF Goiás / Representante ZEUS Goiás', image: ColabGoias },
         { id: 8, name: 'Léo Pestana', role: 'Representante ZEUS São Paulo', image: LeoPestana },
     ];
