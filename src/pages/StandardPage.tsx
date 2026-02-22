@@ -41,7 +41,7 @@ export function StandardPage({ title, subtitle, image, video, products, mvv, con
     const location = useLocation();
 
     const renderHero = () => (
-        <section className="h-[40vh] md:h-screen bg-zinc-900 relative flex items-center p-6 md:p-20 pt-20 md:pt-28 overflow-hidden">
+        <section className="aspect-[16/9] md:aspect-auto md:h-screen bg-zinc-900 relative flex items-center p-6 md:p-20 pt-20 md:pt-28 overflow-hidden">
             <div className="md:w-1/2 z-20 space-y-8 relative">
                 <motion.h1
                     initial={{ opacity: 0, x: -30 }}

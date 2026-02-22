@@ -42,6 +42,7 @@ import Trophy2 from './assets/images/tropy/trophy-2.jpeg';
 import Trophy3 from './assets/images/tropy/trophy-3.jpeg';
 import Trophy4 from './assets/images/tropy/trophy-4.jpeg';
 
+import ColabGoias from './assets/images/colaborador_zeus1.jpeg';
 import Team1 from './assets/images/duelo/1.jpeg';
 import Team2 from './assets/images/duelo/2.jpeg';
 import Team3 from './assets/images/duelo/3.jpeg';
@@ -51,6 +52,7 @@ import Team5 from './assets/images/duelo/5.jpeg';
 export default function App() {
     const dueloTeam = [
         { id: 2, name: 'Luciano Gonzales', role: 'Vice-Presidente WBPF Triângulo Mineiro', image: Team2 },
+        { id: 6, name: 'Diego Maradona', role: 'Vice-Presidente WBPF Goiás / Representante ZEUS Goiás', image: ColabGoias },
     ];
 
     const darkTanTeam = [
