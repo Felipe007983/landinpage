@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import DueloBg from '../assets/images/duelo-bg.jpeg';
+import ZeusBanner from '../assets/images/zeus123.png';
 
 export function Home() {
     return (
@@ -7,15 +7,14 @@ export function Home() {
             {/* Hero Section */}
             <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
                 <div className="absolute inset-0 z-0">
-                    <div className="absolute inset-0 bg-black/40 z-10" />
                     <img
-                        src={DueloBg}
+                        src={ZeusBanner}
                         alt="Arena Background"
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain bg-black"
                     />
                 </div>
 
-                <div className="relative z-10 text-center px-4 w-full">
+                <div className="relative z-10 text-center px-4 w-full pt-20">
                     <motion.h1
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}

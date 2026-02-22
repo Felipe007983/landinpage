@@ -8,7 +8,7 @@ import Company1 from './assets/images/company-1.jpeg';
 import Company2 from './assets/images/company-2.jpeg';
 import Company3 from './assets/images/company-3.jpeg';
 import Company4 from './assets/images/company-4.jpeg';
-import DueloPrincipal from './assets/images/duelo/fotoprincipal.jpeg';
+import ZeusBanner from './assets/images/zeus123.png';
 import Video1 from './assets/images/video1.mp4';
 import DueloPortfolio from './assets/images/duelo/PORTFÓLIOPATROCÍNADORESDUELODE GIGANTESEVOLUTION2026.pdf';
 import Evento1 from './assets/images/evento1.jpeg';
@@ -89,7 +89,7 @@ export default function App() {
                     <Route path="/" element={<StandardPage
                         title="Zeus Evolution"
                         subtitle="Expo Fitness e Campeonato de Fisiculturismo"
-                        image={DueloPrincipal}
+                        image={ZeusBanner}
                         secondaryVideo={Video1}
                         events={[Evento1]}
                         mvv={{

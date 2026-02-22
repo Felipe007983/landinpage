@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import DueloLogo from '../../assets/images/duelo-logo.jpeg';
+import LogoZeus from '../../assets/images/logozeus.jpeg';
 import Company1 from '../../assets/images/company-1.jpeg';
 import Company2 from '../../assets/images/company-2.jpeg';
 import Company3 from '../../assets/images/company-3.jpeg';
@@ -22,7 +22,7 @@ export function Header() {
 
     // Logic to determine which logo to show on the left based on the current path
     const logoMap: { [key: string]: string } = {
-        '/': DueloLogo,
+        '/': LogoZeus,
         '/trophy-gonzales': Company2,
         '/clothing-bodybuilding': Company1,
         '/dark-tan-pro': Company4,
@@ -30,7 +30,7 @@ export function Header() {
     };
 
     // Default to DueloLogo if path not found in map (or handle partial matches if needed)
-    const currentLogo = logoMap[location.pathname] || DueloLogo;
+    const currentLogo = logoMap[location.pathname] || LogoZeus;
 
     return (
         <header className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md border-b border-white/5 text-white shadow-lg h-20 flex items-center transition-all duration-300">

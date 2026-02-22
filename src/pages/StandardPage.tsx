@@ -41,7 +41,7 @@ export function StandardPage({ title, subtitle, image, video, products, mvv, con
     const location = useLocation();
 
     const renderHero = () => (
-        <section className="h-[70vh] bg-zinc-900 relative flex items-center p-6 md:p-20 overflow-hidden">
+        <section className="h-screen bg-zinc-900 relative flex items-center p-6 md:p-20 pt-20 md:pt-28 overflow-hidden">
             <div className="md:w-1/2 z-20 space-y-8 relative">
                 <motion.h1
                     initial={{ opacity: 0, x: -30 }}
@@ -62,10 +62,8 @@ export function StandardPage({ title, subtitle, image, video, products, mvv, con
                 </div>
             </div>
 
-            {/* Hero Image with Gradient Overlay */}
+            {/* Hero Image */}
             <div className="absolute inset-0 z-10 w-full h-full">
-                <div className="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/80 to-transparent z-10" />
-                <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent z-10" />
                 {video ? (
                     <video
                         src={video}
@@ -79,9 +77,8 @@ export function StandardPage({ title, subtitle, image, video, products, mvv, con
                 ) : (
                     <img
                         src={image}
-                        className="w-full h-full object-cover object-center transform scale-105"
+                        className="w-full h-full object-contain bg-zinc-950"
                         alt={title}
-                        style={{ objectPosition: 'center 20%' }}
                     />
                 )}
             </div>
@@ -209,7 +206,7 @@ export function StandardPage({ title, subtitle, image, video, products, mvv, con
 
 
     return (
-        <div className="min-h-screen bg-gray-50 text-gray-800 pt-16 font-sans flex flex-col">
+        <div className="min-h-screen text-gray-100 font-sans flex flex-col">
             {renderHero()}
 
             {variant === 'duelo' ? (
