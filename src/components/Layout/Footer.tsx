@@ -25,7 +25,7 @@ export function Footer() {
             instagram: 'https://www.instagram.com/clothingbodybuilding?utm_source=qr&igsh=MXZobjVydnA4cGJ3bg==',
             whatsapp: 'https://wa.me/553492510023'
         },
-        '/dark-tan-pro': {
+        '/dark-tan': {
             instagram: 'https://www.instagram.com/darktanpro?igsh=MXV5aGZnOHRpazdwaA==',
             whatsapp: 'https://wa.me/553492354877'
         }
@@ -53,7 +53,7 @@ export function Footer() {
                         <li><Link to="/" onClick={scrollToTop} className="hover:text-[#D4AF37] transition-colors">Home</Link></li>
                         <li><Link to="/trophy-gonzales" onClick={scrollToTop} className="hover:text-[#D4AF37] transition-colors">Trophy Gonzales</Link></li>
                         <li><Link to="/clothing-bodybuilding" onClick={scrollToTop} className="hover:text-[#D4AF37] transition-colors">Clothing Bodybuilding</Link></li>
-                        <li><Link to="/dark-tan-pro" onClick={scrollToTop} className="hover:text-[#D4AF37] transition-colors">Dark Tan Pro</Link></li>
+                        <li><Link to="/dark-tan" onClick={scrollToTop} className="hover:text-[#D4AF37] transition-colors">Dark Tan</Link></li>
                     </ul>
                 </div>
 

@@ -6,7 +6,7 @@ import { StandardPage } from './pages/StandardPage';
 // Imports of images
 import Company1 from './assets/images/company-1.jpeg';
 import Company2 from './assets/images/company-2.jpeg';
-import Company4 from './assets/images/company-4.jpeg';
+import DarkTanLogo from './assets/images/darktan.jpg';
 import ZeusBanner from './assets/images/zeusbanner.jpeg';
 import Video1 from './assets/images/video1.mp4';
 import Evento1 from './assets/images/evento1.jpeg';
@@ -187,10 +187,10 @@ Zeus Evolution não é apenas sobre competir.
                     />} />
 
                     {/* Companies Right */}
-                    <Route path="/dark-tan-pro" element={<StandardPage
-                        title="Dark Tan Pro"
+                    <Route path="/dark-tan" element={<StandardPage
+                        title="Dark Tan"
                         subtitle="Official Stage Color"
-                        image={Company4}
+                        image={DarkTanLogo}
                         products={darkTanProducts}
                         mvv={{
                             mission: "Desenvolver produtos de bronzeamento profissional que realcem a definição muscular, garantam uniformidade de cor e respeitem a pele do atleta, contribuindo para um palco mais justo e visualmente impecável.",
@@ -201,9 +201,9 @@ Zeus Evolution não é apenas sobre competir.
                             instagram: "https://www.instagram.com/darktanpro?igsh=MXV5aGZnOHRpazdwaA==",
                             whatsapp: "https://wa.me/553492354877"
                         }}
-                        history={`A História da Dark Tan Pro
+                        history={`A História da Dark Tan
 
-A Dark Tan Pro nasceu de uma amizade construída dentro do fisiculturismo.
+A Dark Tan nasceu de uma amizade construída dentro do fisiculturismo.
 
 Wemerson já era competidor e organizador de campeonatos. Do outro lado, Luciano que caminhoneiro e driblando as dificuldades da estra se aventurou no esporte tornando um atleta iniciante, dando os primeiros passos no palco. Foi nesse ambiente — de treino, competição e respeito pelo esporte — que nossa amizade começou.
 
@@ -211,9 +211,9 @@ Com o tempo, essa amizade evoluiu. Vieram as competições, o aprendizado e a co
 
 Entre para somar no projeto que viria a se tornar o Zeus Evolution, ajudando a fortalecer o campeonato e elevar o nível do evento. E foi dentro desse processo que surgiu a ideia de criar nossa própria marca de pintura de atletas.
 
-Assim nasceu a Dark Tan Pro: criada por quem vive o palco, entende o atleta e respeita cada detalhe da competição.
+Assim nasceu a Dark Tan: criada por quem vive o palco, entende o atleta e respeita cada detalhe da competição.
 
-A Dark Tan Pro não nasceu do mercado.
+A Dark Tan não nasceu do mercado.
 Nasceu do esporte, da amizade e da evolução.`}
                         color="#8D5524"
                         secondaryColor="#808080"
