@@ -48,36 +48,40 @@ export function Carousel({ color, collaborators = defaultCollaborators }: Carous
                 </div>
             </div>
 
-            <div className="flex overflow-hidden gap-6">
-                <AnimatePresence mode='popLayout'>
-                    {/* Show 3 items at a time effectively (simplified for demo) */}
-                    {collaborators.slice(0, 3).map((_, offset) => {
-                        const i = (index + offset) % collaborators.length;
-                        const collaborator = collaborators[i];
-                        // If there's only 1 item, we only want to show it once
-                        if (collaborators.length === 1 && offset > 0) return null;
-                        // If there's only 2 items, we only want to show them once
-                        if (collaborators.length === 2 && offset > 1) return null;
-
-                        return (
-                            <motion.div
-                                key={`${collaborator.id}-${offset}`}
-                                initial={{ opacity: 0, x: 50 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: -50 }}
-                                transition={{ duration: 0.3 }}
-                                className="min-w-[300px] bg-white p-6 rounded-xl shadow-sm border border-gray-100"
-                            >
-                                <div className="flex items-center gap-4">
-                                    <img src={collaborator.image} alt={collaborator.name} className="w-16 h-16 rounded-full object-cover" />
-                                    <div>
-                                        <h4 className="font-bold text-gray-800">{collaborator.name}</h4>
-                                        <p className="text-sm text-gray-500 whitespace-pre-line">{collaborator.role}</p>
-                                    </div>
-                                </div>
-                            </motion.div>
-                        );
-                    })}
+            <div className="flex justify-center overflow-hidden">
+                <AnimatePresence mode='wait'>
+                    <motion.div
+                        key={collaborators[index].id}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 1.05 }}
+                        transition={{ duration: 0.4 }}
+                        className="w-full max-w-md bg-black p-8 rounded-3xl border border-white/10 text-center shadow-2xl"
+                    >
+                        <div className="flex flex-col items-center gap-6">
+                            <div className="relative">
+                                {/* Theme colored glow */}
+                                <div
+                                    className="absolute inset-0 blur-3xl rounded-full opacity-10"
+                                    style={{ backgroundColor: color }}
+                                />
+                                <img
+                                    src={collaborators[index].image}
+                                    alt={collaborators[index].name}
+                                    className="w-32 h-32 rounded-full object-cover border-2 relative z-10 transition-transform duration-500 hover:scale-105"
+                                    style={{ borderColor: `rgba(255,255,255,0.2)` }}
+                                />
+                            </div>
+                            <div className="space-y-4">
+                                <h4 className="text-2xl font-black uppercase tracking-tight text-white">
+                                    {collaborators[index].name}
+                                </h4>
+                                <p className="text-sm text-white/90 leading-relaxed whitespace-pre-line text-left border-t border-white/10 pt-4 inline-block">
+                                    {collaborators[index].role}
+                                </p>
+                            </div>
+                        </div>
+                    </motion.div>
                 </AnimatePresence>
             </div>
         </div>

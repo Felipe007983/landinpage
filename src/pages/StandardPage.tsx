@@ -18,6 +18,11 @@ interface Contacts {
     whatsapp?: string;
 }
 
+interface Document {
+    label: string;
+    file: string;
+}
+
 interface StandardPageProps {
     title: string;
     subtitle: string;
@@ -34,10 +39,11 @@ interface StandardPageProps {
     historyTitle?: string;
     portfolio?: string;
     team?: Collaborator[];
+    documents?: Document[];
     variant?: 'default' | 'duelo';
 }
 
-export function StandardPage({ title, subtitle, image, video, products, mvv, contacts, color, secondaryColor, history, secondaryVideo, historyTitle, team, variant = 'default' }: StandardPageProps) {
+export function StandardPage({ title, subtitle, image, video, products, mvv, contacts, color, secondaryColor, history, secondaryVideo, historyTitle, team, documents, variant = 'default' }: StandardPageProps) {
     const location = useLocation();
 
     const renderHero = () => (
@@ -204,6 +210,45 @@ export function StandardPage({ title, subtitle, image, video, products, mvv, con
         </section>
     );
 
+    const renderDocuments = () => documents && documents.length > 0 && (
+        <section className="py-24 bg-white relative z-10 border-t border-gray-100">
+            <div className="container mx-auto px-6 relative">
+                <div className="text-center mb-16">
+                    <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-gray-400 mb-2">Oficial</h3>
+                    <h2 className="text-3xl md:text-5xl font-black text-gray-900">Nomeações</h2>
+                </div>
+
+                <div className="flex flex-wrap justify-center gap-6 max-w-4xl mx-auto">
+                    {documents.map((doc, idx) => (
+                        <motion.a
+                            key={idx}
+                            href={doc.file}
+                            download
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            transition={{ delay: idx * 0.1 }}
+                            className="flex items-center gap-4 bg-zinc-900 hover:bg-black p-6 rounded-2xl border border-white/10 group transition-all duration-300 min-w-[280px]"
+                        >
+                            <div
+                                className="w-12 h-12 rounded-xl flex items-center justify-center text-white text-xl group-hover:scale-110 transition-transform shadow-lg"
+                                style={{ backgroundColor: color }}
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="避諱4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                            </div>
+                            <div className="text-left">
+                                <span className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Download PDF</span>
+                                <span className="text-lg font-bold text-white group-hover:opacity-80 transition-opacity" style={{ color: color }}>{doc.label}</span>
+                            </div>
+                        </motion.a>
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+
 
     return (
         <div className="min-h-screen text-gray-100 font-sans flex flex-col">
@@ -212,6 +257,7 @@ export function StandardPage({ title, subtitle, image, video, products, mvv, con
             {variant === 'duelo' ? (
                 <>
                     {renderTeam()}
+                    {renderDocuments()}
                     {renderVideo()}
                     {renderHistory()}
                     {renderMVV()}

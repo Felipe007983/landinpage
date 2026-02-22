@@ -45,16 +45,20 @@ import Trophy4 from './assets/images/tropy/trophy-4.jpeg';
 import ColabGoias from './assets/images/colaborador_zeus1.jpeg';
 import LeoPestana from './assets/images/Léo pestana.jpeg';
 import ReginaldoGomes from './assets/images/Reginaldo  Gomes.jpeg';
+import CarolinaBarone from './assets/images/carolina barone.jpeg';
+import Nomeacao1 from './assets/images/nomeacao1.pdf';
+import Nomeacao2 from './assets/images/nomeacao2.pdf';
 import Team1 from './assets/images/duelo/1.jpeg';
 import Team2 from './assets/images/duelo/2.jpeg';
 import Team4 from './assets/images/duelo/4.jpeg';
 
 export default function App() {
     const dueloTeam = [
-        { id: 7, name: 'Reginaldo Gomes', role: 'Presidente WBPF Brasil / Presidente WBPF South America', image: ReginaldoGomes },
         { id: 2, name: 'Luciano Gonzales', role: '•Embaixador da WBPF Brasil \n•Presidente WBPF Goiás \n•Vice-Presidente Liga WBPF Minas \n•CEO. Fundador. Diretor do Zeus Evolution Brasil', image: Team2 },
+        { id: 7, name: 'Reginaldo Gomes', role: 'Presidente WBPF Brasil / Presidente WBPF South America', image: ReginaldoGomes },
         { id: 6, name: 'Diego Maradona', role: 'Vice-Presidente WBPF Goiás / Representante ZEUS Goiás', image: ColabGoias },
         { id: 8, name: 'Léo Pestana', role: 'Representante ZEUS São Paulo', image: LeoPestana },
+        { id: 9, name: 'Carolina Barone', role: '•Diretora Oficial de Tanning – Zeus Evolution\n•Representante Oficial Dark Tan Brasil', image: CarolinaBarone },
     ];
 
     const darkTanTeam = [
@@ -104,6 +108,10 @@ export default function App() {
                         portfolio={DueloPortfolio}
                         historyTitle="A História do Zeus Evolution"
                         team={dueloTeam}
+                        documents={[
+                            { label: "Nomeação", file: Nomeacao1 },
+                            { label: "Nomeação", file: Nomeacao2 }
+                        ]}
                         history={`O Zeus Evolution não nasceu apenas como um campeonato.
 Nasceu de uma decisão.
 
