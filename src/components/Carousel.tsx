@@ -14,6 +14,7 @@ export interface Collaborator {
     name: string;
     role: string;
     image: string;
+    scale?: number;
 }
 
 interface CarouselProps {
@@ -65,12 +66,15 @@ export function Carousel({ color, collaborators = defaultCollaborators }: Carous
                                     className="absolute inset-0 blur-3xl rounded-full opacity-10"
                                     style={{ backgroundColor: color }}
                                 />
-                                <img
-                                    src={collaborators[index].image}
-                                    alt={collaborators[index].name}
-                                    className="w-32 h-32 rounded-full object-cover border-2 relative z-10 transition-transform duration-500 hover:scale-105"
-                                    style={{ borderColor: `rgba(255,255,255,0.2)` }}
-                                />
+                                <div className="w-32 h-32 rounded-full overflow-hidden border-2 relative z-10 transition-transform duration-500 hover:scale-105 bg-zinc-800"
+                                    style={{ borderColor: color }}>
+                                    <img
+                                        src={collaborators[index].image}
+                                        alt={collaborators[index].name}
+                                        className="w-full h-full object-cover"
+                                        style={{ transform: `scale(${collaborators[index].scale || 1})` }}
+                                    />
+                                </div>
                             </div>
                             <div className="space-y-4">
                                 <h4 className="text-2xl font-black uppercase tracking-tight text-white">

@@ -41,9 +41,7 @@ import ReginaldoGomes from './assets/images/Reginaldo  Gomes.jpeg';
 import CarolinaBarone from './assets/images/carolina barone.jpeg';
 import Nomeacao1 from './assets/images/nomeacao1.pdf';
 import Nomeacao2 from './assets/images/nomeacao2.pdf';
-import Team1 from './assets/images/duelo/1.jpeg';
 import BrandLuciano from './assets/images/luciano.jpeg';
-import Team4 from './assets/images/duelo/4.jpeg';
 import QrCode from './assets/images/qrcode.jpeg';
 
 export default function App() {
@@ -52,13 +50,12 @@ export default function App() {
         { id: 7, name: 'Reginaldo Gomes', role: 'Presidente WBPF Brasil / Presidente WBPF South America', image: ReginaldoGomes },
         { id: 6, name: 'Diego Maradona', role: 'Vice-Presidente WBPF Goiás / Representante Zeus Evolution Goiás', image: ColabGoias },
         { id: 8, name: 'Léo Pestana', role: 'Representante Zeus Evolution São Paulo', image: LeoPestana },
-        { id: 9, name: '**Russa** (Carolina Barone)', role: '•Diretora Oficial de Tanning – Zeus Evolution\n•Representante Oficial Dark Tan Brasil', image: CarolinaBarone },
+        { id: 9, name: '**Russa** (Carolina Barone)', role: '•Diretora Oficial de Tanning – Zeus Evolution\n•Representante Oficial Dark Tan Brasil', image: CarolinaBarone, scale: 1.4 },
     ];
 
     const darkTanTeam = [
-        { id: 1, name: 'Wemerson', role: 'Presidente WBPF Triângulo Mineiro', image: Team1 },
         dueloTeam[0], // Luciano
-        { id: 4, name: 'Thor Vieira', role: 'Supervisão Geral', image: Team4 },
+        dueloTeam[4], // Carolina
     ];
     const clothingProducts = [
         Product1, Product2, Product3, Product4, Product5,
@@ -182,7 +179,7 @@ Zeus Evolution não é apenas sobre competir.
                             values: "Gratidão, Excelência, Audácia, Inovação, Qualidade, Paixão pelo Bodybuilding."
                         }}
                         contacts={{
-                            instagram: "https://www.instagram.com/clothingbodybuilding_?utm_source=qr&igsh=MXZobjVydnA4cGJ3bg==",
+                            instagram: "https://www.instagram.com/clothingbodybuilding?utm_source=qr&igsh=MXZobjVydnA4cGJ3bg==",
                             whatsapp: "https://wa.me/553492510023"
                         }}
                         color="#00008B"
