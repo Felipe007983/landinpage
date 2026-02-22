@@ -5,7 +5,7 @@ export function Home() {
     return (
         <div className="space-y-20 pb-20">
             {/* Hero Section */}
-            <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+            <section className="relative min-h-[50vh] md:min-h-screen flex items-center justify-center overflow-hidden">
                 <div className="absolute inset-0 z-0">
                     <img
                         src={ZeusBanner}
