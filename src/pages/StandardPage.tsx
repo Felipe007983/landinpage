@@ -37,13 +37,13 @@ interface StandardPageProps {
     history?: string;
     secondaryVideo?: string;
     historyTitle?: string;
-    portfolio?: string;
     team?: Collaborator[];
     documents?: Document[];
+    qrCode?: string;
     variant?: 'default' | 'duelo';
 }
 
-export function StandardPage({ title, subtitle, image, video, products, mvv, contacts, color, secondaryColor, history, secondaryVideo, historyTitle, team, documents, variant = 'default' }: StandardPageProps) {
+export function StandardPage({ title, subtitle, image, video, products, mvv, contacts, color, secondaryColor, history, secondaryVideo, historyTitle, team, documents, qrCode, variant = 'default' }: StandardPageProps) {
     const location = useLocation();
 
     const renderHero = () => (
@@ -110,7 +110,7 @@ export function StandardPage({ title, subtitle, image, video, products, mvv, con
 
                         <div className="w-16 h-16 mb-8 rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-lg transform group-hover:rotate-12 transition-transform duration-500" style={{ backgroundColor: color }}>M</div>
                         <h4 className="text-xl font-bold mb-4 text-gray-900">Missão</h4>
-                        <p className="text-gray-500 leading-relaxed group-hover:text-gray-700 transition-colors">
+                        <p className="text-gray-500 leading-relaxed group-hover:text-gray-700 transition-colors whitespace-pre-line">
                             {mvv?.mission || "Transformar o cenário competitivo através da excelência, inspirando atletas a superarem seus próprios limites."}
                         </p>
                     </div>
@@ -122,7 +122,7 @@ export function StandardPage({ title, subtitle, image, video, products, mvv, con
 
                         <div className="w-16 h-16 mb-8 rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-lg transform group-hover:rotate-12 transition-transform duration-500" style={{ backgroundColor: secondaryColor || color }}>V</div>
                         <h4 className="text-xl font-bold mb-4 text-gray-900">Visão</h4>
-                        <p className="text-gray-500 leading-relaxed group-hover:text-gray-700 transition-colors">
+                        <p className="text-gray-500 leading-relaxed group-hover:text-gray-700 transition-colors whitespace-pre-line">
                             {mvv?.vision || "Ser a referência inquestionável em inovação, organização e impacto positivo no esporte."}
                         </p>
                     </div>
@@ -134,7 +134,7 @@ export function StandardPage({ title, subtitle, image, video, products, mvv, con
 
                         <div className="w-16 h-16 mb-8 rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-lg transform group-hover:rotate-12 transition-transform duration-500" style={{ backgroundColor: color }}>E</div>
                         <h4 className="text-xl font-bold mb-4 text-gray-900">Valores</h4>
-                        <p className="text-gray-500 leading-relaxed group-hover:text-gray-700 transition-colors">
+                        <p className="text-gray-500 leading-relaxed group-hover:text-gray-700 transition-colors whitespace-pre-line">
                             {mvv?.values || "Integridade inegociável, paixão ardente pelo esporte e compromisso total com resultados reais."}
                         </p>
                     </div>
@@ -250,6 +250,21 @@ export function StandardPage({ title, subtitle, image, video, products, mvv, con
     );
 
 
+    const renderQrCode = () => qrCode && (
+        <section className="py-24 bg-white relative z-10 border-t border-gray-100">
+            <div className="container mx-auto px-6 text-center">
+                <div className="mb-12">
+                    <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-gray-400 mb-2">Conecte-se</h3>
+                    <h2 className="text-3xl md:text-5xl font-black text-gray-900">Siga o Zeus Evolution</h2>
+                </div>
+                <div className="max-w-xs mx-auto p-4 bg-white rounded-[2rem] shadow-2xl border border-gray-100 group transition-transform hover:scale-105 duration-500">
+                    <img src={qrCode} alt="QR Code" className="w-full h-auto rounded-2xl" />
+                </div>
+                <p className="mt-8 text-gray-500 font-medium">Escaneie o código para acessar o Instagram oficial</p>
+            </div>
+        </section>
+    );
+
     return (
         <div className="min-h-screen text-gray-100 font-sans flex flex-col">
             {renderHero()}
@@ -263,6 +278,7 @@ export function StandardPage({ title, subtitle, image, video, products, mvv, con
                     {renderMVV()}
                     {/* Keeping Products at the end */}
                     {renderProducts()}
+                    {renderQrCode()}
                 </>
             ) : (
                 <>

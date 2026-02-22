@@ -28,10 +28,6 @@ export function Footer() {
         '/dark-tan-pro': {
             instagram: 'https://www.instagram.com/darktanpro?igsh=MXV5aGZnOHRpazdwaA==',
             whatsapp: 'https://wa.me/553492354877'
-        },
-        '/coruja-lanches': {
-            instagram: 'https://www.instagram.com/corujaolanchess?igsh=MXhkZW50eHZmemk4Mg==',
-            whatsapp: 'https://wa.me/5534997637191'
         }
     };
 
@@ -58,7 +54,6 @@ export function Footer() {
                         <li><Link to="/trophy-gonzales" onClick={scrollToTop} className="hover:text-[#D4AF37] transition-colors">Trophy Gonzales</Link></li>
                         <li><Link to="/clothing-bodybuilding" onClick={scrollToTop} className="hover:text-[#D4AF37] transition-colors">Clothing Bodybuilding</Link></li>
                         <li><Link to="/dark-tan-pro" onClick={scrollToTop} className="hover:text-[#D4AF37] transition-colors">Dark Tan Pro</Link></li>
-                        <li><Link to="/coruja-lanches" onClick={scrollToTop} className="hover:text-[#D4AF37] transition-colors">Coruja Lanches</Link></li>
                     </ul>
                 </div>
 

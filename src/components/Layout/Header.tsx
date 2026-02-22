@@ -3,7 +3,6 @@ import { Link, useLocation } from 'react-router-dom';
 import LogoZeus from '../../assets/images/logo_zeus.jpg';
 import Company1 from '../../assets/images/company-1.jpeg';
 import Company2 from '../../assets/images/company-2.jpeg';
-import Company3 from '../../assets/images/company-3.jpeg';
 import Company4 from '../../assets/images/company-4.jpeg';
 
 export function Header() {
@@ -17,7 +16,6 @@ export function Header() {
 
     const companiesRight = [
         { id: '3', name: 'Dark Tan Pro', path: '/dark-tan-pro' },
-        { id: '4', name: 'Corujão Lanches', path: '/coruja-lanches' },
     ];
 
     // Logic to determine which logo to show on the left based on the current path
@@ -26,7 +24,6 @@ export function Header() {
         '/trophy-gonzales': Company2,
         '/clothing-bodybuilding': Company1,
         '/dark-tan-pro': Company4,
-        '/coruja-lanches': Company3,
     };
 
     // Default to DueloLogo if path not found in map (or handle partial matches if needed)

@@ -6,11 +6,9 @@ import { StandardPage } from './pages/StandardPage';
 // Imports of images
 import Company1 from './assets/images/company-1.jpeg';
 import Company2 from './assets/images/company-2.jpeg';
-import Company3 from './assets/images/company-3.jpeg';
 import Company4 from './assets/images/company-4.jpeg';
 import ZeusBanner from './assets/images/zeusbanner.jpeg';
 import Video1 from './assets/images/video1.mp4';
-import DueloPortfolio from './assets/images/duelo/PORTFÓLIOPATROCÍNADORESDUELODE GIGANTESEVOLUTION2026.pdf';
 import Evento1 from './assets/images/evento1.jpeg';
 
 import Product1 from './assets/images/roupas/product-1.jpeg';
@@ -32,11 +30,6 @@ import DarkTan1 from './assets/images/darktan/darktan-1.jpeg';
 import DarkTan2 from './assets/images/darktan/darktan-2.jpeg';
 import DarkTan3 from './assets/images/darktan/darktan-3.jpeg';
 
-import Corujao1 from './assets/images/corujao/corujao-1.png';
-import Corujao2 from './assets/images/corujao/corujao-2.png';
-import Corujao3 from './assets/images/corujao/corujao-3.jpeg';
-import Corujao4 from './assets/images/corujao/corujao-4.jpeg';
-
 import Trophy1 from './assets/images/tropy/trophy-1.jpeg';
 import Trophy2 from './assets/images/tropy/trophy-2.jpeg';
 import Trophy3 from './assets/images/tropy/trophy-3.jpeg';
@@ -51,6 +44,7 @@ import Nomeacao2 from './assets/images/nomeacao2.pdf';
 import Team1 from './assets/images/duelo/1.jpeg';
 import BrandLuciano from './assets/images/luciano.jpeg';
 import Team4 from './assets/images/duelo/4.jpeg';
+import QrCode from './assets/images/qrcode.jpeg';
 
 export default function App() {
     const dueloTeam = [
@@ -62,7 +56,7 @@ export default function App() {
     ];
 
     const darkTanTeam = [
-        { id: 1, name: 'Wemerson Coruja', role: 'Presidente WBPF Triângulo Mineiro', image: Team1 },
+        { id: 1, name: 'Wemerson', role: 'Presidente WBPF Triângulo Mineiro', image: Team1 },
         dueloTeam[0], // Luciano
         { id: 4, name: 'Thor Vieira', role: 'Supervisão Geral', image: Team4 },
     ];
@@ -74,10 +68,6 @@ export default function App() {
 
     const darkTanProducts = [
         DarkTan1, DarkTan2, DarkTan3
-    ];
-
-    const corujaoProducts = [
-        Corujao1, Corujao2, Corujao3, Corujao4
     ];
 
     const trophyProducts = [
@@ -97,21 +87,21 @@ export default function App() {
                         secondaryVideo={Video1}
                         events={[Evento1]}
                         mvv={{
-                            mission: "Promover o fisiculturismo com respeito, organização e profissionalismo, valorizando o atleta como peça central do evento e contribuindo para o crescimento do esporte em Minas Gerais, com foco em qualidade, experiência e evolução contínua.",
-                            vision: "Evoluir de um campeonato regional para um evento fitness completo, integrando competição, feira e exposição, tornando-se referência no interior de Minas Gerais e ampliando sua presença no cenário nacional do fisiculturismo.",
-                            values: "Respeito ao atleta, Crescimento dos Patrocinadores, Compromisso com o esporte, Profissionalismo, Organização, Evolução constante, Paixão pelo fisiculturismo"
+                            mission: "Promover um evento de fisiculturismo e fitness de alto padrão, valorizando o atleta em todas as etapas – da estrutura à premiação – proporcionando uma experiência profissional, justa e memorável para competidores, público, patrocinadores e parceiros.",
+                            vision: "Transformar o Zeus Evolution em um dos maiores eventos fitness do Brasil, unindo competição de alto nível, feira de negócios e experiências exclusivas, posicionando-se como referência nacional em estrutura, inovação e valorização do atleta.",
+                            values: "• Valorização do atleta: Reconhecer o esforço, a disciplina e a trajetória de cada competidor.\n• Excelência e profissionalismo: Entregar organização, estrutura e premiação em padrão nacional.\n• Transparência e ética: Atuar com respeito às regras, clareza nas informações e justiça nas decisões.\n• Inovação: Buscar constantemente evolução em formato, experiências e oportunidades dentro do evento.\n• Crescimento do esporte: Contribuir para o fortalecimento do fisiculturismo no cenário nacional."
                         }}
                         contacts={{
-                            // instagram: "https://www.instagram.com/duelodegigantes18?igsh=YzI3bGNoYWU3bnV5",
+                            instagram: "https://www.instagram.com/zeusevolutioncb?igsh=MWR1Y25lZWo1NDM3bw==",
                             whatsapp: "https://wa.me/553492440149"
                         }}
-                        portfolio={DueloPortfolio}
                         historyTitle="A História do Zeus Evolution"
                         team={dueloTeam}
                         documents={[
                             { label: "Nomeação", file: Nomeacao1 },
                             { label: "Nomeação", file: Nomeacao2 }
                         ]}
+                        qrCode={QrCode}
                         history={`O Zeus Evolution não nasceu apenas como um campeonato.
 Nasceu de uma decisão.
 
@@ -218,7 +208,7 @@ Zeus Evolution não é apenas sobre competir.
 
 A Dark Tan Pro nasceu de uma amizade construída dentro do fisiculturismo.
 
-Emerson Coruja já era competidor e organizador de campeonatos. Do outro lado, Luciano que caminhoneiro e driblando as dificuldades da estra se aventurou no esporte tornando um atleta iniciante, dando os primeiros passos no palco. Foi nesse ambiente — de treino, competição e respeito pelo esporte — que nossa amizade começou.
+Wemerson já era competidor e organizador de campeonatos. Do outro lado, Luciano que caminhoneiro e driblando as dificuldades da estra se aventurou no esporte tornando um atleta iniciante, dando os primeiros passos no palco. Foi nesse ambiente — de treino, competição e respeito pelo esporte — que nossa amizade começou.
 
 Com o tempo, essa amizade evoluiu. Vieram as competições, o aprendizado e a confiança mútua. Hoje, somos parceiros.
 
@@ -231,24 +221,6 @@ Nasceu do esporte, da amizade e da evolução.`}
                         color="#8D5524"
                         secondaryColor="#808080"
                         team={darkTanTeam}
-                    />} />
-
-                    <Route path="/coruja-lanches" element={<StandardPage
-                        title="Corujão Lanches"
-                        subtitle="O que há de lanche mais saboroso"
-                        image={Company3}
-                        products={corujaoProducts}
-                        mvv={{
-                            mission: "Oferecer alimentação de qualidade e sabor, sendo o ponto de encontro preferido pós-treino e eventos.",
-                            vision: "Expandir nossa marca mantendo a tradição do sabor caseiro e atendimento acolhedor.",
-                            values: "Sabor, Qualidade, Hospitalidade e Tradição."
-                        }}
-                        contacts={{
-                            instagram: "https://www.instagram.com/corujaolanchess?igsh=MXhkZW50eHZmemk4Mg==",
-                            whatsapp: "https://wa.me/553484045438"
-                        }}
-                        color="#FFD700"
-                        secondaryColor="#FF0000"
                     />} />
                 </Routes>
             </Layout>
