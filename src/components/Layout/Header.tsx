@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import LogoZeus from '../../assets/images/logozeus.jpeg';
+import LogoZeus from '../../assets/images/logo_zeus.jpg';
 import Company1 from '../../assets/images/company-1.jpeg';
 import Company2 from '../../assets/images/company-2.jpeg';
 import Company3 from '../../assets/images/company-3.jpeg';
