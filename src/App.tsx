@@ -49,12 +49,12 @@ import CarolinaBarone from './assets/images/carolina barone.jpeg';
 import Nomeacao1 from './assets/images/nomeacao1.pdf';
 import Nomeacao2 from './assets/images/nomeacao2.pdf';
 import Team1 from './assets/images/duelo/1.jpeg';
-import Team2 from './assets/images/duelo/2.jpeg';
+import BrandLuciano from './assets/images/luciano.jpeg';
 import Team4 from './assets/images/duelo/4.jpeg';
 
 export default function App() {
     const dueloTeam = [
-        { id: 2, name: 'Luciano Gonzales', role: '•Embaixador da WBPF Brasil \n•Presidente WBPF Goiás \n•Vice-Presidente Liga WBPF Minas \n•CEO. Fundador. Diretor do Zeus Evolution Brasil', image: Team2 },
+        { id: 2, name: 'Luciano Gonzales', role: '•Embaixador da WBPF Brasil \n•Presidente WBPF Goiás \n•Vice-Presidente Liga WBPF Minas \n•CEO. Fundador. Diretor do Zeus Evolution Brasil', image: BrandLuciano },
         { id: 7, name: 'Reginaldo Gomes', role: 'Presidente WBPF Brasil / Presidente WBPF South America', image: ReginaldoGomes },
         { id: 6, name: 'Diego Maradona', role: 'Vice-Presidente WBPF Goiás / Representante Zeus Evolution Goiás', image: ColabGoias },
         { id: 8, name: 'Léo Pestana', role: 'Representante Zeus Evolution São Paulo', image: LeoPestana },
