@@ -10,11 +10,11 @@ export function Home() {
                     <img
                         src={ZeusBanner}
                         alt="Arena Background"
-                        className="w-full h-full object-contain object-top pt-0 bg-black"
+                        className="w-full h-full object-contain object-top pt-4 md:pt-20 bg-black"
                     />
                 </div>
 
-                <div className="relative z-10 text-center px-4 w-full pt-48 md:pt-20">
+                <div className="relative z-10 text-center px-4 w-full pt-8 md:pt-20">
                     <motion.h1
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}

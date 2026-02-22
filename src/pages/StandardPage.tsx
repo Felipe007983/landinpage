@@ -41,7 +41,7 @@ export function StandardPage({ title, subtitle, image, video, products, mvv, con
     const location = useLocation();
 
     const renderHero = () => (
-        <section className="aspect-[16/9] md:aspect-auto md:h-screen bg-zinc-900 relative flex items-center p-6 md:p-20 pt-48 md:pt-28 overflow-hidden">
+        <section className="aspect-[16/9] md:aspect-auto md:h-screen bg-zinc-900 relative flex items-center p-6 md:p-20 pt-8 md:pt-28 overflow-hidden">
             <div className="md:w-1/2 z-20 space-y-8 relative">
                 <motion.h1
                     initial={{ opacity: 0, x: -30 }}
@@ -77,7 +77,7 @@ export function StandardPage({ title, subtitle, image, video, products, mvv, con
                 ) : (
                     <img
                         src={image}
-                        className="w-full h-full object-contain object-top pt-0 bg-zinc-950"
+                        className="w-full h-full object-contain object-top pt-4 md:pt-20 bg-zinc-950"
                         alt={title}
                     />
                 )}
