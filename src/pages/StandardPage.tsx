@@ -77,7 +77,7 @@ export function StandardPage({ title, subtitle, image, video, products, mvv, con
                 ) : (
                     <img
                         src={image}
-                        className="w-full h-full object-contain bg-zinc-950"
+                        className="w-full h-full object-contain object-top pt-20 bg-zinc-950"
                         alt={title}
                     />
                 )}

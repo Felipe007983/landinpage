@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import ZeusBanner from '../assets/images/zeus123.png';
+import ZeusBanner from '../assets/images/zeusbanner.jpeg';
 
 export function Home() {
     return (
@@ -10,7 +10,7 @@ export function Home() {
                     <img
                         src={ZeusBanner}
                         alt="Arena Background"
-                        className="w-full h-full object-contain bg-black"
+                        className="w-full h-full object-contain object-top pt-20 bg-black"
                     />
                 </div>
 

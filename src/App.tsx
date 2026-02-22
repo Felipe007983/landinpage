@@ -8,7 +8,7 @@ import Company1 from './assets/images/company-1.jpeg';
 import Company2 from './assets/images/company-2.jpeg';
 import Company3 from './assets/images/company-3.jpeg';
 import Company4 from './assets/images/company-4.jpeg';
-import ZeusBanner from './assets/images/zeus123.png';
+import ZeusBanner from './assets/images/zeusbanner.jpeg';
 import Video1 from './assets/images/video1.mp4';
 import DueloPortfolio from './assets/images/duelo/PORTFÓLIOPATROCÍNADORESDUELODE GIGANTESEVOLUTION2026.pdf';
 import Evento1 from './assets/images/evento1.jpeg';
@@ -50,17 +50,13 @@ import Team5 from './assets/images/duelo/5.jpeg';
 
 export default function App() {
     const dueloTeam = [
-        { id: 1, name: 'Wemerson Coruja', role: 'Presidente WBPF Triângulo Mineiro', image: Team1 },
         { id: 2, name: 'Luciano Gonzales', role: 'Vice-Presidente WBPF Triângulo Mineiro', image: Team2 },
-        { id: 3, name: 'Anderson Ramos', role: 'Orador Oficial', image: Team3 },
-        { id: 4, name: 'Thor Vieira', role: 'Supervisão Geral', image: Team4 },
-        { id: 5, name: 'Babu', role: 'Conselho', image: Team5 },
     ];
 
     const darkTanTeam = [
-        dueloTeam[0], // Wemerson
-        dueloTeam[1], // Luciano
-        dueloTeam[3], // Thor (index 3 because index 2 is Anderson)
+        { id: 1, name: 'Wemerson Coruja', role: 'Presidente WBPF Triângulo Mineiro', image: Team1 },
+        dueloTeam[0], // Luciano
+        { id: 4, name: 'Thor Vieira', role: 'Supervisão Geral', image: Team4 },
     ];
     const clothingProducts = [
         Product1, Product2, Product3, Product4, Product5,

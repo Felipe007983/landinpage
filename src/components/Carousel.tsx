@@ -51,9 +51,14 @@ export function Carousel({ color, collaborators = defaultCollaborators }: Carous
             <div className="flex overflow-hidden gap-6">
                 <AnimatePresence mode='popLayout'>
                     {/* Show 3 items at a time effectively (simplified for demo) */}
-                    {[0, 1, 2].map((offset) => {
+                    {collaborators.slice(0, 3).map((_, offset) => {
                         const i = (index + offset) % collaborators.length;
                         const collaborator = collaborators[i];
+                        // If there's only 1 item, we only want to show it once
+                        if (collaborators.length === 1 && offset > 0) return null;
+                        // If there's only 2 items, we only want to show them once
+                        if (collaborators.length === 2 && offset > 1) return null;
+
                         return (
                             <motion.div
                                 key={`${collaborator.id}-${offset}`}
