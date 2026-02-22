@@ -45,9 +45,7 @@ import Trophy4 from './assets/images/tropy/trophy-4.jpeg';
 import ColabGoias from './assets/images/colaborador_zeus1.jpeg';
 import Team1 from './assets/images/duelo/1.jpeg';
 import Team2 from './assets/images/duelo/2.jpeg';
-import Team3 from './assets/images/duelo/3.jpeg';
 import Team4 from './assets/images/duelo/4.jpeg';
-import Team5 from './assets/images/duelo/5.jpeg';
 
 export default function App() {
     const dueloTeam = [
