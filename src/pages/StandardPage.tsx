@@ -51,7 +51,7 @@ export function StandardPage({ title, subtitle, image, video, products, mvv, con
 
     const renderHero = () => (
         <section className="aspect-[16/10] md:aspect-auto md:h-screen bg-zinc-900 relative flex items-center p-6 md:p-20 pt-32 md:pt-28 overflow-hidden">
-            <div className="md:w-1/2 z-20 space-y-8 relative">
+            <div className="hidden md:block md:w-1/2 z-20 space-y-8 relative">
                 <motion.h1
                     initial={{ opacity: 0, x: -30 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -71,8 +71,8 @@ export function StandardPage({ title, subtitle, image, video, products, mvv, con
                 </div>
             </div>
 
-            {/* Hero Image */}
-            <div className="absolute inset-0 z-10 w-full h-full">
+            {/* Hero Image - Optimized to avoid clipping */}
+            <div className="absolute top-0 left-0 right-0 bottom-8 z-10 overflow-hidden">
                 {video ? (
                     <video
                         src={video}
@@ -86,14 +86,14 @@ export function StandardPage({ title, subtitle, image, video, products, mvv, con
                 ) : (
                     <img
                         src={image}
-                        className="w-full h-full object-cover md:object-contain object-top pt-0 md:pt-20 bg-zinc-950"
+                        className="w-full h-full object-contain object-center md:object-contain md:object-top md:pt-20 bg-zinc-950"
                         alt={title}
                     />
                 )}
             </div>
 
-            {/* Brand Strip */}
-            <div className="absolute bottom-0 left-0 right-0 h-4 z-20" style={{ background: `linear-gradient(to right, ${color}, ${secondaryColor || color})` }} />
+            {/* Brand Strip - Separated with gap */}
+            <div className="absolute bottom-4 left-6 right-6 h-1 z-20 rounded-full" style={{ background: `linear-gradient(to right, ${color}, ${secondaryColor || color})` }} />
         </section>
     );
 
@@ -302,9 +302,31 @@ export function StandardPage({ title, subtitle, image, video, products, mvv, con
         </section>
     );
 
+    const renderHeroTextMobile = () => (
+        <section className="md:hidden px-6 py-12 bg-black border-b border-white/5">
+            <motion.h1
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-4xl font-black uppercase tracking-tighter text-white mb-6"
+            >
+                {title}
+            </motion.h1>
+            <div className="space-y-4">
+                <h2 className="text-xl font-bold uppercase tracking-widest flex items-center gap-3" style={{ color }}>
+                    <span className="w-12 h-1 rounded-full" style={{ backgroundColor: color }} />
+                    O Que É
+                </h2>
+                <p className="text-gray-400 text-lg leading-relaxed font-light">
+                    {subtitle}
+                </p>
+            </div>
+        </section>
+    );
+
     return (
         <div className="min-h-screen text-gray-100 font-sans flex flex-col">
             {renderHero()}
+            {renderHeroTextMobile()}
 
             {variant === 'duelo' ? (
                 <>
