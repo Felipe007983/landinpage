@@ -7,8 +7,7 @@ import { StandardPage } from './pages/StandardPage';
 import Company1 from './assets/images/company-1.jpeg';
 import Company2 from './assets/images/company-2.jpeg';
 import DarkTanLogo from './assets/images/darktan.jpg';
-import ZeusBanner from './assets/images/zeusbanner.jpeg';
-import Video1 from './assets/images/video1.mp4';
+import CapaBanner from './assets/images/capa.jpeg';
 import Evento1 from './assets/images/evento1.jpeg';
 
 import Product1 from './assets/images/roupas/product-1.jpeg';
@@ -76,12 +75,11 @@ export default function App() {
             <RedirectToHome />
             <Layout>
                 <Routes>
-                    {/* Duelo Central */}
                     <Route path="/" element={<StandardPage
                         title="Zeus Evolution"
                         subtitle="Expo Fitness e Campeonato de Fisiculturismo"
-                        image={ZeusBanner}
-                        secondaryVideo={Video1}
+                        image={CapaBanner}
+                        showPartnership={true}
                         events={[Evento1]}
                         mvv={{
                             mission: "Promover um evento de fisiculturismo e fitness de alto padrão, valorizando o atleta em todas as etapas – da estrutura à premiação – proporcionando uma experiência profissional, justa e memorável para competidores, público, patrocinadores e parceiros.",

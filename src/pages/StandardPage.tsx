@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 import { Carousel, Collaborator } from '../components/Carousel';
 import { Footer } from '../components/Layout/Footer';
 import { PreFooter } from '../components/PreFooter';
+import { Mail, MessageSquare } from 'lucide-react';
+
 
 import { ImageCarousel } from '../components/ImageCarousel';
 import { FixedContacts } from '../components/FixedContacts';
@@ -41,19 +43,20 @@ interface StandardPageProps {
     documents?: Document[];
     qrCode?: string;
     variant?: 'default' | 'duelo';
+    showPartnership?: boolean;
 }
 
-export function StandardPage({ title, subtitle, image, video, products, mvv, contacts, color, secondaryColor, history, secondaryVideo, historyTitle, team, documents, qrCode, variant = 'default' }: StandardPageProps) {
+export function StandardPage({ title, subtitle, image, video, products, mvv, contacts, color, secondaryColor, history, secondaryVideo, historyTitle, team, documents, qrCode, variant = 'default', showPartnership = false }: StandardPageProps) {
     const location = useLocation();
 
     const renderHero = () => (
-        <section className="aspect-[16/9] md:aspect-auto md:h-screen bg-zinc-900 relative flex items-center p-6 md:p-20 pt-8 md:pt-28 overflow-hidden">
+        <section className="aspect-[16/10] md:aspect-auto md:h-screen bg-zinc-900 relative flex items-center p-6 md:p-20 pt-32 md:pt-28 overflow-hidden">
             <div className="md:w-1/2 z-20 space-y-8 relative">
                 <motion.h1
                     initial={{ opacity: 0, x: -30 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.8 }}
-                    className="text-6xl md:text-8xl font-black uppercase tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-white to-gray-400 drop-shadow-xl"
+                    className="text-5xl md:text-8xl font-black uppercase tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-white to-gray-400 drop-shadow-xl"
                 >
                     {title}
                 </motion.h1>
@@ -83,7 +86,7 @@ export function StandardPage({ title, subtitle, image, video, products, mvv, con
                 ) : (
                     <img
                         src={image}
-                        className="w-full h-full object-contain object-top pt-4 md:pt-20 bg-zinc-950"
+                        className="w-full h-full object-cover md:object-contain object-top pt-0 md:pt-20 bg-zinc-950"
                         alt={title}
                     />
                 )}
@@ -255,12 +258,46 @@ export function StandardPage({ title, subtitle, image, video, products, mvv, con
             <div className="container mx-auto px-6 text-center">
                 <div className="mb-12">
                     <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-gray-400 mb-2">Conecte-se</h3>
-                    <h2 className="text-3xl md:text-5xl font-black text-gray-900">Siga o Zeus Evolution</h2>
+                    <h2 className="text-3xl md:text-5xl font-black text-gray-900">Fale com o Zeus Evolution</h2>
                 </div>
                 <div className="max-w-xs mx-auto p-4 bg-white rounded-[2rem] shadow-2xl border border-gray-100 group transition-transform hover:scale-105 duration-500">
                     <img src={qrCode} alt="QR Code" className="w-full h-auto rounded-2xl" />
                 </div>
-                <p className="mt-8 text-gray-500 font-medium">Escaneie o código para acessar o Instagram oficial</p>
+                <p className="mt-8 text-gray-500 font-medium">Escaneie o código para acessar o WhatsApp oficial</p>
+            </div>
+        </section>
+    );
+
+    const renderPartnership = () => showPartnership && (
+        <section className="container mx-auto px-6 py-12 relative z-10">
+            <div className="bg-gradient-to-br from-zinc-900 to-black p-8 md:p-12 rounded-3xl border border-white/10 relative overflow-hidden shadow-2xl">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 blur-[80px] rounded-full pointer-events-none" />
+                <div className="relative z-10 max-w-4xl text-left">
+                    <h2 className="text-xl md:text-3xl font-bold text-white mb-6 leading-tight">
+                        Empresas interessadas em patrocínio ou representantes estaduais que queiram trazer o Zeus Evolution para sua região podem nos contactar através dos canais abaixo.
+                    </h2>
+
+                    <div className="flex flex-col md:flex-row gap-4 mt-8">
+                        <a
+                            href="https://wa.me/553492440149"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center justify-center gap-3 bg-white text-black px-8 py-4 rounded-xl font-bold hover:bg-amber-500 hover:text-white transition-all group"
+                        >
+                            <MessageSquare className="w-5 h-5 transition-transform group-hover:scale-110" />
+                            <span>Parceria Comercial</span>
+                        </a>
+                        <a
+                            href="https://wa.me/553492440149"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center justify-center gap-3 bg-zinc-800 text-white px-8 py-4 rounded-xl font-bold border border-white/10 hover:border-amber-500/50 transition-all group"
+                        >
+                            <Mail className="w-5 h-5 transition-transform group-hover:scale-110" />
+                            <span>Levar Zeus para Meu Estado ou Região</span>
+                        </a>
+                    </div>
+                </div>
             </div>
         </section>
     );
@@ -274,6 +311,7 @@ export function StandardPage({ title, subtitle, image, video, products, mvv, con
                     {renderTeam()}
                     {renderDocuments()}
                     {renderVideo()}
+                    {renderPartnership()}
                     {renderHistory()}
                     {renderMVV()}
                     {/* Keeping Products at the end */}

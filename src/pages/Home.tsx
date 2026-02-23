@@ -1,16 +1,18 @@
 import { motion } from 'framer-motion';
-import ZeusBanner from '../assets/images/zeusbanner.jpeg';
+import CapaBanner from '../assets/images/capa.jpeg';
+import { Mail, MessageSquare } from 'lucide-react';
+
 
 export function Home() {
     return (
         <div className="space-y-20 pb-20">
             {/* Hero Section */}
-            <section className="relative aspect-[3/2] md:aspect-auto md:min-h-screen flex items-center justify-center overflow-hidden">
+            <section className="relative aspect-[16/10] md:aspect-auto md:min-h-screen flex items-center justify-center overflow-hidden">
                 <div className="absolute inset-0 z-0">
                     <img
-                        src={ZeusBanner}
+                        src={CapaBanner}
                         alt="Arena Background"
-                        className="w-full h-full object-contain object-top pt-4 md:pt-20 bg-black"
+                        className="w-full h-full object-cover md:object-contain object-top pt-0 md:pt-20 bg-black"
                     />
                 </div>
 
@@ -74,6 +76,39 @@ export function Home() {
                         <div className="absolute inset-0 bg-gradient-to-tr from-blue-900/40 to-purple-900/40 z-10" />
                         <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2670&auto=format&fit=crop" alt="Strategy" className="w-full h-full object-cover" />
                     </motion.div>
+                </div>
+            </section>
+
+            {/* Partnership Section */}
+            <section className="container mx-auto px-6 py-12">
+                <div className="bg-gradient-to-br from-zinc-900 to-black p-8 md:p-12 rounded-3xl border border-white/10 relative overflow-hidden shadow-2xl">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 blur-[80px] rounded-full pointer-events-none" />
+                    <div className="relative z-10 max-w-4xl">
+                        <h2 className="text-2xl md:text-3xl font-bold text-white mb-6">
+                            Empresas interessadas em patrocínio ou representantes estaduais que queiram trazer o Zeus Evolution para sua região podem nos contactar através dos canais abaixo.
+                        </h2>
+
+                        <div className="flex flex-col md:flex-row gap-4 mt-8">
+                            <a
+                                href="https://wa.me/553492440149"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center justify-center gap-3 bg-white text-black px-8 py-4 rounded-xl font-bold hover:bg-amber-500 hover:text-white transition-all group"
+                            >
+                                <MessageSquare className="w-5 h-5" />
+                                <span>Parceria Comercial</span>
+                            </a>
+                            <a
+                                href="https://wa.me/553492440149"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center justify-center gap-3 bg-zinc-800 text-white px-8 py-4 rounded-xl font-bold border border-white/10 hover:border-amber-500/50 transition-all group"
+                            >
+                                <Mail className="w-5 h-5" />
+                                <span>Levar Zeus para Meu Estado ou Região</span>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </section>
 
