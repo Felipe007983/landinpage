@@ -97,48 +97,65 @@ export default function App() {
                             { label: "Nomeação", file: Nomeacao2 }
                         ]}
                         qrCode={QrCode}
-                        history={`O Zeus Evolution não nasceu apenas como um campeonato.
-Nasceu de uma decisão.
+                        history={`Alguns campeonatos nascem por oportunidade.
+Outros nascem por necessidade.
+O Zeus Evolution nasceu por decisão.
 
-Tudo começou quando participei de um campeonato acreditando em um projeto. Acreditei na proposta, na visão e no propósito. Porém, durante o processo, percebi que aquele caminho não representava o que eu defendia para o esporte.
+Tudo começou quando seu fundador subiu ao palco acreditando em um projeto. Ele confiava na proposta. Confiava na visão. Confiava no propósito.
+Mas, no decorrer da jornada, percebeu que aquilo já não representava o que ele defendia para o esporte.
 
-Foi naquele momento que entendi: se eu queria algo diferente, eu teria que construir.
+Naquele momento, uma escolha precisava ser feita.
+Aceitar o padrão…
+Ou criar um novo.
+Ele escolheu construir.
 
-Sozinho, dei o primeiro passo. Conquistei a filiação da Federação e, mais que isso, o título nobre de Embaixador, além da confiança do presidente para colocar minhas ideias em prática em nome da Federação em âmbito nacional.
+Sozinho, deu o primeiro passo. Conquistou a filiação da Federação. Recebeu o título de Embaixador. Ganhou a confiança para colocar suas ideias em prática em âmbito nacional.
 
-Ali, fiz uma promessa pessoal: criar um campeonato que realmente valorizasse o atleta. Um evento onde respeito, reconhecimento e profissionalismo não fossem apenas discurso — fossem prática.
+Mas o que realmente nasceu ali não foi apenas um campeonato.
+Foi um compromisso.
+O compromisso de criar um evento onde o atleta fosse respeitado.
+Onde o reconhecimento fosse real.
+Onde o profissionalismo deixasse de ser promessa e se tornasse padrão.
+Assim surgiu o Zeus Evolution.
 
-Foi assim que nasceu o Zeus Evolution.
-
-Muito além de um evento
-O Zeus Evolution foi criado com a missão de elevar o padrão dos eventos de fisiculturismo. Cada detalhe passou a ser pensado para entregar algo diferente do comum:
-
-• Troféus exclusivos e estilizados, desenvolvidos especialmente para cada categoria.
-• Premiações em dinheiro para os campeões overall.
-• Troféu de participação para todos os atletas, reconhecendo que subir ao palco já é uma vitória.
-• Estrutura profissional de pintura com a Dark Tan, garantindo excelência no palco.
-• Organização estratégica, produção própria e reinvestimento constante na experiência do atleta.
+Muito além do palco
+Desde o início, nada foi pensado para ser comum.
+Cada troféu passou a ser exclusivo.
+Cada categoria, valorizada.
+Cada campeão overall, premiado em dinheiro.
+Cada atleta, independentemente da colocação, reconhecido com um troféu de participação — porque subir ao palco já é um ato de coragem.
+A pintura deixou de ser detalhe e se tornou parte da experiência, com estrutura profissional através da Dark Tan.
+Organização estratégica.
+Produção própria.
+Reinvestimento constante.
 
 Aqui, o atleta não é número.
 Ele é protagonista.
 
-Inovação como base
-Desde o início, o Zeus Evolution foi estruturado com visão empresarial e estratégica. A produção própria de troféus, o controle de qualidade e o planejamento financeiro inteligente permitem que o evento cresça mantendo alto padrão.
+Mentalidade de evolução
+O Zeus Evolution foi estruturado como marca.
+Como empresa.
+Como movimento.
+Produção própria de troféus.
+Controle de qualidade.
+Planejamento financeiro inteligente.
+Crescimento sustentável.
 
-Cada edição não é apenas um campeonato.
-É uma evolução.
+Cada edição não é repetição.
+É evolução.
 
 Expansão e legado
-Com edições em diferentes estados, o Zeus Evolution vem se consolidando como uma proposta ousada, profissional e respeitada dentro do cenário.
+Com edições em diferentes estados, o Zeus Evolution se consolida como uma proposta ousada, profissional e respeitada.
+Não é apenas um campeonato.
+É posicionamento.
+É visão.
+É construção de legado.
 
-Mais que um campeonato, é uma marca.
-Mais que uma marca, é um compromisso.
-
-Nosso compromisso
-• Valorizar o esforço.
-• Premiar com respeito.
-• Entregar excelência.
-• Garantir que cada atleta saia do palco com orgulho de ter feito parte.
+O que move o Zeus
+Valorizar o esforço.
+Premiar com respeito.
+Entregar excelência.
+Garantir que cada atleta saia do palco maior do que entrou.
 
 Zeus Evolution não é apenas sobre competir.
 É sobre evoluir.`}
