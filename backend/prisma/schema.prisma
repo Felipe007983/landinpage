@@ -47,6 +47,7 @@ model Order {
   type            String       // "COMPETITOR" or "VISITOR"
   paymentStatus   String       // "PENDING", "APPROVED", "FAILED"
   amount          Float
+  gatewayOrderId  String?      @unique // ID retornado pelo Mercado Pago (payment.id)
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @updatedAt
 

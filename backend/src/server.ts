@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import authRoutes from './routes/auth.routes';
@@ -6,6 +7,7 @@ import orderRoutes from './routes/orders.routes';
 import ticketRoutes from './routes/tickets.routes';
 import creditCardRoutes from './routes/creditCards.routes';
 import adminRoutes from './routes/admin.routes';
+import paymentRoutes from './routes/payment.routes';
 
 const app = express();
 
@@ -18,6 +20,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/tickets', ticketRoutes);
 app.use('/api/credit-cards', creditCardRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/payment', paymentRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

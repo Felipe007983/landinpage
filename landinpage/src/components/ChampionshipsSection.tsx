@@ -3,6 +3,9 @@ import { api } from '../services/api';
 import { Calendar, MapPin, ChevronRight, X } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { initMercadoPago, Wallet } from '@mercadopago/sdk-react';
+
+initMercadoPago(import.meta.env.VITE_MERCADOPAGO_PUBLIC_KEY || '');
 
 export function ChampionshipsSection() {
     const [championships, setChampionships] = useState<any[]>([]);
@@ -18,6 +21,7 @@ export function ChampionshipsSection() {
     const [selectedCardId, setSelectedCardId] = useState('');
     const [gatewayResponse, setGatewayResponse] = useState<any>(null);
     const [processing, setProcessing] = useState(false);
+    const [preferenceId, setPreferenceId] = useState<string | null>(null);
 
     const location = useLocation();
 
@@ -68,6 +72,40 @@ export function ChampionshipsSection() {
         }
         setSelectedType(type);
         setPaymentStep(true);
+        setPreferenceId(null); // Resetar ID de preferência ao abrir checkout
+    };
+
+    const generatePreference = async () => {
+        if (!selectedChamp || !selectedType) return;
+        setProcessing(true);
+        try {
+            const pr = selectedType === 'COMPETITOR' ? selectedChamp.priceComp : selectedChamp.priceVis;
+            const nm = selectedType === 'COMPETITOR' ? 'Inscrição Atleta' : 'Ingresso Visitante';
+
+            const payload = {
+                items: [
+                    {
+                        title: `${nm} - ${selectedChamp.name}`,
+                        quantity: 1,
+                        unit_price: Number(pr)
+                    }
+                ],
+                returnUrl: window.location.origin || 'http://localhost:5173'
+            };
+
+            const { data } = await api.post('/payment/create_preference', payload);
+            if (data.id) {
+                setPreferenceId(data.id);
+            }
+
+            // Aqui poderíamos opcionalmente chamar o /orders para persistir a intenção de compra antes de pagar no MP
+
+        } catch (e) {
+            console.error(e);
+            alert('Falha ao gerar o checkout do Mercado Pago.');
+        } finally {
+            setProcessing(false);
+        }
     };
 
     const processPayment = async () => {
@@ -97,6 +135,7 @@ export function ChampionshipsSection() {
         setSelectedChamp(null);
         setPaymentStep(false);
         setGatewayResponse(null);
+        setPreferenceId(null);
     };
 
     if (loading) return <div className="text-amber-500 text-center py-20">Carregando Campeonatos...</div>;
@@ -214,46 +253,38 @@ export function ChampionshipsSection() {
                                             )}
                                         </div>
                                     ) : (
-                                        <>
-                                            <div className="space-y-3 mb-6">
-                                                <label className={`flex items-center gap-3 p-4 rounded-xl border cursor-pointer transition-all ${paymentMethod === 'PIX' ? 'border-amber-500 bg-amber-500/10' : 'border-zinc-700 bg-zinc-800 hover:border-zinc-500'}`}>
-                                                    <input type="radio" name="payment" value="PIX" checked={paymentMethod === 'PIX'} onChange={(e) => setPaymentMethod(e.target.value)} className="w-4 h-4 text-amber-500" />
-                                                    <span className="font-bold">PIX (Aprovação Imediata)</span>
-                                                </label>
+                                        <div className="bg-zinc-800 p-6 rounded-xl border border-zinc-700">
+                                            <h3 className="text-lg font-bold text-white mb-4">Escolha a forma de pagamento</h3>
 
-                                                <label className={`flex flex-col gap-2 p-4 rounded-xl border cursor-pointer transition-all ${paymentMethod === 'CREDIT_CARD' ? 'border-amber-500 bg-amber-500/10' : 'border-zinc-700 bg-zinc-800 hover:border-zinc-500'}`}>
-                                                    <div className="flex items-center gap-3">
-                                                        <input type="radio" name="payment" value="CREDIT_CARD" checked={paymentMethod === 'CREDIT_CARD'} onChange={(e) => setPaymentMethod(e.target.value)} className="w-4 h-4 text-amber-500" />
-                                                        <span className="font-bold">Cartão de Crédito</span>
-                                                    </div>
+                                            {preferenceId ? (
+                                                <div className="mt-4">
+                                                    <Wallet initialization={{ preferenceId }} />
+                                                    <button onClick={() => setPreferenceId(null)} className="w-full mt-4 text-sm text-gray-400 hover:text-white underline">
+                                                        Cancelar e voltar
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <button
+                                                    onClick={generatePreference}
+                                                    disabled={processing}
+                                                    className="w-full bg-gradient-to-r from-amber-500 to-amber-600 text-black py-4 rounded-xl font-black uppercase tracking-wider hover:opacity-90 transition-opacity disabled:opacity-50"
+                                                >
+                                                    {processing ? 'Carregando...' : 'Pagar com Mercado Pago'}
+                                                </button>
+                                            )}
 
-                                                    {paymentMethod === 'CREDIT_CARD' && (
-                                                        <div className="pl-7 pt-2">
-                                                            {cards.length > 0 ? (
-                                                                <select value={selectedCardId} onChange={e => setSelectedCardId(e.target.value)} className="w-full bg-zinc-900 border border-zinc-700 text-white rounded p-2 text-sm focus:border-amber-500 focus:outline-none">
-                                                                    {cards.map(c => <option key={c.id} value={c.id}>Final: {c.maskedNumber.slice(-4)} (Val: {c.expiry})</option>)}
-                                                                </select>
-                                                            ) : (
-                                                                <p className="text-xs text-red-400">Nenhum cartão salvo. Vá em Minha Conta para cadastrar.</p>
-                                                            )}
-                                                        </div>
-                                                    )}
-                                                </label>
-
-                                                <label className={`flex items-center gap-3 p-4 rounded-xl border cursor-pointer transition-all ${paymentMethod === 'DEBIT_CARD' ? 'border-amber-500 bg-amber-500/10' : 'border-zinc-700 bg-zinc-800 hover:border-zinc-500'}`}>
-                                                    <input type="radio" name="payment" value="DEBIT_CARD" checked={paymentMethod === 'DEBIT_CARD'} onChange={(e) => setPaymentMethod(e.target.value)} className="w-4 h-4 text-amber-500" />
-                                                    <span className="font-bold">Cartão de Débito (Redirecionamento)</span>
-                                                </label>
+                                            {/* Legacy Flow Button (Se quiser manter a API manual, deixe visível, senão pode remover na versão final) */}
+                                            <div className="mt-6 border-t border-white/5 pt-6 hidden">
+                                                <p className="text-xs text-zinc-500 text-center mb-4">Ou Checkout Transparente (Local)</p>
+                                                <button
+                                                    onClick={processPayment}
+                                                    disabled={processing}
+                                                    className="w-full bg-zinc-700 text-white py-3 rounded-xl font-bold uppercase tracking-wider hover:bg-zinc-600 transition-opacity disabled:opacity-50 text-sm"
+                                                >
+                                                    {processing ? 'Processando...' : 'Pagar via Gateway Antigo'}
+                                                </button>
                                             </div>
-
-                                            <button
-                                                onClick={processPayment}
-                                                disabled={processing || (paymentMethod === 'CREDIT_CARD' && cards.length === 0)}
-                                                className="w-full bg-gradient-to-r from-amber-500 to-amber-600 text-black py-4 rounded-xl font-black uppercase tracking-wider hover:opacity-90 transition-opacity disabled:opacity-50"
-                                            >
-                                                {processing ? 'Processando...' : 'Finalizar Pagamento'}
-                                            </button>
-                                        </>
+                                        </div>
                                     )}
                                 </div>
                             )}

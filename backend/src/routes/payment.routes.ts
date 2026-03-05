@@ -1,0 +1,9 @@
+import { Router } from 'express';
+import { createPreference, handleWebhook } from '../controllers/payment.controller';
+
+const router = Router();
+
+router.post('/create_preference', createPreference);
+router.post('/webhook', handleWebhook);
+
+export default router;
