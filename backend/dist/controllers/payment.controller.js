@@ -28,8 +28,19 @@ const createPreference = (req, res) => __awaiter(void 0, void 0, void 0, functio
         const preference = new mercadopago_1.Preference(client);
         // URL base do frontend (pode vir do body ou variável de ambiente)
         const baseUrl = req.body.returnUrl || 'http://localhost:5173';
+        // Limpando baseUrl para evitar barras extras no final
+        let cleanBaseUrl = baseUrl;
+        if (cleanBaseUrl.endsWith('/')) {
+            cleanBaseUrl = cleanBaseUrl.slice(0, -1);
+        }
+        // Se o frontend não enviar ou enviar string vazia, defina um fallback local estrito
+        if (!cleanBaseUrl || cleanBaseUrl === 'null' || cleanBaseUrl === 'undefined') {
+            cleanBaseUrl = 'http://localhost:5173';
+        }
         const response = yield preference.create({
             body: {
+                // Adicionando external_reference para o Webhook achar esse pedido
+                external_reference: orderId ? orderId.toString() : undefined,
                 items: items || [
                     {
                         title: 'Meu produto',
@@ -38,9 +49,8 @@ const createPreference = (req, res) => __awaiter(void 0, void 0, void 0, functio
                     }
                 ],
                 back_urls: {
-                    success: `${baseUrl}/minha-conta`,
-                    failure: `${baseUrl}/`,
-                    pending: `${baseUrl}/minha-conta`
+                    success: `${cleanBaseUrl}/minha-conta`,
+                    failure: `${cleanBaseUrl}/minha-conta`
                 },
                 auto_return: 'approved'
             }

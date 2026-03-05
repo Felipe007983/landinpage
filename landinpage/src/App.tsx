@@ -6,6 +6,7 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { AuthPage } from './pages/Auth/AuthPage';
 import { ClientAreaPage } from './pages/ClientArea/ClientAreaPage';
 import { ValidatorPage } from './pages/Validator/ValidatorPage';
+import { AdminDashboard } from './pages/Admin/AdminDashboard';
 
 // Imports of images
 import Company1 from './assets/images/company-1.jpeg';
@@ -172,6 +173,7 @@ Zeus Evolution não é apenas sobre competir.
                     <Route path="/auth" element={<AuthPage />} />
                     <Route path="/minha-conta" element={<ProtectedRoute><ClientAreaPage /></ProtectedRoute>} />
                     <Route path="/validar-ticket" element={<ProtectedRoute><ValidatorPage /></ProtectedRoute>} />
+                    <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
 
                     {/* Companies Left */}
                     <Route path="/trophy-gonzales" element={<StandardPage

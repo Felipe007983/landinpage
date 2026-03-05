@@ -45,5 +45,40 @@ class AdminController {
             }
         });
     }
+    static updateChampionship(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const id = req.params.id;
+                const data = req.body;
+                const champ = yield prisma_1.prisma.championship.update({
+                    where: { id },
+                    data
+                });
+                res.json(champ);
+            }
+            catch (e) {
+                res.status(500).json({ error: 'Erro ao atualizar campeonato' });
+            }
+        });
+    }
+    static deleteChampionship(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const id = req.params.id;
+                // Check if there are orders related to this championship
+                const orders = yield prisma_1.prisma.order.findFirst({ where: { championshipId: id } });
+                if (orders) {
+                    return res.status(400).json({ error: 'Não é possível excluir um campeonato que já possui vendas registradas.' });
+                }
+                yield prisma_1.prisma.championship.delete({
+                    where: { id }
+                });
+                res.json({ message: 'Campeonato excluído com sucesso' });
+            }
+            catch (e) {
+                res.status(500).json({ error: 'Erro ao excluir campeonato' });
+            }
+        });
+    }
 }
 exports.AdminController = AdminController;

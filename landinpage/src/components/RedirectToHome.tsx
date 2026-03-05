@@ -6,11 +6,11 @@ export function RedirectToHome() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Se a rota atual não for a raiz (/), redireciona para a raiz
-        if (location.pathname !== '/') {
-            navigate('/', { replace: true });
-        }
-    }, []); // Executa apenas uma vez na montagem do componente
+        // Redirecionamento removido ou ajustado para não interferir nas rotas novas
+        // if (location.pathname !== '/') {
+        //     navigate('/', { replace: true });
+        // }
+    }, []);
 
     return null; // Este componente não renderiza nada visualmente
 }

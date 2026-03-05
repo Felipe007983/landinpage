@@ -74,24 +74,22 @@ export function Header() {
                         </Link>
                     ))}
 
-                    {['/', '/auth', '/minha-conta', '/validar-ticket', '/admin'].includes(location.pathname) && (
-                        <div className="flex items-center gap-4 ml-4">
-                            {user?.role === 'ADMIN' && (
-                                <Link
-                                    to="/admin"
-                                    className={`px-4 py-2 border rounded-lg transition-colors duration-300 ${location.pathname === '/admin' ? 'bg-indigo-500 border-indigo-500 text-white' : 'border-indigo-500 text-indigo-500 hover:bg-indigo-500 hover:text-white'}`}
-                                >
-                                    ADMIN
-                                </Link>
-                            )}
+                    <div className="flex items-center gap-4 ml-4">
+                        {user?.role === 'ADMIN' && (
                             <Link
-                                to="/minha-conta"
-                                className={`px-4 py-2 border border-amber-500 rounded-lg hover:bg-amber-500 hover:text-black transition-colors duration-300 ${location.pathname === '/minha-conta' || location.pathname === '/auth' ? 'bg-amber-500 text-black' : 'text-amber-500'}`}
+                                to="/admin"
+                                className={`px-4 py-2 border rounded-lg transition-colors duration-300 ${location.pathname === '/admin' ? 'bg-indigo-500 border-indigo-500 text-white' : 'border-indigo-500 text-indigo-500 hover:bg-indigo-500 hover:text-white'}`}
                             >
-                                {user ? 'MINHA CONTA' : 'ENTRAR'}
+                                ADMIN
                             </Link>
-                        </div>
-                    )}
+                        )}
+                        <Link
+                            to="/minha-conta"
+                            className={`px-4 py-2 border border-amber-500 rounded-lg hover:bg-amber-500 hover:text-black transition-colors duration-300 ${location.pathname === '/minha-conta' || location.pathname === '/auth' ? 'bg-amber-500 text-black' : 'text-amber-500'}`}
+                        >
+                            {user ? 'MINHA CONTA' : 'ENTRAR'}
+                        </Link>
+                    </div>
                 </nav>
 
                 {/* Mobile Menu Button */}

@@ -9,6 +9,8 @@ const router = (0, express_1.Router)();
 router.use(auth_1.authMiddleware);
 router.use(admin_middleware_1.adminMiddleware);
 router.patch('/championships/:id/status', AdminController_1.AdminController.toggleChampionshipStatus);
+router.put('/championships/:id', AdminController_1.AdminController.updateChampionship);
+router.delete('/championships/:id', AdminController_1.AdminController.deleteChampionship);
 router.get('/orders', AdminController_1.AdminController.listAllOrders);
 router.post('/championships', ChampionshipController_1.ChampionshipController.create);
 exports.default = router;

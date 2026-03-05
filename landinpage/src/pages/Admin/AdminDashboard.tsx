@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../../services/api';
-import { ShieldCheck, Plus, Power } from 'lucide-react';
+import { ShieldCheck, Plus, Power, Pencil, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -11,10 +11,11 @@ export function AdminDashboard() {
     const [championships, setChampionships] = useState<any[]>([]);
     const [orders, setOrders] = useState<any[]>([]);
 
-    // New Champ Form
+    // New Champ Form / Edit Form
     const [form, setForm] = useState({
         name: '', description: '', date: '', location: '', priceComp: 0, priceVis: 0, banner: ''
     });
+    const [editingId, setEditingId] = useState<string | null>(null);
 
     useEffect(() => {
         if (!user || user.role !== 'ADMIN') {
@@ -41,21 +42,62 @@ export function AdminDashboard() {
         fetchChamps();
     };
 
-    const handleCreateChamp = async (e: any) => {
+    const handleCreateOrEditChamp = async (e: any) => {
         e.preventDefault();
         try {
-            await api.post('/admin/championships', {
+            const payload = {
                 ...form,
                 date: new Date(form.date).toISOString(),
                 priceComp: Number(form.priceComp),
                 priceVis: Number(form.priceVis)
-            });
-            alert('Campeonato criado!');
+            };
+
+            if (editingId) {
+                await api.put(`/admin/championships/${editingId}`, payload);
+                alert('Campeonato atualizado com sucesso!');
+            } else {
+                await api.post('/admin/championships', payload);
+                alert('Campeonato criado com sucesso!');
+            }
+
             fetchChamps();
-            setForm({ name: '', description: '', date: '', location: '', priceComp: 0, priceVis: 0, banner: '' });
+            resetForm();
         } catch (err) {
-            alert('Erro ao criar campeonato');
+            alert('Erro ao salvar campeonato');
         }
+    };
+
+    const handleEdit = (c: any) => {
+        setEditingId(c.id);
+        const formattedDate = new Date(c.date).toISOString().slice(0, 16);
+        setForm({
+            name: c.name,
+            description: c.description,
+            date: formattedDate,
+            location: c.location,
+            priceComp: c.priceComp,
+            priceVis: c.priceVis,
+            banner: c.banner || ''
+        });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const handleDelete = async (id: string, name: string) => {
+        if (window.confirm(`Tem certeza que deseja apagar o campeonato "${name}"? Esta ação não pode ser desfeita e só é possível se não houver vendas.`)) {
+            try {
+                await api.delete(`/admin/championships/${id}`);
+                alert('Campeonato apagado com sucesso.');
+                fetchChamps();
+                if (editingId === id) resetForm();
+            } catch (err: any) {
+                alert(err.response?.data?.error || 'Erro ao apagar campeonato.');
+            }
+        }
+    };
+
+    const resetForm = () => {
+        setForm({ name: '', description: '', date: '', location: '', priceComp: 0, priceVis: 0, banner: '' });
+        setEditingId(null);
     };
 
     return (
@@ -99,31 +141,60 @@ export function AdminDashboard() {
                                         </div>
                                         <p className="text-sm text-gray-400">{new Date(c.date).toLocaleDateString('pt-BR')} - {c.location}</p>
                                     </div>
-                                    <button
-                                        onClick={() => toggleStatus(c.id)}
-                                        title="Alternar Status"
-                                        className={`p-3 rounded-full transition-colors ${c.status === 'OPEN' ? 'bg-amber-500 text-black hover:bg-amber-400' : 'bg-zinc-700 hover:bg-zinc-600 text-white'}`}
-                                    >
-                                        <Power className="w-5 h-5" />
-                                    </button>
+                                    <div className="flex gap-2 relative z-10">
+                                        <button
+                                            onClick={() => handleEdit(c)}
+                                            title="Editar Campeonato"
+                                            className="p-3 rounded-full transition-colors bg-zinc-700 hover:bg-zinc-600 text-white"
+                                        >
+                                            <Pencil className="w-5 h-5" />
+                                        </button>
+                                        <button
+                                            onClick={() => handleDelete(c.id, c.name)}
+                                            title="Apagar Campeonato"
+                                            className="p-3 rounded-full transition-colors bg-red-900/50 hover:bg-red-700 text-red-500 hover:text-white"
+                                        >
+                                            <Trash2 className="w-5 h-5" />
+                                        </button>
+                                        <button
+                                            onClick={() => toggleStatus(c.id)}
+                                            title="Alternar Status"
+                                            className={`p-3 rounded-full transition-colors ${c.status === 'OPEN' ? 'bg-amber-500 text-black hover:bg-amber-400' : 'bg-zinc-700 hover:bg-zinc-600 text-white'}`}
+                                        >
+                                            <Power className="w-5 h-5" />
+                                        </button>
+                                    </div>
                                 </div>
                             ))}
                         </div>
 
                         <div>
                             <div className="bg-zinc-900 border border-amber-500/30 p-6 rounded-xl sticky top-24">
-                                <h2 className="text-xl font-bold uppercase mb-4 flex items-center gap-2 text-amber-500"><Plus className="w-5 h-5" /> Novo Evento</h2>
-                                <form onSubmit={handleCreateChamp} className="space-y-4 text-sm">
+                                <h2 className="text-xl font-bold uppercase mb-4 flex items-center gap-2 text-amber-500">
+                                    {editingId ? <Pencil className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
+                                    {editingId ? 'Editar Evento' : 'Novo Evento'}
+                                </h2>
+                                <form onSubmit={handleCreateOrEditChamp} className="space-y-4 text-sm">
                                     <input type="text" placeholder="Nome do Campeonato" required value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="w-full bg-zinc-800 border-zinc-700 border p-3 rounded" />
                                     <textarea placeholder="Descrição e Regras" required rows={3} value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} className="w-full bg-zinc-800 border-zinc-700 border p-3 rounded" />
                                     <input type="datetime-local" required value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} className="w-full bg-zinc-800 border-zinc-700 border p-3 rounded text-gray-400" />
                                     <input type="text" placeholder="Local / Arena" required value={form.location} onChange={e => setForm({ ...form, location: e.target.value })} className="w-full bg-zinc-800 border-zinc-700 border p-3 rounded" />
                                     <div className="grid grid-cols-2 gap-4">
-                                        <input type="number" step="0.01" placeholder="R$ Atleta" required value={form.priceComp || ''} onChange={e => setForm({ ...form, priceComp: Number(e.target.value) })} className="w-full bg-zinc-800 border-zinc-700 border p-3 rounded" />
-                                        <input type="number" step="0.01" placeholder="R$ Visitante" required value={form.priceVis || ''} onChange={e => setForm({ ...form, priceVis: Number(e.target.value) })} className="w-full bg-zinc-800 border-zinc-700 border p-3 rounded" />
+                                        <input type="number" step="0.01" placeholder="R$ Atleta" required value={form.priceComp === 0 && !editingId ? '' : form.priceComp} onChange={e => setForm({ ...form, priceComp: Number(e.target.value) })} className="w-full bg-zinc-800 border-zinc-700 border p-3 rounded" />
+                                        <input type="number" step="0.01" placeholder="R$ Visitante" required value={form.priceVis === 0 && !editingId ? '' : form.priceVis} onChange={e => setForm({ ...form, priceVis: Number(e.target.value) })} className="w-full bg-zinc-800 border-zinc-700 border p-3 rounded" />
                                     </div>
                                     <input type="url" placeholder="URL da Capa (Imagem)" value={form.banner} onChange={e => setForm({ ...form, banner: e.target.value })} className="w-full bg-zinc-800 border-zinc-700 border p-3 rounded" />
-                                    <button type="submit" className="w-full bg-amber-500 text-black font-black uppercase py-3 rounded hover:bg-amber-400 transition-colors">Criar Campeonato</button>
+
+                                    <div className="flex gap-2">
+                                        <button type="submit" className="flex-1 bg-amber-500 text-black font-black uppercase py-3 rounded hover:bg-amber-400 transition-colors">
+                                            {editingId ? 'Salvar Edição' : 'Criar Campeonato'}
+                                        </button>
+                                        {editingId && (
+                                            <button type="button" onClick={resetForm} className="bg-zinc-700 text-white font-bold uppercase px-4 py-3 rounded hover:bg-zinc-600 transition-colors">
+                                                Cancelar
+                                            </button>
+                                        )}
+                                    </div>
                                 </form>
                             </div>
                         </div>

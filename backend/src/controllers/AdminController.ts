@@ -33,4 +33,40 @@ export class AdminController {
             res.status(500).json({ error: 'Erro ao listar transações' });
         }
     }
+
+    static async updateChampionship(req: Request, res: Response) {
+        try {
+            const id = req.params.id as string;
+            const data = req.body;
+
+            const champ = await prisma.championship.update({
+                where: { id },
+                data
+            });
+
+            res.json(champ);
+        } catch (e) {
+            res.status(500).json({ error: 'Erro ao atualizar campeonato' });
+        }
+    }
+
+    static async deleteChampionship(req: Request, res: Response) {
+        try {
+            const id = req.params.id as string;
+
+            // Check if there are orders related to this championship
+            const orders = await prisma.order.findFirst({ where: { championshipId: id } });
+            if (orders) {
+                return res.status(400).json({ error: 'Não é possível excluir um campeonato que já possui vendas registradas.' });
+            }
+
+            await prisma.championship.delete({
+                where: { id }
+            });
+
+            res.json({ message: 'Campeonato excluído com sucesso' });
+        } catch (e) {
+            res.status(500).json({ error: 'Erro ao excluir campeonato' });
+        }
+    }
 }
