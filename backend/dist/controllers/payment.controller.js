@@ -16,6 +16,7 @@ exports.handleWebhook = exports.createPreference = void 0;
 const mercadopago_1 = require("mercadopago");
 const crypto_1 = __importDefault(require("crypto"));
 const prisma_1 = require("../prisma");
+const ticket_service_1 = require("../services/ticket.service");
 const createPreference = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { items, orderId } = req.body;
@@ -71,7 +72,6 @@ const createPreference = (req, res) => __awaiter(void 0, void 0, void 0, functio
 });
 exports.createPreference = createPreference;
 const handleWebhook = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
     try {
         const xSignature = req.headers['x-signature'];
         const xRequestId = req.headers['x-request-id'];
@@ -117,7 +117,7 @@ const handleWebhook = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             const paymentInfo = yield paymentClient.get({ id: dataId });
             console.log(`[Webhook] Pagamento recebido: ID ${paymentInfo.id} | Status: ${paymentInfo.status}`);
             // Atualiza banco com Prisma
-            if (paymentInfo.status === 'approved' && ((_a = paymentInfo.order) === null || _a === void 0 ? void 0 : _a.id)) {
+            if (paymentInfo.status === 'approved' && paymentInfo.external_reference) {
                 // Como não podemos confiar 100% que orderId venha da Preference ID inicial, 
                 // A melhor prática na integração Preference + Checkout Pro é enviar o orderId local no campo `external_reference`
                 // Assumindo que setamos external_reference na Preference = local order.id:
@@ -133,12 +133,13 @@ const handleWebhook = (req, res) => __awaiter(void 0, void 0, void 0, function* 
                             }
                         });
                         // Geraremos aqui o ticket se o pedido foi aprovado pela 1a vez
-                        yield prisma_1.prisma.ticket.create({
+                        const ticket = yield prisma_1.prisma.ticket.create({
                             data: {
                                 orderId: localOrderId
                             }
                         });
                         console.log(`[Webhook] Ticket gerado com sucesso para a Order ID ${localOrderId}`);
+                        ticket_service_1.TicketService.generateAndSendTicket(ticket.id);
                     }
                 }
             }

@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrderController = void 0;
 const prisma_1 = require("../prisma");
+const ticket_service_1 = require("../services/ticket.service");
 class OrderController {
     static create(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -28,7 +29,16 @@ class OrderController {
                 // Gateway Mock Processing
                 let paymentStatus = 'PENDING';
                 let gatewayResponse = {};
-                if (paymentMethod === 'PIX') {
+                // Se o valor for 0, aprova direto (gratuito / teste)
+                const amountVal = parseFloat((amount === null || amount === void 0 ? void 0 : amount.toString()) || '0');
+                if (amountVal === 0) {
+                    paymentStatus = 'APPROVED';
+                    gatewayResponse = {
+                        message: 'Ingresso gratuito emitido com sucesso.',
+                        isFree: true
+                    };
+                }
+                else if (paymentMethod === 'PIX') {
                     // Simula a geração de um QRCode PIX
                     // Em um cenário real, `paymentStatus` começa PENDING e um Webhook atualiza para APPROVED.
                     // Mas para o Mock interativo do frontend, vamos aprovar caso o cliente "confirme", ou aprovar direto para acelerar o teste:
@@ -64,6 +74,8 @@ class OrderController {
                             orderId: order.id
                         }
                     });
+                    // Send email synchronously or asynchronously
+                    ticket_service_1.TicketService.generateAndSendTicket(ticket.id);
                 }
                 res.json({ order, ticket, gatewayResponse });
             }

@@ -1,0 +1,10 @@
+# Environment variables declared in this file are NOT automatically loaded by Prisma.
+# Please add `import "dotenv/config";` to your `prisma.config.ts` file, or use the Prisma CLI with Bun
+# to load environment variables from .env files: https://pris.ly/prisma-config-env-vars.
+
+# Prisma supports the native connection string format for PostgreSQL, MySQL, SQLite, SQL Server, MongoDB and CockroachDB.
+# See the documentation for all the connection string options: https://pris.ly/d/connection-strings
+
+DATABASE_URL="file:./dev.db"
+MERCADOPAGO_ACCESS_TOKEN="APP_USR-8272104164695755-030507-6b198f5f373294a0a302d7680ca41fad-3244889862"
+MERCADOPAGO_WEBHOOK_SECRET="SuaChaveSecretaDoPainelMercadoPagoAqui"

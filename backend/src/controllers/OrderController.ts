@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { prisma } from '../prisma';
+import { TicketService } from '../services/ticket.service';
 
 export class OrderController {
     static async create(req: Request, res: Response) {
@@ -20,7 +21,15 @@ export class OrderController {
             let paymentStatus = 'PENDING';
             let gatewayResponse: any = {};
 
-            if (paymentMethod === 'PIX') {
+            // Se o valor for 0, aprova direto (gratuito / teste)
+            const amountVal = parseFloat(amount?.toString() || '0');
+            if (amountVal === 0) {
+                paymentStatus = 'APPROVED';
+                gatewayResponse = {
+                    message: 'Ingresso gratuito emitido com sucesso.',
+                    isFree: true
+                };
+            } else if (paymentMethod === 'PIX') {
                 // Simula a geração de um QRCode PIX
                 // Em um cenário real, `paymentStatus` começa PENDING e um Webhook atualiza para APPROVED.
                 // Mas para o Mock interativo do frontend, vamos aprovar caso o cliente "confirme", ou aprovar direto para acelerar o teste:
@@ -57,6 +66,8 @@ export class OrderController {
                         orderId: order.id
                     }
                 });
+                // Send email synchronously or asynchronously
+                TicketService.generateAndSendTicket(ticket.id);
             }
 
             res.json({ order, ticket, gatewayResponse });

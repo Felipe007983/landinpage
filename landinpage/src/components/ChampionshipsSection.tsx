@@ -16,8 +16,7 @@ export function ChampionshipsSection() {
 
     const [paymentStep, setPaymentStep] = useState(false);
     const [selectedType, setSelectedType] = useState<any>(null);
-    const [cards, setCards] = useState<any[]>([]);
-    const [paymentMethod, setPaymentMethod] = useState('PIX');
+    const [paymentMethod] = useState('PIX');
     const [selectedCardId, setSelectedCardId] = useState('');
     const [gatewayResponse, setGatewayResponse] = useState<any>(null);
     const [processing, setProcessing] = useState(false);
@@ -56,7 +55,6 @@ export function ChampionshipsSection() {
     useEffect(() => {
         if (user && selectedChamp) {
             api.get('/credit-cards').then(res => {
-                setCards(res.data);
                 if (res.data.length > 0) {
                     const defaultCard = res.data.find((c: any) => c.isDefault) || res.data[0];
                     setSelectedCardId(defaultCard.id);
@@ -80,6 +78,12 @@ export function ChampionshipsSection() {
         setProcessing(true);
         try {
             const pr = selectedType === 'COMPETITOR' ? selectedChamp.priceComp : selectedChamp.priceVis;
+
+            // Bypass Mercado Pago payment generation if price is 0
+            if (Number(pr) === 0) {
+                return processPayment();
+            }
+
             const nm = selectedType === 'COMPETITOR' ? 'Inscrição Atleta' : 'Ingresso Visitante';
 
             const payload = {
@@ -98,12 +102,9 @@ export function ChampionshipsSection() {
                 setPreferenceId(data.id);
             }
 
-            // Aqui poderíamos opcionalmente chamar o /orders para persistir a intenção de compra antes de pagar no MP
-
         } catch (e) {
             console.error(e);
             alert('Falha ao gerar o checkout do Mercado Pago.');
-        } finally {
             setProcessing(false);
         }
     };
@@ -122,7 +123,12 @@ export function ChampionshipsSection() {
 
             setGatewayResponse(data.gatewayResponse);
             if (data.order.paymentStatus === 'APPROVED') {
-                alert('Pagamento Aprovado! Seu ingresso foi gerado.');
+                if (data.gatewayResponse?.isFree) {
+                    alert('Ingresso resgatado com sucesso! Redirecionando para seus ingressos...');
+                    navigate('/minha-conta');
+                } else {
+                    alert('Pagamento Aprovado! Seu ingresso foi gerado.');
+                }
             }
         } catch (e) {
             alert('Falha ao processar pagamento.');
@@ -235,7 +241,13 @@ export function ChampionshipsSection() {
 
                                     {gatewayResponse ? (
                                         <div className="text-center p-6 bg-green-500/10 border border-green-500/30 rounded-xl">
-                                            {paymentMethod === 'PIX' ? (
+                                            {gatewayResponse.isFree ? (
+                                                <>
+                                                    <h3 className="text-green-500 font-bold mb-2 uppercase tracking-widest">{gatewayResponse.message}</h3>
+                                                    <p className="text-sm text-gray-400 mb-6">Seu ingresso gratuito foi gerado com sucesso e enviado para o seu e-mail.</p>
+                                                    <button onClick={() => navigate('/minha-conta')} className="px-6 py-3 bg-amber-500 text-black font-bold uppercase rounded-lg hover:bg-amber-400 w-full transition-colors">Acessar Meu Ingresso</button>
+                                                </>
+                                            ) : paymentMethod === 'PIX' ? (
                                                 <>
                                                     <h3 className="text-green-500 font-bold mb-4 uppercase tracking-widest">Pague com PIX</h3>
                                                     <div className="flex justify-center mb-4">
@@ -269,7 +281,7 @@ export function ChampionshipsSection() {
                                                     disabled={processing}
                                                     className="w-full bg-gradient-to-r from-amber-500 to-amber-600 text-black py-4 rounded-xl font-black uppercase tracking-wider hover:opacity-90 transition-opacity disabled:opacity-50"
                                                 >
-                                                    {processing ? 'Carregando...' : 'Pagar com Mercado Pago'}
+                                                    {processing ? 'Carregando...' : (selectedType === 'COMPETITOR' && Number(selectedChamp.priceComp) === 0) || (selectedType === 'VISITOR' && Number(selectedChamp.priceVis) === 0) ? 'Gerar Ingresso Gratuito' : 'Pagar com Mercado Pago'}
                                                 </button>
                                             )}
 

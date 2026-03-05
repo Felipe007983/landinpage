@@ -21,6 +21,25 @@ export function ClientAreaPage() {
         }
     }, [activeTab]);
 
+    const handleDownloadTicket = async (ticketId: string, championshipName: string) => {
+        try {
+            const response = await api.get(`/tickets/${ticketId}/pdf`, { responseType: 'blob' });
+
+            // Create blob link to download
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `ingresso-${championshipName.replace(/\s+/g, '-').toLowerCase()}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.parentNode?.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Erro ao baixar ingresso:', error);
+            alert('Não foi possível baixar o ingresso no momento.');
+        }
+    };
+
     return (
         <div className="min-h-screen bg-black text-white pt-24 pb-12 px-6">
             <div className="container mx-auto max-w-6xl">
@@ -117,8 +136,11 @@ export function ClientAreaPage() {
                                                 </div>
                                                 <div className="p-4 bg-white flex flex-col items-center justify-center border-l-2 border-dashed border-zinc-300 relative">
                                                     <QRCodeSVG value={t.uuid} size={100} />
-                                                    <button className="mt-4 flex items-center gap-2 text-xs font-bold text-zinc-600 hover:text-black transition-colors">
-                                                        <Download className="w-3 h-3" /> Salvar
+                                                    <button
+                                                        onClick={() => handleDownloadTicket(t.id, t.order.championship.name)}
+                                                        className="mt-4 flex items-center gap-2 text-xs font-bold text-zinc-600 hover:text-black transition-colors"
+                                                    >
+                                                        <Download className="w-3 h-3" /> Salvar PDF
                                                     </button>
                                                     {/* Pseudo cut-outs */}
                                                     <div className="absolute -top-3 -left-3 w-6 h-6 bg-zinc-800 rounded-full"></div>

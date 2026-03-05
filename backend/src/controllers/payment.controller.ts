@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { MercadoPagoConfig, Preference, Payment } from 'mercadopago';
 import crypto from 'crypto';
 import { prisma } from '../prisma';
+import { TicketService } from '../services/ticket.service';
 
 export const createPreference = async (req: Request, res: Response) => {
     try {
@@ -118,7 +119,7 @@ export const handleWebhook = async (req: Request, res: Response) => {
             console.log(`[Webhook] Pagamento recebido: ID ${paymentInfo.id} | Status: ${paymentInfo.status}`);
 
             // Atualiza banco com Prisma
-            if (paymentInfo.status === 'approved' && paymentInfo.order?.id) {
+            if (paymentInfo.status === 'approved' && paymentInfo.external_reference) {
                 // Como não podemos confiar 100% que orderId venha da Preference ID inicial, 
                 // A melhor prática na integração Preference + Checkout Pro é enviar o orderId local no campo `external_reference`
                 // Assumindo que setamos external_reference na Preference = local order.id:
@@ -138,12 +139,14 @@ export const handleWebhook = async (req: Request, res: Response) => {
                         });
 
                         // Geraremos aqui o ticket se o pedido foi aprovado pela 1a vez
-                        await prisma.ticket.create({
+                        const ticket = await prisma.ticket.create({
                             data: {
                                 orderId: localOrderId
                             }
                         });
                         console.log(`[Webhook] Ticket gerado com sucesso para a Order ID ${localOrderId}`);
+
+                        TicketService.generateAndSendTicket(ticket.id);
                     }
                 }
             }
