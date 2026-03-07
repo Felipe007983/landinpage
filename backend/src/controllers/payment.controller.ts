@@ -26,6 +26,7 @@ export const processPayment = async (req: Request, res: Response) => {
         const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : 'Evolução';
 
         // Construção robusta do body baseada no exemplo da documentação e no snippet do frontend
+        const webhookBase = process.env.API_BASE_URL || 'https://zeusevolution.com.br';
         const body: any = {
             transaction_amount: Number(paymentData.transaction_amount),
             token: paymentData.token,
@@ -42,9 +43,10 @@ export const processPayment = async (req: Request, res: Response) => {
                 }
             },
             external_reference: orderId ? orderId.toString() : undefined,
-            notification_url: `https://unretained-cammy-nonsynoptical.ngrok-free.dev/api/payment/webhook/${order.championship?.id || 'global'}`,
+            notification_url: `${webhookBase}/api/payment/webhook/${order.championship?.id || 'global'}`,
             binary_mode: true,
         };
+
 
         const issuerIdRaw = paymentData.issuer_id || paymentData.issuerId || paymentData.issuer;
         if (issuerIdRaw && issuerIdRaw.toString().trim() !== '') {
