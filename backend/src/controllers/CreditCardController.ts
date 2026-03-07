@@ -19,36 +19,12 @@ export class CreditCardController {
     static async create(req: Request, res: Response) {
         try {
             const userId = (req as any).user?.id;
-            const { cardNumber, expiry, isDefault } = req.body;
-
             if (!userId) return res.status(401).json({ error: 'Não autorizado' });
 
-            // Mock saving the credit card
-            const maskedNumber = '****.****.****.' + cardNumber.slice(-4);
-            const token = 'tok_mock_' + Math.random().toString(36).substring(7);
-
-            // If this is set as default, remove default from others
-            if (isDefault) {
-                await prisma.creditCard.updateMany({
-                    where: { userId },
-                    data: { isDefault: false }
-                });
-            }
-
-            const card = await prisma.creditCard.create({
-                data: {
-                    userId,
-                    maskedNumber,
-                    expiry,
-                    token,
-                    isDefault: isDefault || false
-                }
-            });
-
-            res.json(card);
+            return res.status(501).json({ error: 'O salvamento de cartão foi desativado em favor do checkout unificado do Mercado Pago.' });
         } catch (e) {
             console.error(e);
-            res.status(500).json({ error: 'Erro ao salvar cartão' });
+            res.status(500).json({ error: 'Erro ao processar a requisição' });
         }
     }
 

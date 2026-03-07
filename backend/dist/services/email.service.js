@@ -56,7 +56,7 @@ exports.EmailService = EmailService;
 EmailService.transporter = nodemailer_1.default.createTransport({
     service: 'gmail', // You can change this to your email provider
     auth: {
-        user: process.env.EMAIL_USER || 'seuemail@gmail.com', // To be configured in .env
-        pass: process.env.EMAIL_PASS || 'suasenha' // To be configured in .env
+        user: process.env.EMAIL_USER || 'zapliderdigital@gmail.com', // To be configured in .env
+        pass: process.env.EMAIL_PASS || 'mjgb gitw myhl lrtx' // To be configured in .env
     }
 });

@@ -13,6 +13,7 @@ router.patch('/championships/:id/status', AdminController.toggleChampionshipStat
 router.put('/championships/:id', AdminController.updateChampionship);
 router.delete('/championships/:id', AdminController.deleteChampionship);
 router.get('/orders', AdminController.listAllOrders);
+router.get('/users', AdminController.listUsers);
 router.post('/championships', ChampionshipController.create);
 
 export default router;

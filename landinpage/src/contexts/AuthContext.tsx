@@ -7,6 +7,7 @@ export interface User {
     email: string;
     cpf?: string;
     role: string;
+    federationYear?: number;
 }
 
 interface AuthContextType {

@@ -25,6 +25,11 @@ export class TicketService {
             const { order } = ticket;
             const { user, championship } = order;
 
+            if (!championship) {
+                console.error(`[TicketService] Attempted to generate ticket for order ${order.id} without championship.`);
+                return;
+            }
+
             const ticketData = {
                 championshipName: championship.name,
                 ticketType: order.type === 'COMPETITOR' ? 'Competidor' : 'Espectador',
@@ -41,7 +46,8 @@ export class TicketService {
                 user.email,
                 user.name,
                 championship.name,
-                pdfBuffer
+                pdfBuffer,
+                order.wonTshirt
             );
 
             console.log(`[TicketService] PDF generated and email sent for ticket ${ticketId}.`);

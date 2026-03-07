@@ -37,7 +37,12 @@ export class AdminController {
     static async updateChampionship(req: Request, res: Response) {
         try {
             const id = req.params.id as string;
-            const data = req.body;
+            const data = { ...req.body };
+
+            // Se o admin mandou as chaves em branco, presumimos que ele não quer alterá-las, preservando as originais
+            if (!data.mpAccessToken) delete data.mpAccessToken;
+            if (!data.mpPublicKey) delete data.mpPublicKey;
+            if (!data.mpWebhookSecret) delete data.mpWebhookSecret;
 
             const champ = await prisma.championship.update({
                 where: { id },
@@ -67,6 +72,29 @@ export class AdminController {
             res.json({ message: 'Campeonato excluído com sucesso' });
         } catch (e) {
             res.status(500).json({ error: 'Erro ao excluir campeonato' });
+        }
+    }
+
+    static async listUsers(req: Request, res: Response) {
+        try {
+            const users = await prisma.user.findMany({
+                where: {
+                    role: 'USER',
+                    orders: {
+                        some: {
+                            paymentStatus: 'APPROVED',
+                            OR: [
+                                { type: 'FEDERATION' },
+                                { includesFederation: true }
+                            ]
+                        }
+                    }
+                },
+                orderBy: { createdAt: 'desc' }
+            });
+            res.json(users);
+        } catch (e) {
+            res.status(500).json({ error: 'Erro ao listar usuários federados' });
         }
     }
 }

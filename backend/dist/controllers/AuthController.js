@@ -29,7 +29,7 @@ class AuthController {
                     data: { name, cpf, email, phone, password_hash, address }
                 });
                 const token = jsonwebtoken_1.default.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET || 'secret', { expiresIn: '1d' });
-                res.json({ user: { id: user.id, name: user.name, email: user.email, role: user.role }, token });
+                res.json({ user: { id: user.id, name: user.name, email: user.email, role: user.role, federationYear: user.federationYear }, token });
             }
             catch (e) {
                 res.status(500).json({ error: 'Erro ao registrar usuário' });
@@ -47,7 +47,7 @@ class AuthController {
                 if (!matches)
                     return res.status(401).json({ error: 'Senha incorreta' });
                 const token = jsonwebtoken_1.default.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET || 'secret', { expiresIn: '1d' });
-                res.json({ user: { id: user.id, name: user.name, email: user.email, role: user.role }, token });
+                res.json({ user: { id: user.id, name: user.name, email: user.email, role: user.role, federationYear: user.federationYear }, token });
             }
             catch (e) {
                 res.status(500).json({ error: 'Erro no login' });
@@ -60,7 +60,7 @@ class AuthController {
             const id = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
             if (!id)
                 return res.status(401).json({ error: 'Unauthorized' });
-            const user = yield prisma_1.prisma.user.findUnique({ where: { id }, select: { id: true, name: true, email: true, cpf: true, phone: true, role: true } });
+            const user = yield prisma_1.prisma.user.findUnique({ where: { id }, select: { id: true, name: true, email: true, cpf: true, phone: true, role: true, federationYear: true } });
             res.json(user);
         });
     }

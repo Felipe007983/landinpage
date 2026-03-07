@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { api } from '../../services/api';
 import LogoZeus from '../../assets/images/logo_zeus.jpg';
+import toast from 'react-hot-toast';
 
 export function AuthPage() {
     const [isLogin, setIsLogin] = useState(true);
@@ -26,13 +27,15 @@ export function AuthPage() {
 
             const { data } = await api.post(endpoint, payload);
             login(data.token, data.user);
-            if (location.state?.returnTo) {
-                navigate(location.state.returnTo, { state: location.state });
-            } else {
-                navigate('/minha-conta');
-            }
+            const target = location.state?.returnTo
+                ? location.state.returnTo
+                : data.user?.role?.toUpperCase() === 'ADMIN'
+                    ? '/admin'
+                    : '/minha-conta';
+            const state = location.state?.returnTo ? location.state : undefined;
+            setTimeout(() => navigate(target, state ? { state } : undefined), 0);
         } catch (err: any) {
-            alert(err.response?.data?.error || 'Erro ao autenticar');
+            toast.error(err.response?.data?.error || 'Erro ao autenticar');
         } finally {
             setLoading(false);
         }

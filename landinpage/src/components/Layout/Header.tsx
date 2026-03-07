@@ -31,6 +31,9 @@ export function Header() {
     // Default to DueloLogo if path not found in map (or handle partial matches if needed)
     const currentLogo = logoMap[location.pathname] || LogoZeus;
 
+    // Define in which pages the auth buttons should appear
+    const showAuthButtons = ['/', '/admin', '/minha-conta', '/auth', '/validar-ticket'].includes(location.pathname);
+
     return (
         <header className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md border-b border-white/5 text-white shadow-lg h-20 flex items-center transition-all duration-300">
             <div className="container mx-auto px-6 h-full flex items-center justify-between">
@@ -74,22 +77,24 @@ export function Header() {
                         </Link>
                     ))}
 
-                    <div className="flex items-center gap-4 ml-4">
-                        {user?.role === 'ADMIN' && (
+                    {showAuthButtons && (
+                        <div className="flex items-center gap-4 ml-4">
+                            {user?.role?.toUpperCase() === 'ADMIN' && (
+                                <Link
+                                    to="/admin"
+                                    className={`px-4 py-2 border rounded-lg transition-colors duration-300 ${location.pathname === '/admin' ? 'bg-amber-500 border-amber-500 text-black' : 'border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-black'}`}
+                                >
+                                    PAINEL ADMIN
+                                </Link>
+                            )}
                             <Link
-                                to="/admin"
-                                className={`px-4 py-2 border rounded-lg transition-colors duration-300 ${location.pathname === '/admin' ? 'bg-indigo-500 border-indigo-500 text-white' : 'border-indigo-500 text-indigo-500 hover:bg-indigo-500 hover:text-white'}`}
+                                to="/minha-conta"
+                                className={`px-4 py-2 border border-amber-500 rounded-lg hover:bg-amber-500 hover:text-black transition-colors duration-300 ${location.pathname === '/minha-conta' || location.pathname === '/auth' ? 'bg-amber-500 text-black' : 'text-amber-500'}`}
                             >
-                                ADMIN
+                                {user ? 'MINHA CONTA' : 'ENTRAR'}
                             </Link>
-                        )}
-                        <Link
-                            to="/minha-conta"
-                            className={`px-4 py-2 border border-amber-500 rounded-lg hover:bg-amber-500 hover:text-black transition-colors duration-300 ${location.pathname === '/minha-conta' || location.pathname === '/auth' ? 'bg-amber-500 text-black' : 'text-amber-500'}`}
-                        >
-                            {user ? 'MINHA CONTA' : 'ENTRAR'}
-                        </Link>
-                    </div>
+                        </div>
+                    )}
                 </nav>
 
                 {/* Mobile Menu Button */}
@@ -187,6 +192,27 @@ export function Header() {
                             >
                                 Compre Conosco
                             </a>
+                        </div>
+                    )}
+
+                    {showAuthButtons && (
+                        <div className="flex flex-col items-center gap-4 mt-6">
+                            {user?.role?.toUpperCase() === 'ADMIN' && (
+                                <Link
+                                    to="/admin"
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                    className={`px-8 py-3 w-full max-w-[200px] border rounded-lg transition-colors duration-300 font-bold uppercase tracking-widest text-sm ${location.pathname === '/admin' ? 'bg-amber-500 border-amber-500 text-black' : 'border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-black'}`}
+                                >
+                                    PAINEL ADMIN
+                                </Link>
+                            )}
+                            <Link
+                                to="/minha-conta"
+                                onClick={() => setIsMobileMenuOpen(false)}
+                                className={`px-8 py-3 w-full max-w-[200px] border border-amber-500 rounded-lg hover:bg-amber-500 hover:text-black transition-colors duration-300 font-bold uppercase tracking-widest text-sm ${location.pathname === '/minha-conta' || location.pathname === '/auth' ? 'bg-amber-500 text-black' : 'text-amber-500'}`}
+                            >
+                                {user ? 'MINHA CONTA' : 'ENTRAR'}
+                            </Link>
                         </div>
                     )}
                 </nav>

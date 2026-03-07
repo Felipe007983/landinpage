@@ -7,7 +7,11 @@ export class ChampionshipController {
             const champs = await prisma.championship.findMany({
                 orderBy: { date: 'asc' }
             });
-            res.json(champs);
+            const safeChamps = champs.map(c => {
+                const { mpAccessToken, mpWebhookSecret, ...safeData } = c;
+                return safeData;
+            });
+            res.json(safeChamps);
         } catch (e) {
             res.status(500).json({ error: 'Erro ao listar campeonatos' });
         }
@@ -19,17 +23,19 @@ export class ChampionshipController {
                 where: { id: req.params.id as string }
             });
             if (!champ) return res.status(404).json({ error: 'Campeonato não encontrado' });
-            res.json(champ);
+            
+            const { mpAccessToken, mpWebhookSecret, ...safeData } = champ;
+            res.json(safeData);
         } catch (e) {
             res.status(500).json({ error: 'Erro ao buscar campeonato' });
         }
     }
 
-    // Admin rotas (mock simples para seed)
     static async create(req: Request, res: Response) {
         try {
             const champ = await prisma.championship.create({ data: req.body });
-            res.json(champ);
+            const { mpAccessToken, mpWebhookSecret, ...safeData } = champ;
+            res.json(safeData);
         } catch (e) {
             res.status(500).json({ error: 'Erro ao criar campeonato' });
         }

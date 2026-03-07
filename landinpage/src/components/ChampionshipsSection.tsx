@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
-import { api } from '../services/api';
-import { Calendar, MapPin, ChevronRight, X } from 'lucide-react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { initMercadoPago } from '@mercadopago/sdk-react';
+import { Calendar, ChevronRight, MapPin, X } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { initMercadoPago, Wallet } from '@mercadopago/sdk-react';
+import { api } from '../services/api';
+import toast from 'react-hot-toast';
+import { CardCheckoutForm } from './CardCheckoutForm';
+import { createPortal } from 'react-dom';
 
 initMercadoPago(import.meta.env.VITE_MERCADOPAGO_PUBLIC_KEY || '');
 
@@ -16,52 +19,69 @@ export function ChampionshipsSection() {
 
     const [paymentStep, setPaymentStep] = useState(false);
     const [selectedType, setSelectedType] = useState<any>(null);
-    const [paymentMethod] = useState('PIX');
-    const [selectedCardId, setSelectedCardId] = useState('');
-    const [gatewayResponse, setGatewayResponse] = useState<any>(null);
+    const [paymentMethod, setPaymentMethod] = useState<'PIX' | 'CREDIT_CARD'>('PIX');
+    const [showCardForm, setShowCardForm] = useState(false);
     const [processing, setProcessing] = useState(false);
-    const [preferenceId, setPreferenceId] = useState<string | null>(null);
+    const [gatewayResponse, setGatewayResponse] = useState<any>(null);
 
     const location = useLocation();
 
     useEffect(() => {
-        const mockEvent = {
-            id: 'mock-test-id',
-            name: 'Zeus Evolution - Evento Teste',
-            date: new Date(Date.now() + 86400000 * 30).toISOString(),
-            location: 'Arena Zeus, São Paulo',
-            description: 'Evento de teste para validação do fluxo de compra. Preço promocional de R$ 0,001.',
-            status: 'OPEN',
-            priceComp: 0.001,
-            priceVis: 0.001,
-            banner: '',
-        };
-
         api.get('/championships').then(res => {
-            const events = [mockEvent, ...res.data];
-            setChampionships(events);
+            setChampionships(res.data);
 
             // Auto-open modal if returning from Auth
             if (user && location.state?.champId) {
-                const targetChamp = events.find(c => c.id === location.state.champId);
-                if (targetChamp) setSelectedChamp(targetChamp);
+                const targetChamp = res.data.find((c: any) => c.id === location.state.champId);
+                if (targetChamp) {
+                    setSelectedChamp(targetChamp);
+                    // Restaurar o fluxo de checkout automaticamente se houver uma ação salva no estado
+                    if (location.state.action) {
+                        setSelectedType(location.state.action);
+                        setPaymentStep(true);
+                    }
+                }
             }
         }).catch(err => {
             console.error('Failed to load championships', err);
-            setChampionships([mockEvent]);
+            setChampionships([]);
         }).finally(() => setLoading(false));
     }, [user, location.state]);
 
+    // Verificação de status do pedido em tempo real (Polling)
     useEffect(() => {
-        if (user && selectedChamp) {
-            api.get('/credit-cards').then(res => {
-                if (res.data.length > 0) {
-                    const defaultCard = res.data.find((c: any) => c.isDefault) || res.data[0];
-                    setSelectedCardId(defaultCard.id);
+        let interval: NodeJS.Timeout;
+        if (gatewayResponse?.orderId && gatewayResponse?.status !== 'approved' && !gatewayResponse?.isFree) {
+            interval = setInterval(async () => {
+                try {
+                    const { data } = await api.get(`/orders/${gatewayResponse.orderId}/status`);
+                    if (data.paymentStatus === 'APPROVED') {
+                        toast.success("Pagamento aprovado com sucesso!");
+                        setGatewayResponse((prev: any) => ({
+                            ...prev,
+                            status: 'approved',
+                            message: 'Pagamento Aprovado!'
+                        }));
+                        setTimeout(() => {
+                            navigate('/minha-conta');
+                        }, 3000);
+                    } else if (data.paymentStatus === 'FAILED' || data.paymentStatus === 'REJECTED') {
+                        toast.error("Pagamento não foi aprovado.");
+                        setGatewayResponse((prev: any) => ({
+                            ...prev,
+                            status: 'rejected',
+                            message: 'Pagamento Recusado'
+                        }));
+                    }
+                } catch (e) {
+                    console.error("Erro ao verificar status do pedido", e);
                 }
-            });
+            }, 5000); // Check every 5 seconds
         }
-    }, [user, selectedChamp]);
+        return () => {
+            if (interval) clearInterval(interval);
+        };
+    }, [gatewayResponse, navigate]);
 
     const handleAction = (c: any, type: 'COMPETITOR' | 'VISITOR') => {
         if (!user) {
@@ -70,68 +90,96 @@ export function ChampionshipsSection() {
         }
         setSelectedType(type);
         setPaymentStep(true);
-        setPreferenceId(null); // Resetar ID de preferência ao abrir checkout
+        setShowCardForm(false);
+        setGatewayResponse(null);
     };
 
-    const generatePreference = async () => {
-        if (!selectedChamp || !selectedType) return;
-        setProcessing(true);
-        try {
-            const pr = selectedType === 'COMPETITOR' ? selectedChamp.priceComp : selectedChamp.priceVis;
+    const isFederated = user?.federationYear === new Date().getFullYear();
 
-            // Bypass Mercado Pago payment generation if price is 0
-            if (Number(pr) === 0) {
-                return processPayment();
-            }
-
-            const nm = selectedType === 'COMPETITOR' ? 'Inscrição Atleta' : 'Ingresso Visitante';
-
-            const payload = {
-                items: [
-                    {
-                        title: `${nm} - ${selectedChamp.name}`,
-                        quantity: 1,
-                        unit_price: Number(pr)
-                    }
-                ],
-                returnUrl: window.location.origin || 'http://localhost:5173'
-            };
-
-            const { data } = await api.post('/payment/create_preference', payload);
-            if (data.id) {
-                setPreferenceId(data.id);
-            }
-
-        } catch (e) {
-            console.error(e);
-            alert('Falha ao gerar o checkout do Mercado Pago.');
-            setProcessing(false);
+    const calculateTotal = () => {
+        let total = selectedType === 'COMPETITOR' ? selectedChamp.priceComp : selectedChamp.priceVis;
+        if (selectedType === 'COMPETITOR' && !isFederated) {
+            total += 50;
         }
+        return total;
     };
 
-    const processPayment = async () => {
+    const processTransparentPayment = async (cardData?: any) => {
         if (!selectedChamp || !selectedType) return;
         setProcessing(true);
         try {
-            const payload = {
+            const amount = calculateTotal();
+
+            // 1. Criar o pedido (Order)
+            const orderPayload = {
                 championshipId: selectedChamp.id,
                 type: selectedType,
-                paymentMethod,
-                creditCardId: paymentMethod === 'CREDIT_CARD' ? selectedCardId : undefined
+                paymentMethod: paymentMethod,
             };
-            const { data } = await api.post('/orders', payload);
 
-            setGatewayResponse(data.gatewayResponse);
-            if (data.order.paymentStatus === 'APPROVED') {
-                if (data.gatewayResponse?.isFree) {
-                    alert('Ingresso resgatado com sucesso! Redirecionando para seus ingressos...');
-                    navigate('/minha-conta');
-                } else {
-                    alert('Pagamento Aprovado! Seu ingresso foi gerado.');
+            const { data: orderData } = await api.post('/orders', orderPayload);
+            const orderId = orderData.order.id;
+
+            // Se for gratuito, já encerra aqui (o OrderController já aprovou)
+            if (orderData.order.paymentStatus === 'APPROVED') {
+                setGatewayResponse({ isFree: true });
+                return;
+            }
+
+            // 2. Processar o Pagamento Transparente
+            let paymentData: any = {};
+
+            if (paymentMethod === 'PIX') {
+                paymentData = {
+                    transaction_amount: amount,
+                    payment_method_id: 'pix',
+                    payer: {
+                        email: user?.email,
+                    }
+                };
+            } else if (cardData) {
+                // Dados vindos do CardCheckoutForm
+                paymentData = cardData.formData;
+            } else {
+                toast.error("Método de pagamento não configurado.");
+                setProcessing(false);
+                return;
+            }
+
+            const { data: payData } = await api.post('/payment/process', {
+                paymentData,
+                orderId
+            });
+
+            console.log('[Frontend] Pagamento processado:', payData);
+
+            if (paymentMethod === 'PIX') {
+                setGatewayResponse({
+                    qrCodeUrl: payData.ticket_url,
+                    qrCodeData: payData.qr_code,
+                    qrCodeBase64: payData.qr_code_base64,
+                    orderId: orderId,
+                    status: 'pending' // Added to trigger polling
+                });
+            } else {
+                setGatewayResponse({
+                    message: payData.status === 'approved' ? 'Pagamento Aprovado!' : (payData.status === 'rejected' ? 'Pagamento Recusado' : 'Processando Pagamento...'),
+                    transactionId: payData.id,
+                    status: payData.status,
+                    orderId: orderId
+                });
+                
+                if (payData.status === 'approved') {
+                    toast.success("Pagamento aprovado com sucesso!");
+                    setTimeout(() => navigate('/minha-conta'), 3000);
+                } else if (payData.status === 'rejected') {
+                    toast.error("Pagamento não foi aprovado pela operadora.");
                 }
             }
-        } catch (e) {
-            alert('Falha ao processar pagamento.');
+
+        } catch (e: any) {
+            console.error(e);
+            toast.error(e.response?.data?.details || 'Falha ao processar pagamento transparente.');
         } finally {
             setProcessing(false);
         }
@@ -141,10 +189,13 @@ export function ChampionshipsSection() {
         setSelectedChamp(null);
         setPaymentStep(false);
         setGatewayResponse(null);
-        setPreferenceId(null);
+        setShowCardForm(false);
     };
 
     if (loading) return <div className="text-amber-500 text-center py-20">Carregando Campeonatos...</div>;
+    
+    const openChampionships = championships.filter(c => c.status === 'OPEN');
+    if (openChampionships.length === 0) return null;
 
     return (
         <>
@@ -157,12 +208,12 @@ export function ChampionshipsSection() {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                        {championships.map(c => (
+                        {openChampionships.map(c => (
                             <div key={c.id} className="bg-zinc-900 border border-white/10 rounded-xl overflow-hidden hover:border-amber-500/50 transition-all cursor-pointer group" onClick={() => setSelectedChamp(c)}>
                                 <div className="h-48 bg-zinc-800 relative">
                                     {c.banner ? <img src={c.banner} alt={c.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-zinc-600">Sem Banner</div>}
                                     <div className="absolute top-4 right-4 bg-amber-500 text-black px-3 py-1 rounded-full text-xs font-bold shadow-lg">
-                                        {c.status === 'OPEN' ? 'ABERTO' : 'ENCERRADO'}
+                                        ABERTO
                                     </div>
                                 </div>
                                 <div className="p-6">
@@ -182,16 +233,13 @@ export function ChampionshipsSection() {
                                 </div>
                             </div>
                         ))}
-                        {championships.length === 0 && (
-                            <div className="col-span-full text-center text-gray-500 py-10">Nenhum campeonato cadastrado no momento.</div>
-                        )}
                     </div>
                 </div>
             </section>
 
-            {selectedChamp && (
-                <div className="fixed inset-0 z-[9999] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4">
-                    <div className="bg-zinc-900 border border-amber-500/30 w-full max-w-2xl max-h-[90vh] rounded-2xl overflow-hidden relative shadow-2xl flex flex-col">
+            {selectedChamp && createPortal(
+                <div className="fixed inset-0 z-[99999] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 py-8 md:py-12">
+                    <div className="bg-zinc-900 border border-amber-500/30 w-full max-w-2xl max-h-[90vh] rounded-2xl overflow-hidden relative shadow-2xl flex flex-col mt-12 md:mt-0">
                         <button onClick={closeAll} className="absolute top-4 right-4 text-gray-400 hover:text-white bg-black/50 p-2 rounded-full z-10 transition-colors">
                             <X className="w-5 h-5" />
                         </button>
@@ -234,68 +282,135 @@ export function ChampionshipsSection() {
                             ) : (
                                 <div>
                                     <h2 className="text-2xl font-black mb-4 uppercase tracking-widest text-amber-500">Checkout</h2>
-                                    <p className="text-gray-400 mb-6">
-                                        Você está adquirindo: <strong className="text-white">{selectedType === 'COMPETITOR' ? 'Inscrição Atleta' : 'Ingresso Visitante'}</strong><br />
-                                        Valor: <strong className="text-white">R$ {(selectedType === 'COMPETITOR' ? selectedChamp.priceComp : selectedChamp.priceVis).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 3 })}</strong>
-                                    </p>
+                                    <div className="text-gray-400 mb-6 bg-zinc-950 p-4 rounded-xl border border-white/5">
+                                        <div className="flex justify-between items-center mb-2">
+                                            <span>{selectedType === 'COMPETITOR' ? 'Inscrição Atleta' : 'Ingresso Visitante'}</span>
+                                            <strong className="text-white">R$ {(selectedType === 'COMPETITOR' ? selectedChamp.priceComp : selectedChamp.priceVis).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</strong>
+                                        </div>
+                                        {selectedType === 'COMPETITOR' && !isFederated && (
+                                            <div className="flex justify-between items-center mb-2 text-red-400">
+                                                <span>Taxa de Federação Anual (Obrigatória)</span>
+                                                <strong>+ R$ 50,00</strong>
+                                            </div>
+                                        )}
+                                        <div className="h-px bg-white/10 my-2"></div>
+                                        <div className="flex justify-between items-center text-lg mt-2">
+                                            <span className="font-bold text-white">Total</span>
+                                            <strong className="text-amber-500 font-black">R$ {calculateTotal().toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</strong>
+                                        </div>
+                                    </div>
 
                                     {gatewayResponse ? (
-                                        <div className="text-center p-6 bg-green-500/10 border border-green-500/30 rounded-xl">
-                                            {gatewayResponse.isFree ? (
+                                        <div className="text-center p-6 bg-zinc-800 border border-amber-500/20 rounded-xl">
+                                            {gatewayResponse.isFree || gatewayResponse.status === 'approved' ? (
                                                 <>
-                                                    <h3 className="text-green-500 font-bold mb-2 uppercase tracking-widest">{gatewayResponse.message}</h3>
-                                                    <p className="text-sm text-gray-400 mb-6">Seu ingresso gratuito foi gerado com sucesso e enviado para o seu e-mail.</p>
+                                                    <h3 className="text-amber-500 font-bold mb-2 uppercase tracking-widest">
+                                                        {gatewayResponse.isFree ? 'Ingresso Gratuito!' : 'Pagamento Aprovado!'}
+                                                    </h3>
+                                                    <p className="text-sm text-gray-400 mb-6">
+                                                        {gatewayResponse.isFree 
+                                                            ? "Sua inscrição foi confirmada com sucesso." 
+                                                            : `Seu pedido #${gatewayResponse.transactionId} foi processado.`}
+                                                    </p>
                                                     <button onClick={() => navigate('/minha-conta')} className="px-6 py-3 bg-amber-500 text-black font-bold uppercase rounded-lg hover:bg-amber-400 w-full transition-colors">Acessar Meu Ingresso</button>
                                                 </>
                                             ) : paymentMethod === 'PIX' ? (
                                                 <>
-                                                    <h3 className="text-green-500 font-bold mb-4 uppercase tracking-widest">Pague com PIX</h3>
-                                                    <div className="flex justify-center mb-4">
-                                                        <img src={gatewayResponse.qrCodeUrl} alt="QR Code PIX" className="w-48 h-48 border-4 border-white rounded-lg" />
+                                                    <h3 className="text-amber-500 font-bold mb-4 uppercase tracking-widest">Pague com PIX</h3>
+                                                    <div className="flex justify-center mb-6 bg-white p-4 rounded-xl inline-block mx-auto">
+                                                        {gatewayResponse.qrCodeBase64 ? (
+                                                            <img src={`data:image/jpeg;base64,${gatewayResponse.qrCodeBase64}`} alt="QR Code PIX" className="w-48 h-48" />
+                                                        ) : (
+                                                            <div className="w-48 h-48 flex items-center justify-center text-zinc-400">QR Code não disponível</div>
+                                                        )}
                                                     </div>
-                                                    <p className="text-xs text-gray-400 break-all bg-black/50 p-3 rounded font-mono">{gatewayResponse.qrCodeData}</p>
-                                                    <button onClick={() => navigate('/minha-conta')} className="mt-6 font-bold text-amber-500 hover:text-amber-400 underline uppercase text-sm">Validar Pagamento na Área do Cliente</button>
+                                                    <div className="space-y-4">
+                                                        <p className="text-xs text-gray-400 text-center">Código PIX (Copia e Cola):</p>
+                                                        <p className="text-[10px] text-gray-400 break-all bg-black/50 p-3 rounded font-mono border border-zinc-800 select-all">{gatewayResponse.qrCodeData}</p>
+                                                        <button 
+                                                            onClick={() => {
+                                                                navigator.clipboard.writeText(gatewayResponse.qrCodeData);
+                                                                toast.success("Código PIX copiado!");
+                                                            }}
+                                                            className="text-amber-500 text-xs font-bold uppercase hover:underline"
+                                                        >
+                                                            Copiar Código
+                                                        </button>
+                                                    </div>
+                                                    <button onClick={() => navigate('/minha-conta')} className="mt-8 px-6 py-3 border border-amber-500 text-amber-500 font-bold uppercase rounded-lg hover:bg-amber-500 hover:text-black w-full transition-all">Já paguei, ver meus ingressos</button>
                                                 </>
                                             ) : (
-                                                <>
-                                                    <h3 className="text-green-500 font-bold mb-2 uppercase tracking-widest">{gatewayResponse.message}</h3>
-                                                    <p className="text-sm text-gray-400 font-mono mb-6">Transação: {gatewayResponse.transactionId}</p>
-                                                    <button onClick={() => navigate('/minha-conta')} className="px-6 py-3 bg-amber-500 text-black font-bold uppercase rounded-lg hover:bg-amber-400 w-full transition-colors">Acessar Meu Ingresso</button>
-                                                </>
+                                                <div className="flex flex-col items-center justify-center py-4">
+                                                    {gatewayResponse.status === 'rejected' ? (
+                                                        <>
+                                                            <div className="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mb-4 border border-red-500/20">
+                                                                <X className="w-8 h-8" />
+                                                            </div>
+                                                            <h3 className="text-red-500 font-bold mb-2 uppercase tracking-widest">{gatewayResponse.message || 'Pagamento Recusado'}</h3>
+                                                            <p className="text-sm text-gray-400 mb-6 max-w-sm mx-auto">Sua transação ({gatewayResponse.transactionId}) foi negada pelo banco ou emissor. Verifique os dados e tente novamente.</p>
+                                                            <button onClick={() => setGatewayResponse(null)} className="px-6 py-3 border border-red-500 text-red-500 font-bold uppercase rounded-lg hover:bg-red-500 hover:text-white w-full transition-colors">Tentar Novamente</button>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <div className="mb-6 relative">
+                                                                <div className="w-16 h-16 border-4 border-amber-500/20 border-t-amber-500 rounded-full animate-spin mx-auto"></div>
+                                                            </div>
+                                                            <h3 className="text-amber-500 font-bold mb-2 uppercase tracking-widest">Processando Pagamento...</h3>
+                                                            <p className="text-sm text-gray-400 font-mono mb-6 max-w-sm mx-auto">Aguardando confirmação da operadora do cartão. Por favor, não feche esta página enquanto avaliamos sua transação ({gatewayResponse.transactionId}).</p>
+                                                            <button disabled className="px-6 py-3 bg-zinc-800 text-zinc-500 cursor-not-allowed font-bold uppercase rounded-lg w-full flex items-center justify-center gap-2">
+                                                                <div className="w-4 h-4 border-2 border-zinc-500 border-t-transparent rounded-full animate-spin"></div>
+                                                                Aguarde...
+                                                            </button>
+                                                        </>
+                                                    )}
+                                                </div>
                                             )}
                                         </div>
                                     ) : (
-                                        <div className="bg-zinc-800 p-6 rounded-xl border border-zinc-700">
-                                            <h3 className="text-lg font-bold text-white mb-4">Escolha a forma de pagamento</h3>
-
-                                            {preferenceId ? (
-                                                <div className="mt-4">
-                                                    <Wallet initialization={{ preferenceId }} />
-                                                    <button onClick={() => setPreferenceId(null)} className="w-full mt-4 text-sm text-gray-400 hover:text-white underline">
-                                                        Cancelar e voltar
-                                                    </button>
-                                                </div>
+                                        <div className="flex flex-col gap-6">
+                                            {showCardForm ? (
+                                                <CardCheckoutForm 
+                                                    amount={calculateTotal()}
+                                                    orderId="TEMP" // Será gerado internamente
+                                                    mpPublicKey={selectedChamp.mpPublicKey || ''}
+                                                    onPaymentSuccess={(data) => processTransparentPayment(data)}
+                                                    onCancel={() => setShowCardForm(false)}
+                                                />
                                             ) : (
-                                                <button
-                                                    onClick={generatePreference}
-                                                    disabled={processing}
-                                                    className="w-full bg-gradient-to-r from-amber-500 to-amber-600 text-black py-4 rounded-xl font-black uppercase tracking-wider hover:opacity-90 transition-opacity disabled:opacity-50"
-                                                >
-                                                    {processing ? 'Carregando...' : (selectedType === 'COMPETITOR' && Number(selectedChamp.priceComp) === 0) || (selectedType === 'VISITOR' && Number(selectedChamp.priceVis) === 0) ? 'Gerar Ingresso Gratuito' : 'Pagar com Mercado Pago'}
-                                                </button>
-                                            )}
+                                                <>
+                                                    <div className="grid grid-cols-2 gap-4">
+                                                        <button 
+                                                            onClick={() => setPaymentMethod('PIX')}
+                                                            className={`py-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${paymentMethod === 'PIX' ? 'border-amber-500 bg-amber-500/10 text-white' : 'border-zinc-800 bg-zinc-900 text-gray-500 hover:border-zinc-700'}`}
+                                                        >
+                                                            <span className="font-bold">PIX</span>
+                                                            <span className="text-[10px] uppercase tracking-wider">Instantâneo</span>
+                                                        </button>
+                                                        <button 
+                                                            onClick={() => setPaymentMethod('CREDIT_CARD')}
+                                                            className={`py-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${paymentMethod === 'CREDIT_CARD' ? 'border-amber-500 bg-amber-500/10 text-white' : 'border-zinc-800 bg-zinc-900 text-gray-500 hover:border-zinc-700'}`}
+                                                        >
+                                                            <span className="font-bold">CARTÃO DE CRÉDITO</span>
+                                                            <span className="text-[10px] uppercase tracking-wider">Até 12x</span>
+                                                        </button>
+                                                    </div>
 
-                                            {/* Legacy Flow Button (Se quiser manter a API manual, deixe visível, senão pode remover na versão final) */}
-                                            <div className="mt-6 border-t border-white/5 pt-6 hidden">
-                                                <p className="text-xs text-zinc-500 text-center mb-4">Ou Checkout Transparente (Local)</p>
-                                                <button
-                                                    onClick={processPayment}
-                                                    disabled={processing}
-                                                    className="w-full bg-zinc-700 text-white py-3 rounded-xl font-bold uppercase tracking-wider hover:bg-zinc-600 transition-opacity disabled:opacity-50 text-sm"
-                                                >
-                                                    {processing ? 'Processando...' : 'Pagar via Gateway Antigo'}
-                                                </button>
-                                            </div>
+                                                    <button
+                                                        onClick={() => paymentMethod === 'PIX' ? processTransparentPayment() : setShowCardForm(true)}
+                                                        disabled={processing}
+                                                        className="w-full bg-amber-500 text-black py-4 rounded-xl font-black uppercase tracking-wider hover:bg-amber-400 transition-colors disabled:opacity-50"
+                                                    >
+                                                        {processing ? (
+                                                            <div className="flex items-center justify-center gap-2">
+                                                                <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                                                                <span>Processando...</span>
+                                                            </div>
+                                                        ) : (
+                                                            paymentMethod === 'PIX' ? 'Gerar QR Code PIX' : 'Seguir para Dados do Cartão'
+                                                        )}
+                                                    </button>
+                                                </>
+                                            )}
                                         </div>
                                     )}
                                 </div>
@@ -303,7 +418,7 @@ export function ChampionshipsSection() {
                         </div>
                     </div>
                 </div>
-            )}
+                , document.body)}
         </>
     );
 }

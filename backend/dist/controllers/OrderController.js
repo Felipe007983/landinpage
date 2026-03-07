@@ -22,14 +22,30 @@ class OrderController {
                 if (!userId) {
                     return res.status(401).json({ error: 'Não autorizado' });
                 }
-                const champ = yield prisma_1.prisma.championship.findUnique({ where: { id: championshipId } });
-                if (!champ)
-                    return res.status(404).json({ error: 'Campeonato não encontrado' });
-                const amount = type === 'COMPETITOR' ? champ.priceComp : champ.priceVis;
-                // Gateway Mock Processing
+                const user = yield prisma_1.prisma.user.findUnique({ where: { id: userId } });
+                if (!user)
+                    return res.status(404).json({ error: 'Usuário não encontrado' });
+                let amount = 0;
+                let includesFederation = false;
+                const currentYear = new Date().getFullYear();
+                const isFederated = user.federationYear === currentYear;
+                if (type === 'FEDERATION') {
+                    amount = 50;
+                    includesFederation = true;
+                }
+                else {
+                    const champ = yield prisma_1.prisma.championship.findUnique({ where: { id: championshipId } });
+                    if (!champ)
+                        return res.status(404).json({ error: 'Campeonato não encontrado' });
+                    amount = type === 'COMPETITOR' ? champ.priceComp : champ.priceVis;
+                    if (type === 'COMPETITOR' && !isFederated) {
+                        amount += 50;
+                        includesFederation = true;
+                    }
+                }
                 let paymentStatus = 'PENDING';
                 let gatewayResponse = {};
-                // Se o valor for 0, aprova direto (gratuito / teste)
+                // Se o valor for 0, aprova direto (gratuito)
                 const amountVal = parseFloat((amount === null || amount === void 0 ? void 0 : amount.toString()) || '0');
                 if (amountVal === 0) {
                     paymentStatus = 'APPROVED';
@@ -38,44 +54,58 @@ class OrderController {
                         isFree: true
                     };
                 }
-                else if (paymentMethod === 'PIX') {
-                    // Simula a geração de um QRCode PIX
-                    // Em um cenário real, `paymentStatus` começa PENDING e um Webhook atualiza para APPROVED.
-                    // Mas para o Mock interativo do frontend, vamos aprovar caso o cliente "confirme", ou aprovar direto para acelerar o teste:
-                    paymentStatus = 'APPROVED';
+                else if (paymentMethod === 'PIX' || paymentMethod === 'CREDIT_CARD' || paymentMethod === 'MERCADO_PAGO') {
+                    // Para Mercado Pago Transparente, o pedido nasce PENDING e o frontend processa em seguida
+                    paymentStatus = 'PENDING';
                     gatewayResponse = {
-                        qrCodeData: '00020101021126580014br.gov.bcb.pix0136123e4567-e89b-12d3-a456-426655440000520400005303986540510.005802BR5913ZEUS EVOLUTION6008BRASILIA62070503***6304A1B2',
-                        qrCodeUrl: 'https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=mockpix'
+                        message: 'Pedido criado. Aguardando processamento do pagamento.'
                     };
                 }
-                else if (paymentMethod === 'CREDIT_CARD' || paymentMethod === 'DEBIT_CARD') {
-                    // Simula processamento de cartão instantâneo
-                    // Idealmente validaríamos o creditCardId aqui.
-                    paymentStatus = 'APPROVED';
-                    gatewayResponse = {
-                        transactionId: 'txn_mock_' + Math.random().toString(36).substring(7),
-                        message: 'Pagamento aprovado com sucesso'
-                    };
+                else {
+                    return res.status(400).json({ error: 'Método de pagamento não disponível.' });
                 }
-                const order = yield prisma_1.prisma.order.create({
-                    data: {
+                // Verifica se o usuário já tem um pedido não-aprovado para este mesmo contexto
+                let order = yield prisma_1.prisma.order.findFirst({
+                    where: {
                         userId,
-                        championshipId,
+                        championshipId: type === 'FEDERATION' ? null : championshipId,
                         type,
-                        amount,
-                        paymentStatus
+                        paymentStatus: { in: ['PENDING', 'FAILED'] }
                     }
                 });
-                // Se aprovado na hora, gera o ticket
-                let ticket = null;
-                if (paymentStatus === 'APPROVED') {
-                    ticket = yield prisma_1.prisma.ticket.create({
+                if (order) {
+                    // Atualiza o valor e status caso tenham mudado ou estivessem em FAILED
+                    order = yield prisma_1.prisma.order.update({
+                        where: { id: order.id },
+                        data: { amount, paymentStatus, includesFederation }
+                    });
+                }
+                else {
+                    order = yield prisma_1.prisma.order.create({
                         data: {
-                            orderId: order.id
+                            userId,
+                            championshipId: type === 'FEDERATION' ? null : championshipId,
+                            type,
+                            amount,
+                            paymentStatus,
+                            includesFederation
                         }
                     });
-                    // Send email synchronously or asynchronously
-                    ticket_service_1.TicketService.generateAndSendTicket(ticket.id);
+                }
+                // Se for ingresso gratuito (paymentStatus aprovado direto) e NÃO FOR ORDEM APENAS DE FEDERAÇÃO, gera o ticket. 
+                // Pagamentos do MP (PENDING) devem ser tratados no Webhook ou no callback sucessfull do frontend
+                let ticket = null;
+                if (paymentStatus === 'APPROVED' && amountVal === 0 && type !== 'FEDERATION') {
+                    // Previne duplicação de tickets gratuitos também
+                    ticket = yield prisma_1.prisma.ticket.findUnique({ where: { orderId: order.id } });
+                    if (!ticket) {
+                        ticket = yield prisma_1.prisma.ticket.create({
+                            data: {
+                                orderId: order.id
+                            }
+                        });
+                        ticket_service_1.TicketService.generateAndSendTicket(ticket.id);
+                    }
                 }
                 res.json({ order, ticket, gatewayResponse });
             }
@@ -101,6 +131,28 @@ class OrderController {
             }
             catch (e) {
                 res.status(500).json({ error: 'Erro ao buscar pedidos' });
+            }
+        });
+    }
+    static getStatus(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            try {
+                const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+                const { id } = req.params;
+                if (!userId)
+                    return res.status(401).json({ error: 'Não autorizado' });
+                const order = yield prisma_1.prisma.order.findUnique({
+                    where: { id: id, userId: userId }
+                });
+                if (!order) {
+                    return res.status(404).json({ error: 'Pedido não encontrado' });
+                }
+                res.json({ paymentStatus: order.paymentStatus });
+            }
+            catch (e) {
+                console.error(e);
+                res.status(500).json({ error: 'Erro ao buscar status do pedido' });
             }
         });
     }

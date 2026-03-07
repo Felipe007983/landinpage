@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../../services/api';
-import { ShieldCheck, Plus, Power, Pencil, Trash2, Camera, CheckCircle2, XCircle, Search } from 'lucide-react';
+import { ShieldCheck, Plus, Power, Pencil, Camera, CheckCircle2, XCircle, Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Html5QrcodeScanner } from 'html5-qrcode';
 import { useAuth } from '../../contexts/AuthContext';
@@ -11,6 +11,10 @@ export function AdminDashboard() {
     const [activeTab, setActiveTab] = useState('champs');
     const [championships, setChampionships] = useState<any[]>([]);
     const [orders, setOrders] = useState<any[]>([]);
+    const [users, setUsers] = useState<any[]>([]);
+    const [selectedChampFilter, setSelectedChampFilter] = useState<string>('');
+    const [selectedStartDate, setSelectedStartDate] = useState<string>('');
+    const [selectedEndDate, setSelectedEndDate] = useState<string>('');
 
     // Validator State
     const [scanResult, setScanResult] = useState<any>(null);
@@ -20,18 +24,23 @@ export function AdminDashboard() {
 
     // New Champ Form / Edit Form
     const [form, setForm] = useState({
-        name: '', description: '', date: '', location: '', priceComp: 0, priceVis: 0, banner: ''
+        name: '', description: '', date: '', location: '', priceComp: 0, priceVis: 0, banner: '',
+        mpPublicKey: '', mpAccessToken: '', mpWebhookSecret: '',
+        hasTshirtPromotion: false, tshirtLimitComp: 50, tshirtLimitVis: 100
     });
     const [editingId, setEditingId] = useState<string | null>(null);
 
     useEffect(() => {
-        if (!user || user.role !== 'ADMIN') {
+        if (!user || user.role?.toUpperCase() !== 'ADMIN') {
             navigate('/');
             return;
         }
 
-        if (activeTab === 'champs') fetchChamps();
-        if (activeTab === 'orders') fetchOrders();
+        if (activeTab === 'champs' || activeTab === 'orders' || activeTab === 'athletes') {
+            fetchChamps();
+            fetchOrders();
+            if (activeTab === 'athletes') fetchUsers();
+        }
 
         // Scanner Cleanup
         return () => {
@@ -88,6 +97,11 @@ export function AdminDashboard() {
         setOrders(data);
     };
 
+    const fetchUsers = async () => {
+        const { data } = await api.get('/admin/users');
+        setUsers(data);
+    };
+
     const toggleStatus = async (id: string) => {
         await api.patch(`/admin/championships/${id}/status`);
         fetchChamps();
@@ -128,26 +142,23 @@ export function AdminDashboard() {
             location: c.location,
             priceComp: c.priceComp,
             priceVis: c.priceVis,
-            banner: c.banner || ''
+            banner: c.banner || '',
+            mpPublicKey: '',
+            mpAccessToken: '',
+            mpWebhookSecret: '',
+            hasTshirtPromotion: c.hasTshirtPromotion || false,
+            tshirtLimitComp: c.tshirtLimitComp || 50,
+            tshirtLimitVis: c.tshirtLimitVis || 100
         });
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    const handleDelete = async (id: string, name: string) => {
-        if (window.confirm(`Tem certeza que deseja apagar o campeonato "${name}"? Esta ação não pode ser desfeita e só é possível se não houver vendas.`)) {
-            try {
-                await api.delete(`/admin/championships/${id}`);
-                alert('Campeonato apagado com sucesso.');
-                fetchChamps();
-                if (editingId === id) resetForm();
-            } catch (err: any) {
-                alert(err.response?.data?.error || 'Erro ao apagar campeonato.');
-            }
-        }
-    };
-
     const resetForm = () => {
-        setForm({ name: '', description: '', date: '', location: '', priceComp: 0, priceVis: 0, banner: '' });
+        setForm({ 
+            name: '', description: '', date: '', location: '', priceComp: 0, priceVis: 0, banner: '', 
+            mpPublicKey: '', mpAccessToken: '', mpWebhookSecret: '',
+            hasTshirtPromotion: false, tshirtLimitComp: 50, tshirtLimitVis: 100
+        });
         setEditingId(null);
     };
 
@@ -181,6 +192,12 @@ export function AdminDashboard() {
                     >
                         <Camera className="w-4 h-4" /> Portaria (Validar)
                     </button>
+                    <button
+                        onClick={() => setActiveTab('athletes')}
+                        className={`px-6 py-3 font-bold rounded-lg transition-colors flex items-center gap-2 ${activeTab === 'athletes' ? 'bg-amber-500 text-black' : 'bg-zinc-800 text-white hover:bg-zinc-700'}`}
+                    >
+                        Atletas / Federados
+                    </button>
                 </div>
 
                 {activeTab === 'champs' && (
@@ -196,7 +213,17 @@ export function AdminDashboard() {
                                                 {c.status}
                                             </span>
                                         </div>
-                                        <p className="text-sm text-gray-400">{new Date(c.date).toLocaleDateString('pt-BR')} - {c.location}</p>
+                                        <p className="text-sm text-gray-400 mb-2">{new Date(c.date).toLocaleDateString('pt-BR')} - {c.location}</p>
+                                        <div className="flex gap-3 mt-2">
+                                            <div className="bg-black/50 px-3 py-1.5 rounded border border-white/5">
+                                                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Competidores</p>
+                                                <p className="text-amber-500 font-black text-lg leading-none">{orders.filter(o => o.championshipId === c.id && o.type === 'COMPETITOR' && o.paymentStatus === 'APPROVED').length}</p>
+                                            </div>
+                                            <div className="bg-black/50 px-3 py-1.5 rounded border border-white/5">
+                                                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Visitantes</p>
+                                                <p className="text-amber-600 font-black text-lg leading-none">{orders.filter(o => o.championshipId === c.id && o.type === 'VISITOR' && o.paymentStatus === 'APPROVED').length}</p>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div className="flex gap-2 relative z-10">
                                         <button
@@ -205,13 +232,6 @@ export function AdminDashboard() {
                                             className="p-3 rounded-full transition-colors bg-zinc-700 hover:bg-zinc-600 text-white"
                                         >
                                             <Pencil className="w-5 h-5" />
-                                        </button>
-                                        <button
-                                            onClick={() => handleDelete(c.id, c.name)}
-                                            title="Apagar Campeonato"
-                                            className="p-3 rounded-full transition-colors bg-red-900/50 hover:bg-red-700 text-red-500 hover:text-white"
-                                        >
-                                            <Trash2 className="w-5 h-5" />
                                         </button>
                                         <button
                                             onClick={() => toggleStatus(c.id)}
@@ -241,6 +261,42 @@ export function AdminDashboard() {
                                         <input type="number" step="0.01" min="0" placeholder="R$ Visitante" required value={form.priceVis} onChange={e => setForm({ ...form, priceVis: Number(e.target.value) })} className="w-full bg-zinc-800 border-zinc-700 border p-3 rounded" />
                                     </div>
                                     <input type="url" placeholder="URL da Capa (Imagem)" value={form.banner} onChange={e => setForm({ ...form, banner: e.target.value })} className="w-full bg-zinc-800 border-zinc-700 border p-3 rounded" />
+                                    
+                                    <div className="border border-amber-500/20 rounded-lg p-4 bg-black/20 space-y-3">
+                                        <h3 className="text-xs font-bold uppercase tracking-widest text-amber-500 mb-2">Credenciais Mercado Pago</h3>
+                                        {editingId && <p className="text-[10px] text-gray-400 mb-2">Deixe em branco para manter as chaves atreladas atualmente.</p>}
+                                        <input type="text" placeholder="Public Key" value={form.mpPublicKey} onChange={e => setForm({ ...form, mpPublicKey: e.target.value })} className="w-full bg-zinc-900 border-zinc-700 border p-3 rounded" />
+                                        <input type="password" placeholder="Access Token" value={form.mpAccessToken} onChange={e => setForm({ ...form, mpAccessToken: e.target.value })} className="w-full bg-zinc-900 border-zinc-700 border p-3 rounded" />
+                                        <input type="password" placeholder="Webhook Secret" value={form.mpWebhookSecret} onChange={e => setForm({ ...form, mpWebhookSecret: e.target.value })} className="w-full bg-zinc-900 border-zinc-700 border p-3 rounded" />
+                                    </div>
+
+                                    <div className="border border-amber-500/20 rounded-lg p-4 bg-black/20 space-y-3">
+                                        <div className="flex items-center justify-between">
+                                            <h3 className="text-xs font-bold uppercase tracking-widest text-amber-500">Promoção de Camiseta</h3>
+                                            <label className="relative inline-flex items-center cursor-pointer">
+                                                <input 
+                                                    type="checkbox" 
+                                                    className="sr-only peer"
+                                                    checked={form.hasTshirtPromotion}
+                                                    onChange={e => setForm({ ...form, hasTshirtPromotion: e.target.checked })}
+                                                />
+                                                <div className="w-11 h-6 bg-zinc-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
+                                            </label>
+                                        </div>
+                                        
+                                        {form.hasTshirtPromotion && (
+                                            <div className="grid grid-cols-2 gap-4 animate-in fade-in zoom-in duration-200">
+                                                <div>
+                                                    <p className="text-[10px] text-gray-500 mb-1 uppercase font-bold">Limite Atletas</p>
+                                                    <input type="number" value={form.tshirtLimitComp} onChange={e => setForm({ ...form, tshirtLimitComp: Number(e.target.value) })} className="w-full bg-zinc-900 border-zinc-700 border p-2 rounded text-xs" />
+                                                </div>
+                                                <div>
+                                                    <p className="text-[10px] text-gray-500 mb-1 uppercase font-bold">Limite Visitantes</p>
+                                                    <input type="number" value={form.tshirtLimitVis} onChange={e => setForm({ ...form, tshirtLimitVis: Number(e.target.value) })} className="w-full bg-zinc-900 border-zinc-700 border p-2 rounded text-xs" />
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
 
                                     <div className="flex gap-2">
                                         <button type="submit" className="flex-1 bg-amber-500 text-black font-black uppercase py-3 rounded hover:bg-amber-400 transition-colors">
@@ -261,55 +317,163 @@ export function AdminDashboard() {
                 {activeTab === 'orders' && (
                     <div className="space-y-6">
                         {/* Summary Metrics */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="bg-zinc-900 border border-white/5 p-6 rounded-xl flex flex-col justify-center">
-                                <span className="text-gray-400 uppercase font-bold text-xs tracking-widest mb-1">Quantidade de Vendas</span>
-                                <span className="text-4xl font-black text-amber-500">{orders.length}</span>
-                            </div>
-                            <div className="bg-zinc-900 border border-white/5 p-6 rounded-xl flex flex-col justify-center">
-                                <span className="text-gray-400 uppercase font-bold text-xs tracking-widest mb-1">Valor Total (Receita)</span>
-                                <span className="text-4xl font-black text-amber-500">
-                                    R$ {orders.filter(o => o.paymentStatus === 'APPROVED').reduce((acc, o) => acc + o.amount, 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                                </span>
-                            </div>
+                        <div className="flex flex-col md:flex-row gap-4 mb-2 items-end">
+                             <div className="flex-1">
+                                 <label className="text-xs text-gray-500 font-bold uppercase tracking-widest mb-2 block">Filtrar por Campeonato</label>
+                                 <select 
+                                    className="bg-zinc-900 border border-zinc-700 text-white p-3 rounded-lg w-full md:w-auto min-w-[300px] focus:outline-none focus:border-amber-500"
+                                    value={selectedChampFilter}
+                                    onChange={e => setSelectedChampFilter(e.target.value)}
+                                 >
+                                     <option value="">Todos os Eventos</option>
+                                     {championships.map(c => (
+                                         <option key={c.id} value={c.id}>{c.name}</option>
+                                     ))}
+                                 </select>
+                             </div>
+                             <div>
+                                 <label className="text-xs text-gray-500 font-bold uppercase tracking-widest mb-2 block">Data Inicial</label>
+                                 <input 
+                                     type="date" 
+                                     className="bg-zinc-900 border border-zinc-700 text-white p-3 rounded-lg w-full md:w-auto focus:outline-none focus:border-amber-500"
+                                     value={selectedStartDate}
+                                     onChange={e => setSelectedStartDate(e.target.value)}
+                                 />
+                             </div>
+                             <div>
+                                 <label className="text-xs text-gray-500 font-bold uppercase tracking-widest mb-2 block">Data Final</label>
+                                 <input 
+                                     type="date" 
+                                     className="bg-zinc-900 border border-zinc-700 text-white p-3 rounded-lg w-full md:w-auto focus:outline-none focus:border-amber-500"
+                                     value={selectedEndDate}
+                                     onChange={e => setSelectedEndDate(e.target.value)}
+                                 />
+                             </div>
+                             <div>
+                                 <button 
+                                     onClick={() => {
+                                         setSelectedChampFilter('');
+                                         setSelectedStartDate('');
+                                         setSelectedEndDate('');
+                                     }}
+                                     className="bg-zinc-800 text-gray-300 hover:text-white hover:bg-zinc-700 p-3 rounded-lg border border-zinc-700 font-bold uppercase text-xs transition-colors h-[48px] flex items-center gap-2"
+                                 >
+                                     <XCircle className="w-4 h-4" /> Limpar
+                                 </button>
+                             </div>
                         </div>
 
-                        {/* Orders Table */}
-                        <div className="bg-zinc-900 border border-white/5 rounded-xl overflow-x-auto">
-                            <table className="w-full text-left border-collapse">
-                                <thead>
-                                    <tr className="border-b border-white/10 uppercase tracking-widest text-xs text-amber-500 bg-black/30">
-                                        <th className="p-4 rounded-tl-xl">Cliente</th>
-                                        <th className="p-4">Evento</th>
-                                        <th className="p-4">Tipo</th>
-                                        <th className="p-4">Valor</th>
-                                        <th className="p-4 rounded-tr-xl">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {orders.length === 0 ? (
-                                        <tr><td colSpan={5} className="p-8 text-center text-gray-400">Nenhuma venda registrada até o momento.</td></tr>
-                                    ) : (
-                                        orders.map(o => (
-                                            <tr key={o.id} className="border-b border-white/5 hover:bg-white/5 transition-colors text-sm">
-                                                <td className="p-4">
-                                                    <div className="font-bold">{o.user?.name}</div>
-                                                    <div className="text-xs text-gray-500">{o.user?.email}</div>
-                                                </td>
-                                                <td className="p-4 font-bold">{o.championship?.name}</td>
-                                                <td className="p-4 text-xs font-mono">{o.type}</td>
-                                                <td className="p-4 font-bold text-amber-500">R$ {o.amount.toFixed(2)}</td>
-                                                <td className="p-4">
-                                                    <span className={`text-[10px] font-black uppercase px-2 py-1 rounded border ${o.paymentStatus === 'APPROVED' ? 'border-green-500 text-green-500 bg-green-500/10' : 'border-amber-500 text-amber-500 bg-amber-500/10'}`}>
-                                                        {o.paymentStatus}
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
+                        {/* Helper Function to check filters */}
+                        {(() => {
+                            const filteredOrders = orders.filter(o => {
+                                const matchStatus = o.paymentStatus === 'APPROVED';
+                                const matchChamp = !selectedChampFilter || o.championshipId === selectedChampFilter;
+                                
+                                let matchDate = true;
+                                if ((selectedStartDate || selectedEndDate) && o.createdAt) {
+                                    const orderDate = new Date(o.createdAt);
+                                    // Zera a hora para focar só no dia
+                                    orderDate.setHours(0, 0, 0, 0); 
+                                    
+                                    if (selectedStartDate) {
+                                        const startDataObj = new Date(selectedStartDate + 'T00:00:00');
+                                        if (orderDate < startDataObj) matchDate = false;
+                                    }
+                                    if (selectedEndDate) {
+                                        const endDataObj = new Date(selectedEndDate + 'T00:00:00');
+                                        if (orderDate > endDataObj) matchDate = false;
+                                    }
+                                }
+
+                                return matchStatus && matchChamp && matchDate;
+                            });
+
+                            return (
+                                <>
+                                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                        <div className="bg-zinc-900 border border-white/5 p-6 rounded-xl flex flex-col justify-center">
+                                            <span className="text-gray-400 uppercase font-bold text-xs tracking-widest mb-1">Vendas</span>
+                                            <span className="text-4xl font-black text-amber-500">
+                                                {filteredOrders.length}
+                                            </span>
+                                        </div>
+                                        <div className="bg-zinc-900 border border-white/5 p-6 rounded-xl flex flex-col justify-center">
+                                            <span className="text-gray-400 uppercase font-bold text-xs tracking-widest mb-1">Atletas</span>
+                                            <span className="text-4xl font-black text-amber-500">
+                                                {filteredOrders.filter(o => o.type === 'COMPETITOR').length}
+                                            </span>
+                                        </div>
+                                        <div className="bg-zinc-900 border border-white/5 p-6 rounded-xl flex flex-col justify-center">
+                                            <span className="text-gray-400 uppercase font-bold text-xs tracking-widest mb-1">Visitantes</span>
+                                            <span className="text-4xl font-black text-amber-500">
+                                                {filteredOrders.filter(o => o.type === 'VISITOR').length}
+                                            </span>
+                                        </div>
+                                        <div className="bg-zinc-900 border border-white/5 p-6 rounded-xl flex flex-col justify-center">
+                                            <span className="text-gray-400 uppercase font-bold text-xs tracking-widest mb-1">Receita</span>
+                                            <span className="text-2xl font-black text-amber-500">
+                                                R$ {filteredOrders.reduce((acc, o) => acc + o.amount, 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {/* Orders Table */}
+                                    <div className="bg-zinc-900 border border-white/5 rounded-xl overflow-x-auto mt-6">
+                                        <table className="w-full text-left border-collapse">
+                                            <thead>
+                                                <tr className="border-b border-white/10 uppercase tracking-widest text-xs text-amber-500 bg-black/30">
+                                                    <th className="p-4 rounded-tl-xl text-center">Data</th>
+                                                    <th className="p-4 text-center">Hora</th>
+                                                    <th className="p-4">Cliente</th>
+                                                    <th className="p-4">Evento</th>
+                                                    <th className="p-4">Tipo</th>
+                                                    <th className="p-4 text-center">Brinde</th>
+                                                    <th className="p-4">Valor</th>
+                                                    <th className="p-4 rounded-tr-xl text-center">Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {filteredOrders.length === 0 ? (
+                                                    <tr><td colSpan={7} className="p-8 text-center text-gray-400">Nenhuma venda concluída registrada com os filtros informados.</td></tr>
+                                                ) : (
+                                                    filteredOrders.map(o => {
+                                                        const dateObj = new Date(o.createdAt);
+                                                        const dateStr = dateObj.toLocaleDateString('pt-BR');
+                                                        const timeStr = dateObj.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                                                        
+                                                        return (
+                                                            <tr key={o.id} className="border-b border-white/5 hover:bg-white/5 transition-colors text-sm">
+                                                                <td className="p-4 text-center font-mono text-xs text-gray-300">{dateStr}</td>
+                                                                <td className="p-4 text-center font-mono text-xs text-gray-500">{timeStr}</td>
+                                                                <td className="p-4">
+                                                                    <div className="font-bold">{o.user?.name}</div>
+                                                                    <div className="text-xs text-gray-500">{o.user?.email}</div>
+                                                                </td>
+                                                                <td className="p-4 font-bold">{o.championship?.name}</td>
+                                                                <td className="p-4 text-xs font-mono">{o.type}</td>
+                                                                <td className="p-4 text-center">
+                                                                    {o.wonTshirt ? (
+                                                                        <span className="text-[10px] font-black bg-amber-500 text-black px-2 py-0.5 rounded shadow-[0_0_10px_rgba(251,191,36,0.5)]">CAMISETA</span>
+                                                                    ) : (
+                                                                        <span className="text-gray-700">-</span>
+                                                                    )}
+                                                                </td>
+                                                                <td className="p-4 font-bold text-amber-500">R$ {o.amount.toFixed(2)}</td>
+                                                                <td className="p-4">
+                                                                    <span className={`text-[10px] font-black uppercase px-2 py-1 rounded border ${o.paymentStatus === 'APPROVED' ? 'border-green-500 text-green-500 bg-green-500/10' : 'border-amber-500 text-amber-500 bg-amber-500/10'}`}>
+                                                                        {o.paymentStatus}
+                                                                    </span>
+                                                                </td>
+                                                            </tr>
+                                                        );
+                                                    })
+                                                )}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </>
+                            );
+                        })()}
                     </div>
                 )}
 
@@ -423,6 +587,54 @@ export function AdminDashboard() {
                             #reader { border: none !important; }
                             #reader__scan_region { display: flex; justify-content: center; }
                         `}</style>
+                    </div>
+                )}
+
+                {activeTab === 'athletes' && (
+                    <div className="space-y-6">
+                        <div className="bg-zinc-900 border border-white/5 rounded-xl overflow-x-auto">
+                            <table className="w-full text-left border-collapse">
+                                <thead>
+                                    <tr className="border-b border-white/10 uppercase tracking-widest text-xs text-amber-500 bg-black/30">
+                                        <th className="p-4 rounded-tl-xl">Nome</th>
+                                        <th className="p-4">CPF</th>
+                                        <th className="p-4">Contato</th>
+                                        <th className="p-4 text-center">Cadastro</th>
+                                        <th className="p-4 rounded-tr-xl text-center">Status Federação</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {users.length === 0 ? (
+                                        <tr><td colSpan={5} className="p-8 text-center text-gray-400">Nenhum atleta cadastrado.</td></tr>
+                                    ) : (
+                                        users.map(u => {
+                                            const isFederated = u.federationYear === new Date().getFullYear();
+                                            return (
+                                                <tr key={u.id} className="border-b border-white/5 hover:bg-white/5 transition-colors text-sm">
+                                                    <td className="p-4 font-bold">{u.name}</td>
+                                                    <td className="p-4 font-mono text-xs">{u.cpf}</td>
+                                                    <td className="p-4">
+                                                        <div className="text-white">{u.email}</div>
+                                                        <div className="text-xs text-gray-500">{u.phone}</div>
+                                                    </td>
+                                                    <td className="p-4 text-center text-gray-400 text-xs">
+                                                        {new Date(u.createdAt).toLocaleDateString('pt-BR')}
+                                                    </td>
+                                                    <td className="p-4 text-center">
+                                                        <span className={`text-[10px] font-black uppercase px-2 py-1 rounded border ${isFederated ? 'border-green-500 text-green-500 bg-green-500/10' : 'border-red-500 text-red-500 bg-red-500/10'}`}>
+                                                            {isFederated ? 'Ativo' : 'Inativo'}
+                                                        </span>
+                                                        {u.federationYear && (
+                                                            <div className="text-[9px] text-gray-600 mt-1 uppercase tracking-tighter">Vigência: {u.federationYear}</div>
+                                                        )}
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 )}
             </div>

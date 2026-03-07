@@ -1,1 +1,0 @@
-{"version":3,"file":"tickets.routes.js","sourceRoot":"","sources":["tickets.routes.ts"],"names":[],"mappings":";;AAAA,qCAAiC;AACjC,sEAAmE;AACnE,6CAAoD;AAEpD,MAAM,MAAM,GAAG,IAAA,gBAAM,GAAE,CAAC;AAExB,MAAM,CAAC,GAAG,CAAC,aAAa,EAAE,qBAAc,EAAE,mCAAgB,CAAC,UAAU,CAAC,CAAC;AACvE,MAAM,CAAC,IAAI,CAAC,WAAW,EAAE,qBAAc,EAAE,mCAAgB,CAAC,QAAQ,CAAC,CAAC,CAAC,6BAA6B;AAElG,kBAAe,MAAM,CAAC"}

@@ -23,7 +23,7 @@ app.use('/api/tickets', tickets_routes_1.default);
 app.use('/api/credit-cards', creditCards_routes_1.default);
 app.use('/api/admin', admin_routes_1.default);
 app.use('/api/payment', payment_routes_1.default);
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server API is running on http://localhost:${PORT}`);
+const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server API is running on http://0.0.0.0:${PORT}`);
 });

@@ -49,7 +49,14 @@ class AdminController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const id = req.params.id;
-                const data = req.body;
+                const data = Object.assign({}, req.body);
+                // Se o admin mandou as chaves em branco, presumimos que ele não quer alterá-las, preservando as originais
+                if (!data.mpAccessToken)
+                    delete data.mpAccessToken;
+                if (!data.mpPublicKey)
+                    delete data.mpPublicKey;
+                if (!data.mpWebhookSecret)
+                    delete data.mpWebhookSecret;
                 const champ = yield prisma_1.prisma.championship.update({
                     where: { id },
                     data

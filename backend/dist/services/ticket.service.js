@@ -34,6 +34,10 @@ class TicketService {
                 }
                 const { order } = ticket;
                 const { user, championship } = order;
+                if (!championship) {
+                    console.error(`[TicketService] Attempted to generate ticket for order ${order.id} without championship.`);
+                    return;
+                }
                 const ticketData = {
                     championshipName: championship.name,
                     ticketType: order.type === 'COMPETITOR' ? 'Competidor' : 'Espectador',

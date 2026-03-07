@@ -2,7 +2,7 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
-export const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const ProtectedRoute: React.FC<{ children: React.ReactNode; adminOnly?: boolean }> = ({ children, adminOnly }) => {
     const { user, loading } = useAuth();
 
     if (loading) {
@@ -11,6 +11,10 @@ export const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ childr
 
     if (!user) {
         return <Navigate to="/auth" />;
+    }
+
+    if (adminOnly && user.role?.toUpperCase() !== 'ADMIN') {
+        return <Navigate to="/" />;
     }
 
     return <>{children}</>;
