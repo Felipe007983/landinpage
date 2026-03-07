@@ -55,7 +55,7 @@ export function ClientAreaPage() {
     }, [activeTab]);
 
     useEffect(() => {
-        let interval: NodeJS.Timeout;
+        let interval: any;
         if (fedGatewayResponse?.orderId && fedGatewayResponse?.status !== 'approved') {
             interval = setInterval(async () => {
                 try {

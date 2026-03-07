@@ -67,7 +67,7 @@ export function ChampionshipsSection() {
 
     // Verificação de status do pedido em tempo real (Polling)
     useEffect(() => {
-        let interval: NodeJS.Timeout;
+        let interval: any;
         if (gatewayResponse?.orderId && gatewayResponse?.status !== 'approved' && !gatewayResponse?.isFree) {
             interval = setInterval(async () => {
                 try {
