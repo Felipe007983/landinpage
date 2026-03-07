@@ -1,12 +1,25 @@
 import { useState, useEffect } from 'react';
 import { api } from '../../services/api';
-import { ShieldCheck, Search, CheckCircle2, XCircle } from 'lucide-react';
+import { ShieldCheck, Search, CheckCircle, XCircle } from 'lucide-react';
 import { Html5QrcodeScanner } from 'html5-qrcode';
+
+interface ValidationResult {
+    status: 'success' | 'error';
+    message: string;
+    detail?: {
+        uuid: string;
+        order?: {
+            type: string;
+            user?: { name: string };
+            championship?: { name: string };
+        }
+    };
+}
 
 export function ValidatorPage() {
     const [uuid, setUuid] = useState('');
     const [loading, setLoading] = useState(false);
-    const [result, setResult] = useState<any>(null); // { status: 'success' | 'error', message: string, detail?: any }
+    const [result, setResult] = useState<ValidationResult | null>(null);
 
     useEffect(() => {
         // Configura o scanner de QRCode após o render
@@ -19,6 +32,7 @@ export function ValidatorPage() {
             validateTicket(decodedText);
             setTimeout(() => scanner.resume(), 3000); // 3 seconds pause after scan
         }, () => { });
+
 
         return () => {
             scanner.clear().catch(e => console.error(e));
@@ -82,7 +96,7 @@ export function ValidatorPage() {
                     {/* Resultado da Validação */}
                     {result && (
                         <div className={`mt-8 p-8 rounded-2xl border flex flex-col items-center text-center animate-pulse-fast ${result.status === 'success' ? 'bg-green-500/10 border-green-500 text-green-500' : 'bg-red-500/10 border-red-500 text-red-500'}`}>
-                            {result.status === 'success' ? <CheckCircle2 className="w-16 h-16 mb-4" /> : <XCircle className="w-16 h-16 mb-4" />}
+                            {result.status === 'success' ? <CheckCircle className="w-16 h-16 mb-4" /> : <XCircle className="w-16 h-16 mb-4" />}
                             <h2 className="text-3xl font-black uppercase tracking-widest mb-2">{result.message}</h2>
                             {result.detail && (
                                 <div className="text-gray-300 w-full mt-6 bg-black/50 p-4 rounded-xl border border-white/5 mx-auto max-w-sm">

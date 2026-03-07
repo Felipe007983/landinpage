@@ -10,19 +10,36 @@ import { createPortal } from 'react-dom';
 
 initMercadoPago(import.meta.env.VITE_MERCADOPAGO_PUBLIC_KEY || '');
 
+interface Champ {
+    id: string;
+    name: string;
+    description: string;
+    date: string;
+    location: string;
+    status: string;
+    priceComp: number;
+    priceVis: number;
+    banner?: string;
+    mpPublicKey?: string;
+    hasTshirtPromotion?: boolean;
+    tshirtLimitComp?: number;
+    tshirtLimitVis?: number;
+}
+
 export function ChampionshipsSection() {
-    const [championships, setChampionships] = useState<any[]>([]);
-    const [selectedChamp, setSelectedChamp] = useState<any | null>(null);
+    const [championships, setChampionships] = useState<Champ[]>([]);
+    const [selectedChamp, setSelectedChamp] = useState<Champ | null>(null);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
     const { user } = useAuth();
 
     const [paymentStep, setPaymentStep] = useState(false);
-    const [selectedType, setSelectedType] = useState<any>(null);
+    const [selectedType, setSelectedType] = useState<'COMPETITOR' | 'VISITOR' | null>(null);
     const [paymentMethod, setPaymentMethod] = useState<'PIX' | 'CREDIT_CARD'>('PIX');
     const [showCardForm, setShowCardForm] = useState(false);
     const [processing, setProcessing] = useState(false);
     const [gatewayResponse, setGatewayResponse] = useState<any>(null);
+
 
     const location = useLocation();
 
@@ -97,12 +114,14 @@ export function ChampionshipsSection() {
     const isFederated = user?.federationYear === new Date().getFullYear();
 
     const calculateTotal = () => {
+        if (!selectedChamp || !selectedType) return 0;
         let total = selectedType === 'COMPETITOR' ? selectedChamp.priceComp : selectedChamp.priceVis;
         if (selectedType === 'COMPETITOR' && !isFederated) {
             total += 50;
         }
         return total;
     };
+
 
     const processTransparentPayment = async (cardData?: any) => {
         if (!selectedChamp || !selectedType) return;

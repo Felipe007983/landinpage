@@ -1,16 +1,48 @@
 import { useState, useEffect } from 'react';
 import { api } from '../../services/api';
-import { ShieldCheck, Plus, Power, Pencil, Camera, CheckCircle2, XCircle, Search } from 'lucide-react';
+import { ShieldCheck, Plus, Power, Pencil, Camera, CheckCircle, XCircle, Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Html5QrcodeScanner } from 'html5-qrcode';
 import { useAuth } from '../../contexts/AuthContext';
+
+interface Champ {
+    id: string;
+    name: string;
+    description: string;
+    date: string;
+    location: string;
+    status: string;
+    priceComp: number;
+    priceVis: number;
+    banner?: string;
+    hasTshirtPromotion?: boolean;
+    tshirtLimitComp?: number;
+    tshirtLimitVis?: number;
+}
+
+interface Order {
+    id: string;
+    championshipId: string;
+    type: string;
+    paymentStatus: string;
+    amount: number;
+    createdAt: string;
+    wonTshirt?: boolean;
+    user?: {
+        name: string;
+        email: string;
+    };
+    championship?: {
+        name: string;
+    };
+}
 
 export function AdminDashboard() {
     const { user } = useAuth();
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('champs');
-    const [championships, setChampionships] = useState<any[]>([]);
-    const [orders, setOrders] = useState<any[]>([]);
+    const [championships, setChampionships] = useState<Champ[]>([]);
+    const [orders, setOrders] = useState<Order[]>([]);
     const [users, setUsers] = useState<any[]>([]);
     const [selectedChampFilter, setSelectedChampFilter] = useState<string>('');
     const [selectedStartDate, setSelectedStartDate] = useState<string>('');
@@ -21,6 +53,7 @@ export function AdminDashboard() {
     const [manualUuid, setManualUuid] = useState('');
     const [isValidating, setIsValidating] = useState(false);
     const [showResultModal, setShowResultModal] = useState(false);
+
 
     // New Champ Form / Edit Form
     const [form, setForm] = useState({
@@ -432,9 +465,9 @@ export function AdminDashboard() {
                                                     <th className="p-4 rounded-tr-xl text-center">Status</th>
                                                 </tr>
                                             </thead>
-                                            <tbody>
+                                             <tbody>
                                                 {filteredOrders.length === 0 ? (
-                                                    <tr><td colSpan={7} className="p-8 text-center text-gray-400">Nenhuma venda concluída registrada com os filtros informados.</td></tr>
+                                                    <tr><td colSpan={8} className="p-8 text-center text-gray-400">Nenhuma venda concluída registrada com os filtros informados.</td></tr>
                                                 ) : (
                                                     filteredOrders.map(o => {
                                                         const dateObj = new Date(o.createdAt);
@@ -519,13 +552,14 @@ export function AdminDashboard() {
                                 <div className={`w-full max-w-md p-8 rounded-3xl border-2 flex flex-col items-center text-center shadow-[0_0_50px_rgba(0,0,0,0.5)] animate-in zoom-in duration-300 ${scanResult.status === 'success' ? 'bg-zinc-900 border-green-500/50 text-green-500' : 'bg-zinc-900 border-red-500/50 text-red-500'}`}>
                                     {scanResult.status === 'success' ? (
                                         <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mb-6">
-                                            <CheckCircle2 className="w-12 h-12" />
+                                            <CheckCircle className="w-12 h-12" />
                                         </div>
                                     ) : (
                                         <div className="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mb-6">
                                             <XCircle className="w-12 h-12" />
                                         </div>
                                     )}
+
 
                                     <h3 className="text-3xl font-black uppercase mb-2 tracking-tighter leading-none">{scanResult.message}</h3>
 

@@ -6,11 +6,36 @@ import { QRCodeSVG } from 'qrcode.react';
 import toast from 'react-hot-toast';
 import { CardCheckoutForm } from '../../components/CardCheckoutForm';
 
+interface Order {
+    id: string;
+    type: string;
+    paymentStatus: string;
+    amount: number;
+    createdAt: string;
+    championship?: {
+        name: string;
+        date: string;
+    };
+}
+
+interface Ticket {
+    id: string;
+    uuid: string;
+    status: string;
+    order: {
+        type: string;
+        championship: {
+            name: string;
+            date: string;
+        };
+    };
+}
+
 export function ClientAreaPage() {
     const { user, logout } = useAuth();
     const [activeTab, setActiveTab] = useState('tickets');
-    const [orders, setOrders] = useState<any[]>([]);
-    const [tickets, setTickets] = useState<any[]>([]);
+    const [orders, setOrders] = useState<Order[]>([]);
+    const [tickets, setTickets] = useState<Ticket[]>([]);
     
     const [fedPaymentStep, setFedPaymentStep] = useState(false);
     const [fedPaymentMethod, setFedPaymentMethod] = useState<'PIX' | 'CREDIT_CARD'>('PIX');
@@ -19,6 +44,7 @@ export function ClientAreaPage() {
     const [fedGatewayResponse, setFedGatewayResponse] = useState<any>(null);
 
     const isFederated = user?.federationYear === new Date().getFullYear();
+
 
     useEffect(() => {
         if (activeTab === 'competitions') {
