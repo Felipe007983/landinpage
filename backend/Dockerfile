@@ -1,13 +1,13 @@
-FROM node:20-alpine AS builder
+FROM node:20-slim AS builder
 
 WORKDIR /app
+
+# Install system dependencies for Prisma on Debian
+RUN apt-get update && apt-get install -y openssl libssl-dev && rm -rf /var/lib/apt/lists/*
 
 # Copy package files
 COPY package*.json ./
 COPY prisma ./prisma/
-
-# Install system dependencies
-RUN apk add --no-cache openssl libc6-compat
 
 # Install dependencies
 RUN npm install
@@ -22,19 +22,17 @@ RUN npx prisma generate
 RUN npm run build
 
 # Production stage
-FROM node:20-alpine
+FROM node:20-slim
 
 WORKDIR /app
 
-RUN apk add --no-cache openssl libc6-compat
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/node_modules ./node_modules
-
-# Ensure data directory for SQLite exists and has permissions
-RUN mkdir -p /app/prisma/data && chown -R node:node /app/prisma
 
 # Environment variables
 ENV NODE_ENV=production
@@ -42,4 +40,4 @@ ENV PORT=3000
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "npx prisma migrate deploy && npm start"]
+CMD ["sh", "-c", "npx prisma migrate deploy && npx prisma db seed && npm start"]
