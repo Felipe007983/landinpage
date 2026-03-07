@@ -20,7 +20,7 @@ services:
       - PORT=3000
     depends_on:
       - db
-    command: /bin/sh -c "npx prisma migrate deploy && npx prisma db seed && npm run dev"
+    command: /bin/sh -c "npx prisma migrate deploy && npx prisma db seed && npm start"
     networks:
       - zeus-network
 
