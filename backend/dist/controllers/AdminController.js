@@ -57,6 +57,12 @@ class AdminController {
                     delete data.mpPublicKey;
                 if (!data.mpWebhookSecret)
                     delete data.mpWebhookSecret;
+                if (!data.mpFedAccessToken)
+                    delete data.mpFedAccessToken;
+                if (!data.mpFedPublicKey)
+                    delete data.mpFedPublicKey;
+                if (!data.mpFedWebhookSecret)
+                    delete data.mpFedWebhookSecret;
                 const champ = yield prisma_1.prisma.championship.update({
                     where: { id },
                     data
@@ -84,6 +90,31 @@ class AdminController {
             }
             catch (e) {
                 res.status(500).json({ error: 'Erro ao excluir campeonato' });
+            }
+        });
+    }
+    static listUsers(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const users = yield prisma_1.prisma.user.findMany({
+                    where: {
+                        role: 'USER',
+                        orders: {
+                            some: {
+                                paymentStatus: 'APPROVED',
+                                OR: [
+                                    { type: 'FEDERATION' },
+                                    { includesFederation: true }
+                                ]
+                            }
+                        }
+                    },
+                    orderBy: { createdAt: 'desc' }
+                });
+                res.json(users);
+            }
+            catch (e) {
+                res.status(500).json({ error: 'Erro ao listar usuários federados' });
             }
         });
     }

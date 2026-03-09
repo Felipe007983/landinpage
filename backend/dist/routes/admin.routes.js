@@ -12,5 +12,6 @@ router.patch('/championships/:id/status', AdminController_1.AdminController.togg
 router.put('/championships/:id', AdminController_1.AdminController.updateChampionship);
 router.delete('/championships/:id', AdminController_1.AdminController.deleteChampionship);
 router.get('/orders', AdminController_1.AdminController.listAllOrders);
+router.get('/users', AdminController_1.AdminController.listUsers);
 router.post('/championships', ChampionshipController_1.ChampionshipController.create);
 exports.default = router;

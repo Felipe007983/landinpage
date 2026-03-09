@@ -48,7 +48,7 @@ class TicketService {
                     uuid: ticket.uuid
                 };
                 const pdfBuffer = yield pdf_service_1.PdfService.generateTicketPdf(ticketData);
-                yield email_service_1.EmailService.sendTicketEmail(user.email, user.name, championship.name, pdfBuffer);
+                yield email_service_1.EmailService.sendTicketEmail(user.email, user.name, championship.name, pdfBuffer, order.wonTshirt);
                 console.log(`[TicketService] PDF generated and email sent for ticket ${ticketId}.`);
                 return pdfBuffer;
             }

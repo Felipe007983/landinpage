@@ -18,6 +18,10 @@ interface Champ {
     hasTshirtPromotion?: boolean;
     tshirtLimitComp?: number;
     tshirtLimitVis?: number;
+    federationFee?: number;
+    mpFedPublicKey?: string;
+    mpFedAccessToken?: string;
+    mpFedWebhookSecret?: string;
 }
 
 interface Order {
@@ -40,7 +44,8 @@ interface Order {
 export function AdminDashboard() {
     const { user } = useAuth();
     const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState('champs');
+    const userRole = user?.role?.toUpperCase() || '';
+    const [activeTab, setActiveTab] = useState(userRole === 'TICKETER' ? 'validator' : 'champs');
     const [championships, setChampionships] = useState<Champ[]>([]);
     const [orders, setOrders] = useState<Order[]>([]);
     const [users, setUsers] = useState<any[]>([]);
@@ -54,17 +59,21 @@ export function AdminDashboard() {
     const [isValidating, setIsValidating] = useState(false);
     const [showResultModal, setShowResultModal] = useState(false);
 
+    // Create User State
+    const [showUserModal, setShowUserModal] = useState(false);
+    const [newUser, setNewUser] = useState({ name: '', cpf: '', email: '', phone: '', password: '', role: 'USER' });
 
     // New Champ Form / Edit Form
     const [form, setForm] = useState({
         name: '', description: '', date: '', location: '', priceComp: 0, priceVis: 0, banner: '',
         mpPublicKey: '', mpAccessToken: '', mpWebhookSecret: '',
+        federationFee: 50, mpFedPublicKey: '', mpFedAccessToken: '', mpFedWebhookSecret: '',
         hasTshirtPromotion: false, tshirtLimitComp: 50, tshirtLimitVis: 100
     });
     const [editingId, setEditingId] = useState<string | null>(null);
 
     useEffect(() => {
-        if (!user || user.role?.toUpperCase() !== 'ADMIN') {
+        if (!user || (!['ADMIN', 'SUPPORT', 'TICKETER'].includes(userRole))) {
             navigate('/');
             return;
         }
@@ -135,6 +144,29 @@ export function AdminDashboard() {
         setUsers(data);
     };
 
+    const handleRoleChange = async (userId: string, newRole: string) => {
+        try {
+            await api.patch(`/admin/users/${userId}/role`, { role: newRole });
+            alert('Perfil atualizado com sucesso!');
+            fetchUsers();
+        } catch (err) {
+            alert('Erro ao atualizar perfil.');
+        }
+    };
+
+    const handleCreateUser = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            await api.post('/admin/users', newUser);
+            alert('Usuário criado com sucesso!');
+            setShowUserModal(false);
+            setNewUser({ name: '', cpf: '', email: '', phone: '', password: '', role: 'USER' });
+            fetchUsers();
+        } catch (err: any) {
+            alert(err.response?.data?.error || 'Erro ao criar usuário.');
+        }
+    };
+
     const toggleStatus = async (id: string) => {
         await api.patch(`/admin/championships/${id}/status`);
         fetchChamps();
@@ -147,7 +179,8 @@ export function AdminDashboard() {
                 ...form,
                 date: new Date(form.date).toISOString(),
                 priceComp: Number(form.priceComp),
-                priceVis: Number(form.priceVis)
+                priceVis: Number(form.priceVis),
+                federationFee: Number(form.federationFee)
             };
 
             if (editingId) {
@@ -179,6 +212,10 @@ export function AdminDashboard() {
             mpPublicKey: '',
             mpAccessToken: '',
             mpWebhookSecret: '',
+            federationFee: c.federationFee || 50,
+            mpFedPublicKey: '',
+            mpFedAccessToken: '',
+            mpFedWebhookSecret: '',
             hasTshirtPromotion: c.hasTshirtPromotion || false,
             tshirtLimitComp: c.tshirtLimitComp || 50,
             tshirtLimitVis: c.tshirtLimitVis || 100
@@ -190,6 +227,7 @@ export function AdminDashboard() {
         setForm({ 
             name: '', description: '', date: '', location: '', priceComp: 0, priceVis: 0, banner: '', 
             mpPublicKey: '', mpAccessToken: '', mpWebhookSecret: '',
+            federationFee: 50, mpFedPublicKey: '', mpFedAccessToken: '', mpFedWebhookSecret: '',
             hasTshirtPromotion: false, tshirtLimitComp: 50, tshirtLimitVis: 100
         });
         setEditingId(null);
@@ -206,31 +244,37 @@ export function AdminDashboard() {
                     </div>
                 </div>
 
-                <div className="flex gap-4 mb-8">
-                    <button
-                        onClick={() => setActiveTab('champs')}
-                        className={`px-6 py-3 font-bold rounded-lg transition-colors ${activeTab === 'champs' ? 'bg-amber-500 text-black' : 'bg-zinc-800 text-white hover:bg-zinc-700'}`}
-                    >
-                        Campeonatos
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('orders')}
-                        className={`px-6 py-3 font-bold rounded-lg transition-colors ${activeTab === 'orders' ? 'bg-amber-500 text-black' : 'bg-zinc-800 text-white hover:bg-zinc-700'}`}
-                    >
-                        Vendas & Ingressos
-                    </button>
+                <div className="flex flex-wrap gap-4 mb-8">
+                    {userRole !== 'TICKETER' && (
+                        <button
+                            onClick={() => setActiveTab('champs')}
+                            className={`px-6 py-3 font-bold rounded-lg transition-colors ${activeTab === 'champs' ? 'bg-amber-500 text-black' : 'bg-zinc-800 text-white hover:bg-zinc-700'}`}
+                        >
+                            Campeonatos
+                        </button>
+                    )}
+                    {userRole !== 'TICKETER' && (
+                        <button
+                            onClick={() => setActiveTab('orders')}
+                            className={`px-6 py-3 font-bold rounded-lg transition-colors ${activeTab === 'orders' ? 'bg-amber-500 text-black' : 'bg-zinc-800 text-white hover:bg-zinc-700'}`}
+                        >
+                            Vendas & Ingressos
+                        </button>
+                    )}
                     <button
                         onClick={() => setActiveTab('validator')}
                         className={`px-6 py-3 font-bold rounded-lg transition-colors flex items-center gap-2 ${activeTab === 'validator' ? 'bg-amber-500 text-black' : 'bg-zinc-800 text-white hover:bg-zinc-700'}`}
                     >
                         <Camera className="w-4 h-4" /> Portaria (Validar)
                     </button>
-                    <button
-                        onClick={() => setActiveTab('athletes')}
-                        className={`px-6 py-3 font-bold rounded-lg transition-colors flex items-center gap-2 ${activeTab === 'athletes' ? 'bg-amber-500 text-black' : 'bg-zinc-800 text-white hover:bg-zinc-700'}`}
-                    >
-                        Atletas / Federados
-                    </button>
+                    {userRole !== 'TICKETER' && (
+                        <button
+                            onClick={() => setActiveTab('athletes')}
+                            className={`px-6 py-3 font-bold rounded-lg transition-colors flex items-center gap-2 ${activeTab === 'athletes' ? 'bg-amber-500 text-black' : 'bg-zinc-800 text-white hover:bg-zinc-700'}`}
+                        >
+                            Usuários / Atletas
+                        </button>
+                    )}
                 </div>
 
                 {activeTab === 'champs' && (
@@ -295,12 +339,21 @@ export function AdminDashboard() {
                                     </div>
                                     <input type="url" placeholder="URL da Capa (Imagem)" value={form.banner} onChange={e => setForm({ ...form, banner: e.target.value })} className="w-full bg-zinc-800 border-zinc-700 border p-3 rounded" />
                                     
-                                    <div className="border border-amber-500/20 rounded-lg p-4 bg-black/20 space-y-3">
-                                        <h3 className="text-xs font-bold uppercase tracking-widest text-amber-500 mb-2">Credenciais Mercado Pago</h3>
+                                    <div className="border border-green-500/20 rounded-lg p-4 bg-black/20 space-y-3">
+                                        <h3 className="text-xs font-bold uppercase tracking-widest text-green-500 mb-2">Credenciais Mercado Pago (Campeonato)</h3>
                                         {editingId && <p className="text-[10px] text-gray-400 mb-2">Deixe em branco para manter as chaves atreladas atualmente.</p>}
                                         <input type="text" placeholder="Public Key" value={form.mpPublicKey} onChange={e => setForm({ ...form, mpPublicKey: e.target.value })} className="w-full bg-zinc-900 border-zinc-700 border p-3 rounded" />
                                         <input type="password" placeholder="Access Token" value={form.mpAccessToken} onChange={e => setForm({ ...form, mpAccessToken: e.target.value })} className="w-full bg-zinc-900 border-zinc-700 border p-3 rounded" />
                                         <input type="password" placeholder="Webhook Secret" value={form.mpWebhookSecret} onChange={e => setForm({ ...form, mpWebhookSecret: e.target.value })} className="w-full bg-zinc-900 border-zinc-700 border p-3 rounded" />
+                                    </div>
+
+                                    <div className="border border-amber-500/20 rounded-lg p-4 bg-black/20 space-y-3">
+                                        <h3 className="text-xs font-bold uppercase tracking-widest text-amber-500 mb-2">Credenciais Mercado Pago (Federação)</h3>
+                                        {editingId && <p className="text-[10px] text-gray-400 mb-2">Deixe em branco para manter as chaves atreladas atualmente.</p>}
+                                        <input type="number" step="0.01" min="0" placeholder="Taxa de Federação (Ex: 50.00)" required value={form.federationFee} onChange={e => setForm({ ...form, federationFee: Number(e.target.value) })} className="w-full bg-zinc-900 border-zinc-700 border p-3 rounded text-amber-500 font-bold" />
+                                        <input type="text" placeholder="Public Key da Federação" value={form.mpFedPublicKey} onChange={e => setForm({ ...form, mpFedPublicKey: e.target.value })} className="w-full bg-zinc-900 border-zinc-700 border p-3 rounded" />
+                                        <input type="password" placeholder="Access Token da Federação" value={form.mpFedAccessToken} onChange={e => setForm({ ...form, mpFedAccessToken: e.target.value })} className="w-full bg-zinc-900 border-zinc-700 border p-3 rounded" />
+                                        <input type="password" placeholder="Webhook Secret da Federação" value={form.mpFedWebhookSecret} onChange={e => setForm({ ...form, mpFedWebhookSecret: e.target.value })} className="w-full bg-zinc-900 border-zinc-700 border p-3 rounded" />
                                     </div>
 
                                     <div className="border border-amber-500/20 rounded-lg p-4 bg-black/20 space-y-3">
@@ -626,6 +679,17 @@ export function AdminDashboard() {
 
                 {activeTab === 'athletes' && (
                     <div className="space-y-6">
+                        {userRole === 'ADMIN' && (
+                            <div className="flex justify-end mb-4">
+                                <button
+                                    onClick={() => setShowUserModal(true)}
+                                    className="bg-amber-500 text-black px-4 py-2 font-bold rounded-lg hover:bg-amber-400 transition-colors flex items-center gap-2"
+                                >
+                                    <Plus className="w-4 h-4" /> Novo Usuário
+                                </button>
+                            </div>
+                        )}
+
                         <div className="bg-zinc-900 border border-white/5 rounded-xl overflow-x-auto">
                             <table className="w-full text-left border-collapse">
                                 <thead>
@@ -635,11 +699,12 @@ export function AdminDashboard() {
                                         <th className="p-4">Contato</th>
                                         <th className="p-4 text-center">Cadastro</th>
                                         <th className="p-4 rounded-tr-xl text-center">Status Federação</th>
+                                        {userRole === 'ADMIN' && <th className="p-4 rounded-tr-xl text-center">Perfil de Acesso</th>}
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {users.length === 0 ? (
-                                        <tr><td colSpan={5} className="p-8 text-center text-gray-400">Nenhum atleta cadastrado.</td></tr>
+                                        <tr><td colSpan={userRole === 'ADMIN' ? 6 : 5} className="p-8 text-center text-gray-400">Nenhum atleta cadastrado.</td></tr>
                                     ) : (
                                         users.map(u => {
                                             const isFederated = u.federationYear === new Date().getFullYear();
@@ -662,12 +727,82 @@ export function AdminDashboard() {
                                                             <div className="text-[9px] text-gray-600 mt-1 uppercase tracking-tighter">Vigência: {u.federationYear}</div>
                                                         )}
                                                     </td>
+                                                    {userRole === 'ADMIN' && (
+                                                        <td className="p-4 text-center">
+                                                            <select
+                                                                value={u.role || 'USER'}
+                                                                onChange={(e) => handleRoleChange(u.id, e.target.value)}
+                                                                className="bg-zinc-800 border-zinc-700 text-white text-xs p-2 rounded"
+                                                            >
+                                                                <option value="USER">Usuário (Padrão)</option>
+                                                                <option value="TICKETER">Portaria (Apenas Validar)</option>
+                                                                <option value="SUPPORT">Suporte Interno</option>
+                                                                <option value="ADMIN">Administrador VIP</option>
+                                                            </select>
+                                                        </td>
+                                                    )}
                                                 </tr>
                                             );
                                         })
                                     )}
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+                )}
+
+                {/* Create User Modal */}
+                {showUserModal && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/90 backdrop-blur-md">
+                        <div className="bg-zinc-900 border border-white/10 rounded-2xl w-full max-w-lg p-6 relative">
+                            <button 
+                                onClick={() => setShowUserModal(false)}
+                                className="absolute top-4 right-4 text-gray-500 hover:text-white"
+                            >
+                                <XCircle className="w-6 h-6" />
+                            </button>
+                            
+                            <h2 className="text-2xl font-bold uppercase text-amber-500 mb-6 flex items-center gap-2">
+                                <Plus className="w-5 h-5" /> Criar Novo Usuário
+                            </h2>
+                            
+                            <form onSubmit={handleCreateUser} className="space-y-4">
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Cpf</label>
+                                    <input required type="text" value={newUser.cpf} onChange={e => setNewUser({...newUser, cpf: e.target.value})} className="w-full bg-zinc-800 border-zinc-700 border p-3 rounded" placeholder="Apenas números" />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="col-span-2">
+                                        <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Nome Completo</label>
+                                        <input required type="text" value={newUser.name} onChange={e => setNewUser({...newUser, name: e.target.value})} className="w-full bg-zinc-800 border-zinc-700 border p-3 rounded" />
+                                    </div>
+                                    <div className="col-span-2 sm:col-span-1">
+                                        <label className="block text-xs font-bold text-gray-400 uppercase mb-1">E-mail</label>
+                                        <input required type="email" value={newUser.email} onChange={e => setNewUser({...newUser, email: e.target.value})} className="w-full bg-zinc-800 border-zinc-700 border p-3 rounded" />
+                                    </div>
+                                    <div className="col-span-2 sm:col-span-1">
+                                        <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Telefone (Whatsapp)</label>
+                                        <input required type="tel" value={newUser.phone} onChange={e => setNewUser({...newUser, phone: e.target.value})} className="w-full bg-zinc-800 border-zinc-700 border p-3 rounded" />
+                                    </div>
+                                    <div className="col-span-2 sm:col-span-1">
+                                        <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Senha de Acesso</label>
+                                        <input required type="password" value={newUser.password} onChange={e => setNewUser({...newUser, password: e.target.value})} className="w-full bg-zinc-800 border-zinc-700 border p-3 rounded" />
+                                    </div>
+                                    <div className="col-span-2 sm:col-span-1">
+                                        <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Perfil de Acesso</label>
+                                        <select value={newUser.role} onChange={e => setNewUser({...newUser, role: e.target.value})} className="w-full bg-zinc-800 border-zinc-700 border p-3 rounded">
+                                            <option value="USER">Usuário (Padrão)</option>
+                                            <option value="TICKETER">Portaria (Apenas Validar)</option>
+                                            <option value="SUPPORT">Suporte Interno</option>
+                                            <option value="ADMIN">Administrador VIP</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <button type="submit" className="w-full bg-amber-500 text-black py-4 rounded-xl font-black uppercase tracking-widest hover:bg-amber-400 transition-colors mt-6 text-lg">
+                                    Cadastrar Usuário
+                                </button>
+                            </form>
                         </div>
                     </div>
                 )}

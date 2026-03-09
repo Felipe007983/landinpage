@@ -18,24 +18,28 @@ const crypto_1 = __importDefault(require("crypto"));
 const prisma_1 = require("../prisma");
 const ticket_service_1 = require("../services/ticket.service");
 const processPayment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o;
     try {
         const { paymentData, orderId } = req.body;
         const order = yield prisma_1.prisma.order.findUnique({ where: { id: orderId }, include: { championship: true } });
         if (!order)
             return res.status(404).json({ error: 'Pedido não encontrado no ato do pagamento.' });
-        const accessToken = ((_a = order.championship) === null || _a === void 0 ? void 0 : _a.mpAccessToken) || process.env.MERCADOPAGO_ACCESS_TOKEN;
+        let accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
+        if (order.championship) {
+            accessToken = order.type === 'FEDERATION' ? order.championship.mpFedAccessToken : order.championship.mpAccessToken;
+        }
         if (!accessToken) {
             return res.status(500).json({ error: 'MERCADOPAGO_ACCESS_TOKEN não configurado no servidor (.env) e nem no Campeonato alvo.' });
         }
         const client = new mercadopago_1.MercadoPagoConfig({ accessToken });
         const paymentClient = new mercadopago_1.Payment(client);
         // Splitting name to avoid high risk rejections
-        const fullName = ((_b = paymentData.payer) === null || _b === void 0 ? void 0 : _b.name) || req.body.cardholderName || paymentData.cardholderName || '';
+        const fullName = ((_a = paymentData.payer) === null || _a === void 0 ? void 0 : _a.name) || req.body.cardholderName || paymentData.cardholderName || '';
         const nameParts = fullName.split(' ');
         const firstName = nameParts[0] || 'Cliente';
         const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : 'Evolução';
         // Construção robusta do body baseada no exemplo da documentação e no snippet do frontend
+        const webhookBase = process.env.API_BASE_URL || 'https://zeusevolution.com.br';
         const body = {
             transaction_amount: Number(paymentData.transaction_amount),
             token: paymentData.token,
@@ -43,16 +47,16 @@ const processPayment = (req, res) => __awaiter(void 0, void 0, void 0, function*
             installments: Number(paymentData.installments),
             payment_method_id: paymentData.payment_method_id || paymentData.paymentMethodId,
             payer: {
-                email: ((_c = paymentData.payer) === null || _c === void 0 ? void 0 : _c.email) || paymentData.email,
+                email: ((_b = paymentData.payer) === null || _b === void 0 ? void 0 : _b.email) || paymentData.email,
                 first_name: firstName,
                 last_name: lastName,
                 identification: {
-                    type: ((_e = (_d = paymentData.payer) === null || _d === void 0 ? void 0 : _d.identification) === null || _e === void 0 ? void 0 : _e.type) || paymentData.identificationType,
-                    number: ((_g = (_f = paymentData.payer) === null || _f === void 0 ? void 0 : _f.identification) === null || _g === void 0 ? void 0 : _g.number) || paymentData.identificationNumber || paymentData.number
+                    type: ((_d = (_c = paymentData.payer) === null || _c === void 0 ? void 0 : _c.identification) === null || _d === void 0 ? void 0 : _d.type) || paymentData.identificationType,
+                    number: ((_f = (_e = paymentData.payer) === null || _e === void 0 ? void 0 : _e.identification) === null || _f === void 0 ? void 0 : _f.number) || paymentData.identificationNumber || paymentData.number
                 }
             },
             external_reference: orderId ? orderId.toString() : undefined,
-            notification_url: `https://unretained-cammy-nonsynoptical.ngrok-free.dev/api/payment/webhook/${((_h = order.championship) === null || _h === void 0 ? void 0 : _h.id) || 'global'}`,
+            notification_url: `${webhookBase}/api/payment/webhook/${((_g = order.championship) === null || _g === void 0 ? void 0 : _g.id) || 'global'}?orig=${order.type === 'FEDERATION' ? 'fed' : 'comp'}`,
             binary_mode: true,
         };
         const issuerIdRaw = paymentData.issuer_id || paymentData.issuerId || paymentData.issuer;
@@ -77,9 +81,9 @@ const processPayment = (req, res) => __awaiter(void 0, void 0, void 0, function*
             status: response.status,
             status_detail: response.status_detail,
             transaction_amount: response.transaction_amount,
-            qr_code: (_k = (_j = response.point_of_interaction) === null || _j === void 0 ? void 0 : _j.transaction_data) === null || _k === void 0 ? void 0 : _k.qr_code,
-            qr_code_base64: (_m = (_l = response.point_of_interaction) === null || _l === void 0 ? void 0 : _l.transaction_data) === null || _m === void 0 ? void 0 : _m.qr_code_base64,
-            ticket_url: (_p = (_o = response.point_of_interaction) === null || _o === void 0 ? void 0 : _o.transaction_data) === null || _p === void 0 ? void 0 : _p.ticket_url
+            qr_code: (_j = (_h = response.point_of_interaction) === null || _h === void 0 ? void 0 : _h.transaction_data) === null || _j === void 0 ? void 0 : _j.qr_code,
+            qr_code_base64: (_l = (_k = response.point_of_interaction) === null || _k === void 0 ? void 0 : _k.transaction_data) === null || _l === void 0 ? void 0 : _l.qr_code_base64,
+            ticket_url: (_o = (_m = response.point_of_interaction) === null || _m === void 0 ? void 0 : _m.transaction_data) === null || _o === void 0 ? void 0 : _o.ticket_url
         });
     }
     catch (error) {
@@ -115,9 +119,11 @@ const handleWebhook = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         }
         let webhookSecret;
         let championship = null;
+        let accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
+        const isFedQuery = req.query.orig === 'fed';
         if (champId === 'global') {
             webhookSecret = process.env.MERCADOPAGO_WEBHOOK_SECRET;
-            console.log(`[Webhook] Processando notificação GLOBAL (Federação).`);
+            console.log(`[Webhook] Processando notificação GLOBAL.`);
         }
         else {
             championship = yield prisma_1.prisma.championship.findUnique({ where: { id: champId } });
@@ -125,7 +131,10 @@ const handleWebhook = (req, res) => __awaiter(void 0, void 0, void 0, function* 
                 console.warn(`[Webhook] Campeonato ${champId} não encontrado no banco.`);
                 return res.status(404).json({ error: 'Campeonato não encontrado' });
             }
-            webhookSecret = championship.mpWebhookSecret || process.env.MERCADOPAGO_WEBHOOK_SECRET;
+            webhookSecret = isFedQuery ? championship.mpFedWebhookSecret : championship.mpWebhookSecret;
+            webhookSecret = webhookSecret || process.env.MERCADOPAGO_WEBHOOK_SECRET;
+            accessToken = isFedQuery ? championship.mpFedAccessToken : championship.mpAccessToken;
+            accessToken = accessToken || process.env.MERCADOPAGO_ACCESS_TOKEN;
         }
         // 1. Extraindo headers de assinatura do MP
         // Extraindo partes (v1=chave, ts=timestamp)
@@ -158,8 +167,7 @@ const handleWebhook = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         res.status(200).send('OK');
         // ==== Processando Notificação ====
         if (type === 'payment') {
-            const accessToken = (championship === null || championship === void 0 ? void 0 : championship.mpAccessToken) || process.env.MERCADOPAGO_ACCESS_TOKEN || '';
-            const client = new mercadopago_1.MercadoPagoConfig({ accessToken });
+            const client = new mercadopago_1.MercadoPagoConfig({ accessToken: accessToken || '' });
             const paymentClient = new mercadopago_1.Payment(client);
             // Busca o estado real do pagamento
             const paymentInfo = yield paymentClient.get({ id: dataId });
@@ -174,11 +182,35 @@ const handleWebhook = (req, res) => __awaiter(void 0, void 0, void 0, function* 
                 if (orderToUpdate) {
                     if (paymentInfo.status === 'approved') {
                         if (orderToUpdate.paymentStatus !== 'APPROVED') {
+                            let wonTshirt = false;
+                            // Lógica de Premiação de Camiseta
+                            if (orderToUpdate.championshipId) {
+                                const champ = yield prisma_1.prisma.championship.findUnique({
+                                    where: { id: orderToUpdate.championshipId }
+                                });
+                                if (champ === null || champ === void 0 ? void 0 : champ.hasTshirtPromotion) {
+                                    const limit = orderToUpdate.type === 'COMPETITOR' ? champ.tshirtLimitComp : champ.tshirtLimitVis;
+                                    // Contar quantos já ganharam camiseta para este tipo de ingresso neste campeonato
+                                    const winnersCount = yield prisma_1.prisma.order.count({
+                                        where: {
+                                            championshipId: orderToUpdate.championshipId,
+                                            type: orderToUpdate.type,
+                                            paymentStatus: 'APPROVED',
+                                            wonTshirt: true
+                                        }
+                                    });
+                                    if (winnersCount < limit) {
+                                        wonTshirt = true;
+                                        console.log(`[Webhook] Pedido ${localOrderId} ganhou uma camiseta! (${winnersCount + 1}/${limit})`);
+                                    }
+                                }
+                            }
                             yield prisma_1.prisma.order.update({
                                 where: { id: localOrderId },
                                 data: {
                                     paymentStatus: 'APPROVED',
-                                    gatewayOrderId: paymentInfo.id.toString()
+                                    gatewayOrderId: paymentInfo.id.toString(),
+                                    wonTshirt
                                 }
                             });
                         }

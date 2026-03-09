@@ -100,25 +100,30 @@ export function ChampionshipsSection() {
         };
     }, [gatewayResponse, navigate]);
 
+    const isFederated = user?.federationYear === new Date().getFullYear();
+
     const handleAction = (c: any, type: 'COMPETITOR' | 'VISITOR') => {
         if (!user) {
             navigate('/auth', { state: { returnTo: '/', champId: c.id, action: type } });
             return;
         }
+
+        if (type === 'COMPETITOR' && !isFederated) {
+            toast.error("Você precisa pagar a taxa de filiação da federação para poder competir.");
+            closeAll();
+            navigate('/minha-conta', { state: { requiredFederation: true, targetChampId: c.id } });
+            return;
+        }
+
         setSelectedType(type);
         setPaymentStep(true);
         setShowCardForm(false);
         setGatewayResponse(null);
     };
 
-    const isFederated = user?.federationYear === new Date().getFullYear();
-
     const calculateTotal = () => {
         if (!selectedChamp || !selectedType) return 0;
         let total = selectedType === 'COMPETITOR' ? selectedChamp.priceComp : selectedChamp.priceVis;
-        if (selectedType === 'COMPETITOR' && !isFederated) {
-            total += 50;
-        }
         return total;
     };
 
@@ -306,12 +311,6 @@ export function ChampionshipsSection() {
                                             <span>{selectedType === 'COMPETITOR' ? 'Inscrição Atleta' : 'Ingresso Visitante'}</span>
                                             <strong className="text-white">R$ {(selectedType === 'COMPETITOR' ? selectedChamp.priceComp : selectedChamp.priceVis).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</strong>
                                         </div>
-                                        {selectedType === 'COMPETITOR' && !isFederated && (
-                                            <div className="flex justify-between items-center mb-2 text-red-400">
-                                                <span>Taxa de Federação Anual (Obrigatória)</span>
-                                                <strong>+ R$ 50,00</strong>
-                                            </div>
-                                        )}
                                         <div className="h-px bg-white/10 my-2"></div>
                                         <div className="flex justify-between items-center text-lg mt-2">
                                             <span className="font-bold text-white">Total</span>

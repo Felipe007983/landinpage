@@ -7,10 +7,11 @@ export const adminMiddleware = async (req: Request, res: Response, next: NextFun
         if (!userId) return res.status(401).json({ error: 'Não autorizado' });
 
         const user = await prisma.user.findUnique({ where: { id: userId } });
-        if (!user || user.role !== 'ADMIN') {
-            return res.status(403).json({ error: 'Acesso negado: Requer privilégios de administrador' });
+        if (!user || !['ADMIN', 'SUPPORT', 'TICKETER'].includes(user.role)) {
+            return res.status(403).json({ error: 'Acesso negado: Requer privilégios administrativos ou de suporte militar' });
         }
 
+        (req as any).userRole = user.role; // Pass role down to controllers
         next();
     } catch (e) {
         res.status(500).json({ error: 'Erro ao validar privilégios' });

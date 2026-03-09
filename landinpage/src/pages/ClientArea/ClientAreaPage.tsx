@@ -3,6 +3,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { api } from '../../services/api';
 import { LogOut, User as UserIcon, Calendar, Ticket, Download, ShieldCheck, Shield } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { CardCheckoutForm } from '../../components/CardCheckoutForm';
 
@@ -42,6 +43,19 @@ export function ClientAreaPage() {
     const [showFedCardForm, setShowFedCardForm] = useState(false);
     const [fedProcessing, setFedProcessing] = useState(false);
     const [fedGatewayResponse, setFedGatewayResponse] = useState<any>(null);
+
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (location.state?.requiredFederation) {
+            setActiveTab('federation');
+            setFedPaymentStep(true);
+            toast("Finalize a taxa de federação para poder competir.");
+            // Remove state to prevent infinite loops on reload
+            window.history.replaceState({}, document.title);
+        }
+    }, [location]);
 
     const isFederated = user?.federationYear === new Date().getFullYear();
 
@@ -93,7 +107,8 @@ export function ClientAreaPage() {
         try {
             const { data: orderData } = await api.post('/orders', {
                 type: 'FEDERATION',
-                paymentMethod: fedPaymentMethod
+                paymentMethod: fedPaymentMethod,
+                championshipId: location.state?.targetChampId || undefined
             });
 
             const orderId = orderData.order.id;
@@ -133,7 +148,13 @@ export function ClientAreaPage() {
                         status: 'approved',
                         message: 'Pagamento Aprovado com Sucesso!'
                     });
-                    setTimeout(() => window.location.reload(), 2000);
+                    setTimeout(() => {
+                        if (location.state?.targetChampId) {
+                            navigate('/#campeonatos', { state: { champId: location.state.targetChampId, action: 'COMPETITOR' } });
+                        } else {
+                            window.location.reload();
+                        }
+                    }, 2000);
                 } else {
                     toast.error("O pagamento foi recusado pelo banco.");
                     setFedProcessing(false);
@@ -178,9 +199,13 @@ export function ClientAreaPage() {
                                 <div className="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center text-black">
                                     <UserIcon className="w-6 h-6" />
                                 </div>
-                                 <div>
+                                <div>
                                     <h3 className="font-bold">{user?.name} <span className="text-[10px] opacity-30">({user?.role})</span></h3>
-                                    <p className="text-xs text-gray-400">{user?.role?.toUpperCase() === 'ADMIN' ? 'Administrador do Sistema' : 'Atleta / Visitante'}</p>
+                                    <p className="text-xs text-gray-400">
+                                        {(user?.role?.toUpperCase() === 'ADMIN' || user?.role?.toUpperCase() === 'SUPPORT' || user?.role?.toUpperCase() === 'TICKETER') 
+                                            ? 'Membro da Equipe (Admin)' 
+                                            : 'Atleta / Visitante'}
+                                    </p>
                                 </div>
                             </div>
 
@@ -212,7 +237,7 @@ export function ClientAreaPage() {
                                     <Shield className={`w-4 h-4 ${!isFederated && activeTab !== 'federation' ? 'text-red-500' : ''}`} /> Federação {user?.role !== 'ADMIN' && !isFederated && <span className="w-2 h-2 rounded-full bg-red-500"></span>}
                                 </button>
 
-                                {user?.role?.toUpperCase() === 'ADMIN' && (
+                                {['ADMIN', 'TICKETER', 'SUPPORT'].includes(user?.role?.toUpperCase() || '') && (
                                     <a
                                         href="/admin"
                                         className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-bold text-sm text-amber-500 border border-amber-500/30 hover:bg-amber-500/10 mt-2"

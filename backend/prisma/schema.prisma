@@ -39,9 +39,15 @@ model Championship {
   hasTshirtPromotion Boolean @default(false)
   tshirtLimitComp    Int      @default(50)
   tshirtLimitVis     Int      @default(100)
-  mpPublicKey     String?  // Chave Pública Mercado Pago
-  mpAccessToken   String?  // Access Token Mercado Pago
-  mpWebhookSecret String?  // Webhook Secret Mercado Pago
+  mpPublicKey     String?  // Chave Pública Mercado Pago (Campeonato)
+  mpAccessToken   String?  // Access Token Mercado Pago (Campeonato)
+  mpWebhookSecret String?  // Webhook Secret Mercado Pago (Campeonato)
+  
+  federationFee      Float    @default(50.0) // Valor da taxa de federação
+  mpFedPublicKey     String?  // Chave Pública Mercado Pago (Federação)
+  mpFedAccessToken   String?  // Access Token Mercado Pago (Federação)
+  mpFedWebhookSecret String?  // Webhook Secret Mercado Pago (Federação)
+
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 

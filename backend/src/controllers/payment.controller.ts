@@ -11,7 +11,11 @@ export const processPayment = async (req: Request, res: Response) => {
         const order = await prisma.order.findUnique({ where: { id: orderId }, include: { championship: true } });
         if (!order) return res.status(404).json({ error: 'Pedido não encontrado no ato do pagamento.' });
 
-        const accessToken = order.championship?.mpAccessToken || process.env.MERCADOPAGO_ACCESS_TOKEN;
+        let accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
+        if (order.championship) {
+            accessToken = order.type === 'FEDERATION' ? (order.championship as any).mpFedAccessToken : (order.championship as any).mpAccessToken;
+        }
+
         if (!accessToken) {
             return res.status(500).json({ error: 'MERCADOPAGO_ACCESS_TOKEN não configurado no servidor (.env) e nem no Campeonato alvo.' });
         }
@@ -43,7 +47,7 @@ export const processPayment = async (req: Request, res: Response) => {
                 }
             },
             external_reference: orderId ? orderId.toString() : undefined,
-            notification_url: `${webhookBase}/api/payment/webhook/${order.championship?.id || 'global'}`,
+            notification_url: `${webhookBase}/api/payment/webhook/${order.championship?.id || 'global'}?orig=${order.type === 'FEDERATION' ? 'fed' : 'comp'}`,
             binary_mode: true,
         };
 
@@ -115,17 +119,24 @@ export const handleWebhook = async (req: Request, res: Response) => {
 
         let webhookSecret: string | undefined;
         let championship: any = null;
+        let accessToken: string | undefined = process.env.MERCADOPAGO_ACCESS_TOKEN;
+        
+        const isFedQuery = req.query.orig === 'fed';
 
         if (champId === 'global') {
             webhookSecret = process.env.MERCADOPAGO_WEBHOOK_SECRET;
-            console.log(`[Webhook] Processando notificação GLOBAL (Federação).`);
+            console.log(`[Webhook] Processando notificação GLOBAL.`);
         } else {
             championship = await prisma.championship.findUnique({ where: { id: champId } });
             if (!championship) {
                 console.warn(`[Webhook] Campeonato ${champId} não encontrado no banco.`);
                 return res.status(404).json({ error: 'Campeonato não encontrado' });
             }
-            webhookSecret = championship.mpWebhookSecret || process.env.MERCADOPAGO_WEBHOOK_SECRET;
+            webhookSecret = isFedQuery ? (championship as any).mpFedWebhookSecret : (championship as any).mpWebhookSecret;
+            webhookSecret = webhookSecret || process.env.MERCADOPAGO_WEBHOOK_SECRET;
+            
+            accessToken = isFedQuery ? (championship as any).mpFedAccessToken : (championship as any).mpAccessToken;
+            accessToken = accessToken || process.env.MERCADOPAGO_ACCESS_TOKEN;
         }
 
         // 1. Extraindo headers de assinatura do MP
@@ -161,8 +172,7 @@ export const handleWebhook = async (req: Request, res: Response) => {
 
         // ==== Processando Notificação ====
         if (type === 'payment') {
-            const accessToken = championship?.mpAccessToken || process.env.MERCADOPAGO_ACCESS_TOKEN || '';
-            const client = new MercadoPagoConfig({ accessToken });
+            const client = new MercadoPagoConfig({ accessToken: accessToken || '' });
             const paymentClient = new Payment(client);
 
             // Busca o estado real do pagamento

@@ -29,17 +29,19 @@ class OrderController {
                 let includesFederation = false;
                 const currentYear = new Date().getFullYear();
                 const isFederated = user.federationYear === currentYear;
+                const champ = championshipId ? yield prisma_1.prisma.championship.findUnique({ where: { id: championshipId } }) : null;
                 if (type === 'FEDERATION') {
-                    amount = 50;
+                    amount = champ ? champ.federationFee : 50;
                     includesFederation = true;
                 }
                 else {
-                    const champ = yield prisma_1.prisma.championship.findUnique({ where: { id: championshipId } });
                     if (!champ)
                         return res.status(404).json({ error: 'Campeonato não encontrado' });
                     amount = type === 'COMPETITOR' ? champ.priceComp : champ.priceVis;
                     if (type === 'COMPETITOR' && !isFederated) {
-                        amount += 50;
+                        // Although the new flow blocks non-federated users from seeing the checkout for Competitor,
+                        // we keep this fallback just in case some old state manages to reach here.
+                        amount += champ.federationFee;
                         includesFederation = true;
                     }
                 }

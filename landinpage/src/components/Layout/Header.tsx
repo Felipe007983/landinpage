@@ -79,7 +79,7 @@ export function Header() {
 
                     {showAuthButtons && (
                         <div className="flex items-center gap-4 ml-4">
-                            {user?.role?.toUpperCase() === 'ADMIN' && (
+                            {['ADMIN', 'TICKETER', 'SUPPORT'].includes(user?.role?.toUpperCase() || '') && (
                                 <Link
                                     to="/admin"
                                     className={`px-4 py-2 border rounded-lg transition-colors duration-300 ${location.pathname === '/admin' ? 'bg-amber-500 border-amber-500 text-black' : 'border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-black'}`}
@@ -197,7 +197,7 @@ export function Header() {
 
                     {showAuthButtons && (
                         <div className="flex flex-col items-center gap-4 mt-6">
-                            {user?.role?.toUpperCase() === 'ADMIN' && (
+                            {['ADMIN', 'TICKETER', 'SUPPORT'].includes(user?.role?.toUpperCase() || '') && (
                                 <Link
                                     to="/admin"
                                     onClick={() => setIsMobileMenuOpen(false)}

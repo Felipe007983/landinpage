@@ -30,7 +30,7 @@ class ChampionshipController {
                     orderBy: { date: 'asc' }
                 });
                 const safeChamps = champs.map(c => {
-                    const { mpAccessToken, mpWebhookSecret } = c, safeData = __rest(c, ["mpAccessToken", "mpWebhookSecret"]);
+                    const { mpAccessToken, mpWebhookSecret, mpFedAccessToken, mpFedWebhookSecret } = c, safeData = __rest(c, ["mpAccessToken", "mpWebhookSecret", "mpFedAccessToken", "mpFedWebhookSecret"]);
                     return safeData;
                 });
                 res.json(safeChamps);
@@ -48,7 +48,7 @@ class ChampionshipController {
                 });
                 if (!champ)
                     return res.status(404).json({ error: 'Campeonato não encontrado' });
-                const { mpAccessToken, mpWebhookSecret } = champ, safeData = __rest(champ, ["mpAccessToken", "mpWebhookSecret"]);
+                const { mpAccessToken, mpWebhookSecret, mpFedAccessToken, mpFedWebhookSecret } = champ, safeData = __rest(champ, ["mpAccessToken", "mpWebhookSecret", "mpFedAccessToken", "mpFedWebhookSecret"]);
                 res.json(safeData);
             }
             catch (e) {
@@ -60,7 +60,7 @@ class ChampionshipController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const champ = yield prisma_1.prisma.championship.create({ data: req.body });
-                const { mpAccessToken, mpWebhookSecret } = champ, safeData = __rest(champ, ["mpAccessToken", "mpWebhookSecret"]);
+                const { mpAccessToken, mpWebhookSecret, mpFedAccessToken, mpFedWebhookSecret } = champ, safeData = __rest(champ, ["mpAccessToken", "mpWebhookSecret", "mpFedAccessToken", "mpFedWebhookSecret"]);
                 res.json(safeData);
             }
             catch (e) {

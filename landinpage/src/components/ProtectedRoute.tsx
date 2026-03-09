@@ -13,7 +13,7 @@ export const ProtectedRoute: React.FC<{ children: React.ReactNode; adminOnly?: b
         return <Navigate to="/auth" />;
     }
 
-    if (adminOnly && user.role?.toUpperCase() !== 'ADMIN') {
+    if (adminOnly && !['ADMIN', 'TICKETER', 'SUPPORT'].includes(user.role?.toUpperCase() || '')) {
         return <Navigate to="/" />;
     }
 
