@@ -11,6 +11,11 @@ import paymentRoutes from './routes/payment.routes';
 
 const app = express();
 
+app.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+    next();
+});
+
 app.use(cors());
 app.use(express.json());
 
@@ -21,6 +26,19 @@ app.use('/api/tickets', ticketRoutes);
 app.use('/api/credit-cards', creditCardRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/payment', paymentRoutes);
+
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    console.error(`[${new Date().toISOString()}] EXPRESS UNHANDLED ERROR:`, err);
+    res.status(500).json({ error: 'Internal Server Error' });
+});
+
+process.on('uncaughtException', (error) => {
+    console.error(`[${new Date().toISOString()}] UNCAUGHT EXCEPTION:`, error);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error(`[${new Date().toISOString()}] UNHANDLED REJECTION at:`, promise, 'reason:', reason);
+});
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 app.listen(PORT, '0.0.0.0', () => {
