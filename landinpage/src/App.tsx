@@ -3,6 +3,7 @@ import { Layout } from './components/Layout/Layout';
 import { StandardPage } from './pages/StandardPage';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { AuthPage } from './pages/Auth/AuthPage';
+import { ResetPasswordPage } from './pages/Auth/ResetPasswordPage';
 import { ClientAreaPage } from './pages/ClientArea/ClientAreaPage';
 import { ValidatorPage } from './pages/Validator/ValidatorPage';
 import { AdminDashboard } from './pages/Admin/AdminDashboard';
@@ -178,6 +179,7 @@ Zeus Evolution não é apenas sobre competir.
 
                         {/* New Core Routes */}
                         <Route path="/auth" element={<AuthPage />} />
+                        <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
                         <Route path="/minha-conta" element={<ProtectedRoute><ClientAreaPage /></ProtectedRoute>} />
                         <Route path="/validar-ticket" element={<ProtectedRoute adminOnly><ValidatorPage /></ProtectedRoute>} />
                         <Route path="/admin" element={<ProtectedRoute adminOnly><AdminDashboard /></ProtectedRoute>} />

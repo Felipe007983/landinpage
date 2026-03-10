@@ -8,9 +8,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AdminController = void 0;
 const prisma_1 = require("../prisma");
+const bcrypt_1 = __importDefault(require("bcrypt"));
 class AdminController {
     static toggleChampionshipStatus(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -97,15 +101,10 @@ class AdminController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const users = yield prisma_1.prisma.user.findMany({
-                    where: {
-                        role: 'USER',
+                    include: {
                         orders: {
-                            some: {
-                                paymentStatus: 'APPROVED',
-                                OR: [
-                                    { type: 'FEDERATION' },
-                                    { includesFederation: true }
-                                ]
+                            where: {
+                                paymentStatus: 'APPROVED'
                             }
                         }
                     },
@@ -114,7 +113,45 @@ class AdminController {
                 res.json(users);
             }
             catch (e) {
-                res.status(500).json({ error: 'Erro ao listar usuários federados' });
+                res.status(500).json({ error: 'Erro ao listar usuários' });
+            }
+        });
+    }
+    static changeUserRole(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const id = req.params.id;
+                const { role } = req.body;
+                if (!['ADMIN', 'USER', 'TICKETER', 'SUPPORT'].includes(role)) {
+                    return res.status(400).json({ error: 'Perfil inválido' });
+                }
+                const updated = yield prisma_1.prisma.user.update({
+                    where: { id },
+                    data: { role }
+                });
+                // Prevent sending full sensitive user data back, just basic info
+                res.json({ id: updated.id, name: updated.name, role: updated.role });
+            }
+            catch (e) {
+                res.status(500).json({ error: 'Erro ao atualizar perfil do usuário' });
+            }
+        });
+    }
+    static createUser(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { name, cpf, email, phone, password, role } = req.body;
+                const exists = yield prisma_1.prisma.user.findFirst({ where: { OR: [{ email }, { cpf }] } });
+                if (exists)
+                    return res.status(400).json({ error: 'E-mail ou CPF já cadastrados' });
+                const password_hash = yield bcrypt_1.default.hash(password, 10);
+                const user = yield prisma_1.prisma.user.create({
+                    data: { name, cpf, email, phone, password_hash, role: role || 'USER' }
+                });
+                res.status(201).json({ id: user.id, name: user.name, email: user.email, role: user.role });
+            }
+            catch (e) {
+                res.status(500).json({ error: 'Erro ao criar usuário' });
             }
         });
     }

@@ -19,6 +19,8 @@ model User {
   profilePic    String?
   role          String   @default("USER") // USER, ADMIN
   federationYear Int?    // Ano vigente (ex: 2026) da ativação
+  resetToken     String?  @unique
+  resetTokenExpires DateTime?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   

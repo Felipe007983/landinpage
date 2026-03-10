@@ -14,6 +14,10 @@ const creditCards_routes_1 = __importDefault(require("./routes/creditCards.route
 const admin_routes_1 = __importDefault(require("./routes/admin.routes"));
 const payment_routes_1 = __importDefault(require("./routes/payment.routes"));
 const app = (0, express_1.default)();
+app.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+    next();
+});
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.use('/api/auth', auth_routes_1.default);
@@ -23,6 +27,16 @@ app.use('/api/tickets', tickets_routes_1.default);
 app.use('/api/credit-cards', creditCards_routes_1.default);
 app.use('/api/admin', admin_routes_1.default);
 app.use('/api/payment', payment_routes_1.default);
+app.use((err, req, res, next) => {
+    console.error(`[${new Date().toISOString()}] EXPRESS UNHANDLED ERROR:`, err);
+    res.status(500).json({ error: 'Internal Server Error' });
+});
+process.on('uncaughtException', (error) => {
+    console.error(`[${new Date().toISOString()}] UNCAUGHT EXCEPTION:`, error);
+});
+process.on('unhandledRejection', (reason, promise) => {
+    console.error(`[${new Date().toISOString()}] UNHANDLED REJECTION at:`, promise, 'reason:', reason);
+});
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server API is running on http://0.0.0.0:${PORT}`);

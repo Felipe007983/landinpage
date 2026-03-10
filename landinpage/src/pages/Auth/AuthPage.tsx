@@ -82,10 +82,31 @@ export function AuthPage() {
                     <input type="email" name="email" placeholder="E-mail" required onChange={handleChange} className="w-full bg-zinc-800 border border-zinc-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-amber-500" />
                     <input type="password" name="password" placeholder="Senha" required onChange={handleChange} className="w-full bg-zinc-800 border border-zinc-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-amber-500" />
 
+                    <div className="flex justify-end">
+                        <button
+                            type="button"
+                            onClick={async () => {
+                                if (!form.email) return toast.error('Digite seu e-mail primeiro');
+                                try {
+                                    setLoading(true);
+                                    await api.post('/auth/forgot-password', { email: form.email });
+                                    toast.success('Link de recuperação enviado para seu e-mail!');
+                                } catch (err: any) {
+                                    toast.error(err.response?.data?.error || 'Erro ao solicitar recuperação');
+                                } finally {
+                                    setLoading(false);
+                                }
+                            }}
+                            className="text-xs text-amber-500 hover:text-amber-400 font-bold uppercase tracking-widest"
+                        >
+                            Esqueceu a senha?
+                        </button>
+                    </div>
+
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full bg-gradient-to-r from-amber-500 to-amber-600 text-black font-black uppercase tracking-widest py-4 rounded-lg mt-4 hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] hover:-translate-y-1 transition-all disabled:opacity-75 disabled:cursor-not-allowed"
+                        className="w-full bg-gradient-to-r from-amber-500 to-amber-600 text-black font-black uppercase tracking-widest py-4 rounded-lg mt-2 hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] hover:-translate-y-1 transition-all disabled:opacity-75 disabled:cursor-not-allowed"
                     >
                         {loading ? 'Aguarde...' : (isLogin ? 'Entrar' : 'Cadastrar')}
                     </button>

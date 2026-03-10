@@ -56,4 +56,37 @@ export class EmailService {
             return false;
         }
     }
+
+    static async sendPasswordResetEmail(to: string, userName: string, resetLink: string) {
+        const mailOptions = {
+            from: `"Zeus Evolution" <${process.env.EMAIL_USER || 'no-reply@zeusevolution.com.br'}>`,
+            to,
+            subject: 'Recuperação de Senha - Zeus Evolution',
+            text: `Olá ${userName},\n\nVocê solicitou a recuperação de sua senha. Clique no link abaixo para redefini-la:\n\n${resetLink}\n\nO link é válido por 1 hora.\n\nSe você não solicitou isso, ignore este e-mail.\n\nAtenciosamente,\nEquipe Zeus Evolution`,
+            html: `
+                <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <h2 style="color: #D4AF37; margin: 0;">Zeus Evolution</h2>
+                    </div>
+                    <p>Olá <strong>${userName}</strong>,</p>
+                    <p>Você solicitou a recuperação de sua senha no sistema Zeus Evolution.</p>
+                    <p>Para definir uma nova senha, clique no botão abaixo:</p>
+                    <div style="text-align: center; margin: 30px 0;">
+                        <a href="${resetLink}" style="background-color: #D4AF37; color: #000; padding: 15px 25px; text-decoration: none; border-radius: 8px; font-weight: bold; text-transform: uppercase;">Redefinir Senha</a>
+                    </div>
+                    <p style="font-size: 14px; color: #555;">Este link é válido por <strong>1 hora</strong>. Se você não solicitou a alteração, sinta-se à vontade para ignorar este e-mail.</p>
+                    <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
+                    <p style="font-size: 12px; color: #777; text-align: center;">Atenciosamente,<br>Equipe Zeus Evolution</p>
+                </div>
+            `
+        };
+
+        try {
+            await this.transporter.sendMail(mailOptions);
+            return true;
+        } catch (error) {
+            console.error('Error sending reset email:', error);
+            return false;
+        }
+    }
 }
