@@ -330,13 +330,36 @@ export function AdminDashboard() {
                                     {editingId ? 'Editar Evento' : 'Novo Evento'}
                                 </h2>
                                 <form onSubmit={handleCreateOrEditChamp} className="space-y-4 text-sm">
-                                    <input type="text" placeholder="Nome do Campeonato" required value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="w-full bg-zinc-800 border-zinc-700 border p-3 rounded" />
-                                    <textarea placeholder="Descrição e Regras" required rows={3} value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} className="w-full bg-zinc-800 border-zinc-700 border p-3 rounded" />
-                                    <input type="datetime-local" required value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} className="w-full bg-zinc-800 border-zinc-700 border p-3 rounded text-gray-400" />
-                                    <input type="text" placeholder="Local / Arena" required value={form.location} onChange={e => setForm({ ...form, location: e.target.value })} className="w-full bg-zinc-800 border-zinc-700 border p-3 rounded" />
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-bold uppercase text-gray-500 ml-1">Nome do Evento</label>
+                                        <input type="text" placeholder="Ex: Zeus Evolution Open" required value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="w-full bg-zinc-800 border-zinc-700 border p-3 rounded" />
+                                    </div>
+
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-bold uppercase text-gray-500 ml-1">Descrição e Regras</label>
+                                        <textarea placeholder="Detalhes do campeonato..." required rows={3} value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} className="w-full bg-zinc-800 border-zinc-700 border p-3 rounded" />
+                                    </div>
+
                                     <div className="grid grid-cols-2 gap-4">
-                                        <input type="number" step="0.01" min="0" placeholder="R$ Atleta" required value={form.priceComp} onChange={e => setForm({ ...form, priceComp: Number(e.target.value) })} className="w-full bg-zinc-800 border-zinc-700 border p-3 rounded" />
-                                        <input type="number" step="0.01" min="0" placeholder="R$ Visitante" required value={form.priceVis} onChange={e => setForm({ ...form, priceVis: Number(e.target.value) })} className="w-full bg-zinc-800 border-zinc-700 border p-3 rounded" />
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] font-bold uppercase text-gray-500 ml-1">Data e Hora</label>
+                                            <input type="datetime-local" required value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} className="w-full bg-zinc-800 border-zinc-700 border p-3 rounded text-gray-400" />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] font-bold uppercase text-gray-500 ml-1">Local / Arena</label>
+                                            <input type="text" placeholder="Cidade - UF" required value={form.location} onChange={e => setForm({ ...form, location: e.target.value })} className="w-full bg-zinc-800 border-zinc-700 border p-3 rounded" />
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] font-bold uppercase text-gray-500 ml-1">Valor Inscrição (Atleta)</label>
+                                            <input type="number" step="0.01" min="0" placeholder="R$ 0,00" required value={form.priceComp} onChange={e => setForm({ ...form, priceComp: Number(e.target.value) })} className="w-full bg-zinc-800 border-zinc-700 border p-3 rounded" />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] font-bold uppercase text-gray-500 ml-1">Valor Ingresso (Visitante)</label>
+                                            <input type="number" step="0.01" min="0" placeholder="R$ 0,00" required value={form.priceVis} onChange={e => setForm({ ...form, priceVis: Number(e.target.value) })} className="w-full bg-zinc-800 border-zinc-700 border p-3 rounded" />
+                                        </div>
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-xs font-bold uppercase text-gray-500">Banner do Evento (Upload ou URL)</label>
