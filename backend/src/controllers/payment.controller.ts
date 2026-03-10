@@ -63,7 +63,7 @@ export const processPayment = async (req: Request, res: Response) => {
 
         const response = await paymentClient.create({
             body,
-            requestOptions: { idempotencyKey: orderId }
+            requestOptions: { idempotencyKey: `${orderId}-${Date.now()}` }
         });
 
         console.log(`[Payment] Resposta: Status ${response.status}, ID ${response.id}`);

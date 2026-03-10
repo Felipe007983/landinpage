@@ -235,7 +235,15 @@ export function ChampionshipsSection() {
                         {openChampionships.map(c => (
                             <div key={c.id} className="bg-zinc-900 border border-white/10 rounded-xl overflow-hidden hover:border-amber-500/50 transition-all cursor-pointer group" onClick={() => setSelectedChamp(c)}>
                                 <div className="h-48 bg-zinc-800 relative">
-                                    {c.banner ? <img src={c.banner} alt={c.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-zinc-600">Sem Banner</div>}
+                                    {c.banner ? (
+                                        <img 
+                                            src={c.banner.startsWith('/') ? `${api.defaults.baseURL?.replace('/api', '')}${c.banner}` : c.banner} 
+                                            alt={c.name} 
+                                            className="w-full h-full object-cover" 
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center text-zinc-600">Sem Banner</div>
+                                    )}
                                     <div className="absolute top-4 right-4 bg-amber-500 text-black px-3 py-1 rounded-full text-xs font-bold shadow-lg">
                                         ABERTO
                                     </div>
@@ -268,7 +276,15 @@ export function ChampionshipsSection() {
                             <X className="w-5 h-5" />
                         </button>
                         <div className="h-48 md:h-64 bg-zinc-800 flex-shrink-0 relative">
-                            {selectedChamp.banner ? <img src={selectedChamp.banner} alt={selectedChamp.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-zinc-600">Sem Banner</div>}
+                            {selectedChamp.banner ? (
+                                <img 
+                                    src={selectedChamp.banner.startsWith('/') ? `${api.defaults.baseURL?.replace('/api', '')}${selectedChamp.banner}` : selectedChamp.banner} 
+                                    alt={selectedChamp.name} 
+                                    className="w-full h-full object-cover" 
+                                />
+                            ) : (
+                                <div className="w-full h-full flex items-center justify-center text-zinc-600">Sem Banner</div>
+                            )}
                         </div>
                         <div className="p-8 overflow-y-auto w-full relative">
                             {!paymentStep ? (

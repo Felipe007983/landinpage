@@ -6,10 +6,15 @@ import championshipRoutes from './routes/championships.routes';
 import orderRoutes from './routes/orders.routes';
 import ticketRoutes from './routes/tickets.routes';
 import creditCardRoutes from './routes/creditCards.routes';
+import path from 'path';
 import adminRoutes from './routes/admin.routes';
 import paymentRoutes from './routes/payment.routes';
+import uploadRoutes from './routes/upload.routes';
 
 const app = express();
+
+// Serve uploads statically
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 app.use((req, res, next) => {
     console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
@@ -26,6 +31,7 @@ app.use('/api/tickets', ticketRoutes);
 app.use('/api/credit-cards', creditCardRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/payment', paymentRoutes);
+app.use('/api/upload', uploadRoutes);
 
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
     console.error(`[${new Date().toISOString()}] EXPRESS UNHANDLED ERROR:`, err);

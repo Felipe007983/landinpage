@@ -4,6 +4,7 @@ import { ShieldCheck, Plus, Power, Pencil, Camera, CheckCircle, XCircle, Search 
 import { useNavigate } from 'react-router-dom';
 import { Html5QrcodeScanner } from 'html5-qrcode';
 import { useAuth } from '../../contexts/AuthContext';
+import toast from 'react-hot-toast';
 
 interface Champ {
     id: string;
@@ -337,7 +338,49 @@ export function AdminDashboard() {
                                         <input type="number" step="0.01" min="0" placeholder="R$ Atleta" required value={form.priceComp} onChange={e => setForm({ ...form, priceComp: Number(e.target.value) })} className="w-full bg-zinc-800 border-zinc-700 border p-3 rounded" />
                                         <input type="number" step="0.01" min="0" placeholder="R$ Visitante" required value={form.priceVis} onChange={e => setForm({ ...form, priceVis: Number(e.target.value) })} className="w-full bg-zinc-800 border-zinc-700 border p-3 rounded" />
                                     </div>
-                                    <input type="url" placeholder="URL da Capa (Imagem)" value={form.banner} onChange={e => setForm({ ...form, banner: e.target.value })} className="w-full bg-zinc-800 border-zinc-700 border p-3 rounded" />
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold uppercase text-gray-500">Banner do Evento (Upload ou URL)</label>
+                                        <div className="flex gap-2">
+                                            <input 
+                                                type="text" 
+                                                placeholder="URL da Imagem" 
+                                                value={form.banner} 
+                                                onChange={e => setForm({ ...form, banner: e.target.value })} 
+                                                className="flex-1 bg-zinc-800 border-zinc-700 border p-3 rounded text-sm" 
+                                            />
+                                            <label className="cursor-pointer bg-zinc-700 hover:bg-zinc-600 px-4 flex items-center justify-center rounded transition-colors group">
+                                                <Camera className="w-5 h-5 text-amber-500 group-hover:scale-110 transition-transform" />
+                                                <input 
+                                                    type="file" 
+                                                    className="hidden" 
+                                                    accept="image/*"
+                                                    onChange={async (e) => {
+                                                        const file = e.target.files?.[0];
+                                                        if (!file) return;
+                                                        
+                                                        const formData = new FormData();
+                                                        formData.append('banner', file);
+                                                        
+                                                        try {
+                                                            toast.loading('Enviando imagem...', { id: 'upload' });
+                                                            const { data } = await api.post('/upload/banner', formData, {
+                                                                headers: { 'Content-Type': 'multipart/form-data' }
+                                                            });
+                                                            setForm({ ...form, banner: data.url });
+                                                            toast.success('Imagem enviada!', { id: 'upload' });
+                                                        } catch (err: any) {
+                                                            toast.error(err.response?.data?.error || 'Erro no upload', { id: 'upload' });
+                                                        }
+                                                    }}
+                                                />
+                                            </label>
+                                        </div>
+                                        {form.banner && (
+                                            <div className="mt-2 relative rounded-lg overflow-hidden border border-white/10 aspect-video">
+                                                <img src={form.banner.startsWith('/') ? `${api.defaults.baseURL?.replace('/api', '')}${form.banner}` : form.banner} alt="Preview" className="w-full h-full object-cover" />
+                                            </div>
+                                        )}
+                                    </div>
                                     
                                     <div className="border border-green-500/20 rounded-lg p-4 bg-black/20 space-y-3">
                                         <h3 className="text-xs font-bold uppercase tracking-widest text-green-500 mb-2">Credenciais Mercado Pago (Campeonato)</h3>
