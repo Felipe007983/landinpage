@@ -45,7 +45,7 @@ export function ChampionshipsSection() {
 
     useEffect(() => {
         api.get('/championships').then(res => {
-            setChampionships(res.data);
+            setChampionships(Array.isArray(res.data) ? res.data : []);
 
             // Auto-open modal if returning from Auth
             if (user && location.state?.champId) {
@@ -218,7 +218,7 @@ export function ChampionshipsSection() {
 
     if (loading) return <div className="text-amber-500 text-center py-20">Carregando Campeonatos...</div>;
     
-    const openChampionships = championships.filter(c => c.status === 'OPEN');
+    const openChampionships = (Array.isArray(championships) ? championships : []).filter(c => c.status === 'OPEN');
     if (openChampionships.length === 0) return null;
 
     return (

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { api } from '../../services/api';
-import LogoZeus from '../../assets/images/logo_zeus.jpg';
+import LogoZeus from '../../assets/images/logo_zeus_new.png';
 import toast from 'react-hot-toast';
 
 export function AuthPage() {

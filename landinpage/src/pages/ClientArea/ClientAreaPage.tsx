@@ -62,9 +62,9 @@ export function ClientAreaPage() {
 
     useEffect(() => {
         if (activeTab === 'competitions') {
-            api.get('/orders/my-orders').then(res => setOrders(res.data));
+            api.get('/orders/my-orders').then(res => setOrders(Array.isArray(res.data) ? res.data : []));
         } else if (activeTab === 'tickets') {
-            api.get('/tickets/my-tickets').then(res => setTickets(res.data));
+            api.get('/tickets/my-tickets').then(res => setTickets(Array.isArray(res.data) ? res.data : []));
         }
     }, [activeTab]);
 
@@ -270,7 +270,7 @@ export function ClientAreaPage() {
                                     <p className="text-gray-400 py-10 text-center">Nenhum ingresso encontrado.</p>
                                 ) : (
                                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                        {tickets.map(t => (
+                                { (Array.isArray(tickets) ? tickets : []).map(t => (
                                             <div key={t.id} className="bg-zinc-800 rounded-xl overflow-hidden border border-white/5 flex flex-col md:flex-row shadow-2xl relative">
                                                 {t.status === 'USED' && (
                                                     <div className="absolute inset-0 bg-black/80 z-10 flex items-center justify-center backdrop-blur-sm">
@@ -311,11 +311,11 @@ export function ClientAreaPage() {
                                 <h2 className="text-2xl font-black uppercase mb-6 flex items-center gap-3 border-b border-white/10 pb-4">
                                     <Calendar className="text-amber-500" /> Histórico de Competições
                                 </h2>
-                                {orders.filter(o => o.type === 'COMPETITOR' && o.paymentStatus === 'APPROVED').length === 0 ? (
+                                { (Array.isArray(orders) ? orders : []).filter(o => o.type === 'COMPETITOR' && o.paymentStatus === 'APPROVED').length === 0 ? (
                                     <p className="text-gray-400 py-10 text-center">Nenhuma inscrição aprovada como competidor até o momento.</p>
                                 ) : (
                                     <div className="space-y-4">
-                                        {orders.filter(o => o.type === 'COMPETITOR' && o.paymentStatus === 'APPROVED').map(o => (
+                                        { (Array.isArray(orders) ? orders : []).filter(o => o.type === 'COMPETITOR' && o.paymentStatus === 'APPROVED').map(o => (
                                             <div key={o.id} className="bg-zinc-800 p-6 rounded-xl flex items-center justify-between border border-white/5">
                                                 <div>
                                                     <p className="text-sm text-gray-400 mb-1">Pagamento {o.paymentStatus}</p>

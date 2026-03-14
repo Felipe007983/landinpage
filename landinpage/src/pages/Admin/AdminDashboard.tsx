@@ -210,13 +210,13 @@ export function AdminDashboard() {
             priceComp: c.priceComp,
             priceVis: c.priceVis,
             banner: c.banner || '',
-            mpPublicKey: '',
-            mpAccessToken: '',
-            mpWebhookSecret: '',
+            mpPublicKey: c.mpPublicKey || '',
+            mpAccessToken: c.mpAccessToken || '',
+            mpWebhookSecret: c.mpWebhookSecret || '',
             federationFee: c.federationFee || 50,
-            mpFedPublicKey: '',
-            mpFedAccessToken: '',
-            mpFedWebhookSecret: '',
+            mpFedPublicKey: c.mpFedPublicKey || '',
+            mpFedAccessToken: c.mpFedAccessToken || '',
+            mpFedWebhookSecret: c.mpFedWebhookSecret || '',
             hasTshirtPromotion: c.hasTshirtPromotion || false,
             tshirtLimitComp: c.tshirtLimitComp || 50,
             tshirtLimitVis: c.tshirtLimitVis || 100
@@ -376,7 +376,7 @@ export function AdminDashboard() {
                                                 <input 
                                                     type="file" 
                                                     className="hidden" 
-                                                    accept="image/*"
+                                                    accept="image/png, image/jpeg, image/jpg, image/webp"
                                                     onChange={async (e) => {
                                                         const file = e.target.files?.[0];
                                                         if (!file) return;

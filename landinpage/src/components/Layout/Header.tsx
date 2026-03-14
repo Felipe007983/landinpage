@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import LogoZeus from '../../assets/images/logo_zeus.jpg';
+import LogoZeus from '../../assets/images/logo_zeus_new.png';
 import Company1 from '../../assets/images/company-1.jpeg';
 import Company2 from '../../assets/images/company-2.jpeg';
 import DarkTanLogo from '../../assets/images/darktan.jpg';
