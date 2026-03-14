@@ -118,7 +118,15 @@ export function ClientAreaPage() {
                 paymentData = {
                     transaction_amount: 50,
                     payment_method_id: 'pix',
-                    payer: { email: user?.email }
+                    payer: { 
+                        email: user?.email,
+                        identification: {
+                            type: 'CPF',
+                            number: user?.cpf?.replace(/\D/g, '')
+                        },
+                        first_name: user?.name?.split(' ')[0] || 'Cliente',
+                        last_name: user?.name?.split(' ').slice(1).join(' ') || 'Evolução'
+                    }
                 };
             } else if (cardData) {
                 paymentData = cardData.formData;
