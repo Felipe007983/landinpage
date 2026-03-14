@@ -40,7 +40,7 @@ export function Carousel({ color, collaborators = defaultCollaborators }: Carous
     return (
         <div className="relative w-full max-w-5xl mx-auto px-12">
             <div className="flex justify-between items-center mb-8">
-                <h3 className="text-2xl font-bold uppercase tracking-widest text-gray-500">Nossos Colaboradores</h3>
+                <h3 className="text-2xl font-bold uppercase tracking-widest text-gray-500">Equipe Zeus</h3>
                 <div className="flex gap-2">
                     <button onClick={prev} className="p-2 rounded-full border hover:bg-gray-100 transition-colors" style={{ borderColor: color, color }}>
                         ←
