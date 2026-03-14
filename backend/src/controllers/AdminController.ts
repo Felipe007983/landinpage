@@ -23,6 +23,17 @@ export class AdminController {
         }
     }
 
+    static async listChampionships(req: Request, res: Response) {
+        try {
+            const championships = await prisma.championship.findMany({
+                orderBy: { date: 'asc' }
+            });
+            res.json(championships);
+        } catch (e) {
+            res.status(500).json({ error: 'Erro ao listar campeonatos' });
+        }
+    }
+
     static async listAllOrders(req: Request, res: Response) {
         try {
             const orders = await prisma.order.findMany({

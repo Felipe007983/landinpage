@@ -11,6 +11,7 @@ router.use(authMiddleware);
 router.use(adminMiddleware);
 
 // Campeonatos (ADMIN e SUPPORT podem criar/editar/excluir, mas tickets podem ser validados por TICKETER via outras rotas)
+router.get('/championships', AdminController.listChampionships);
 router.patch('/championships/:id/status', requireRoles(['ADMIN', 'SUPPORT']), AdminController.toggleChampionshipStatus);
 router.put('/championships/:id', requireRoles(['ADMIN', 'SUPPORT']), AdminController.updateChampionship);
 router.delete('/championships/:id', requireRoles(['ADMIN', 'SUPPORT']), AdminController.deleteChampionship);

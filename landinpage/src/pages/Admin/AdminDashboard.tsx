@@ -131,7 +131,7 @@ export function AdminDashboard() {
     };
 
     const fetchChamps = async () => {
-        const { data } = await api.get('/championships');
+        const { data } = await api.get('/admin/championships');
         setChampionships(data);
     };
 
