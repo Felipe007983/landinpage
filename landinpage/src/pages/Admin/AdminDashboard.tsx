@@ -376,7 +376,7 @@ export function AdminDashboard() {
                                                 <input 
                                                     type="file" 
                                                     className="hidden" 
-                                                    accept="image/png, image/jpeg, image/jpg, image/webp"
+                                                    accept="image/*"
                                                     onChange={async (e) => {
                                                         const file = e.target.files?.[0];
                                                         if (!file) return;
@@ -392,7 +392,8 @@ export function AdminDashboard() {
                                                             setForm({ ...form, banner: data.url });
                                                             toast.success('Imagem enviada!', { id: 'upload' });
                                                         } catch (err: any) {
-                                                            toast.error(err.response?.data?.error || 'Erro no upload', { id: 'upload' });
+                                                            console.error('Erro no upload da imagem:', err);
+                                                            toast.dismiss('upload');
                                                         }
                                                     }}
                                                 />
