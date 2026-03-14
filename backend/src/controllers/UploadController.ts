@@ -43,7 +43,7 @@ export class UploadController {
                 return res.status(400).json({ error: 'Nenhum arquivo enviado' });
             }
 
-            const fileUrl = `/uploads/banners/${req.file.filename}`;
+            const fileUrl = `/api/uploads/banners/${req.file.filename}`;
             res.json({ url: fileUrl });
         });
     }

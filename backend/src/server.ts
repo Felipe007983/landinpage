@@ -14,7 +14,7 @@ import uploadRoutes from './routes/upload.routes';
 const app = express();
 
 // Serve uploads statically
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+app.use('/api/uploads', express.static(path.join(__dirname, '../uploads')));
 
 app.use((req, res, next) => {
     console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
