@@ -10,7 +10,7 @@ import { AdminDashboard } from './pages/Admin/AdminDashboard';
 import { Toaster } from 'react-hot-toast';
 
 // Imports of images
-import Company1 from './assets/images/company-1.jpeg';
+import Company1 from './assets/images/clothing-logo-new.jpg';
 import Company2 from './assets/images/company-2.jpeg';
 import DarkTanLogo from './assets/images/darktan.jpg';
 import CapaBanner from './assets/images/capa.jpeg';
