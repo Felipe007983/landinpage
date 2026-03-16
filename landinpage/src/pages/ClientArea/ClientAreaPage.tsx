@@ -118,7 +118,15 @@ export function ClientAreaPage() {
                 paymentData = {
                     transaction_amount: 50,
                     payment_method_id: 'pix',
-                    payer: { email: user?.email }
+                    payer: {
+                        email: user?.email,
+                        first_name: user?.name?.split(' ')[0] || 'Cliente',
+                        last_name: user?.name?.split(' ').slice(1).join(' ') || 'Zeus',
+                        identification: {
+                            type: 'CPF',
+                            number: user?.cpf
+                        }
+                    }
                 };
             } else if (cardData) {
                 paymentData = cardData.formData;
@@ -463,7 +471,7 @@ export function ClientAreaPage() {
                                                     onPaymentSuccess={processFedPayment}
                                                     onCancel={() => setShowFedCardForm(false)}
                                                     orderId="FEDERATION_TEMP"
-                                                    mpPublicKey=""
+                                                    mpPublicKey="APP_USR-7d7c4ad0-fe7d-4636-a0dd-da0536ceb5a5"
                                                 />
                                             </div>
                                         )}

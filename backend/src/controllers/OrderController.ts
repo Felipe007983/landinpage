@@ -63,7 +63,7 @@ export class OrderController {
             let order = await prisma.order.findFirst({
                 where: {
                     userId,
-                    championshipId: type === 'FEDERATION' ? null : championshipId,
+                    championshipId: championshipId || null,
                     type,
                     paymentStatus: { in: ['PENDING', 'FAILED'] }
                 }
@@ -79,7 +79,7 @@ export class OrderController {
                 order = await prisma.order.create({
                     data: {
                         userId,
-                        championshipId: type === 'FEDERATION' ? null : championshipId,
+                        championshipId: championshipId || null,
                         type,
                         amount,
                         paymentStatus,

@@ -1,22 +1,32 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { api } from '../../services/api';
 import LogoZeus from '../../assets/images/logo_zeus_new.png';
 import toast from 'react-hot-toast';
+import { Eye, EyeOff } from 'lucide-react';
 
 export function AuthPage() {
     const [isLogin, setIsLogin] = useState(true);
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const { login } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
+    const passwordRef = useRef<HTMLInputElement>(null);
 
     const [form, setForm] = useState({
         name: '', email: '', cpf: '', phone: '', password: ''
     });
 
     const handleChange = (e: any) => setForm({ ...form, [e.target.name]: e.target.value });
+
+    const handlePasswordFocus = () => {
+        // On mobile, wait for the keyboard to appear then scroll the field into view
+        setTimeout(() => {
+            passwordRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 350);
+    };
 
     const handleSubmit = async (e: any) => {
         e.preventDefault();
@@ -80,7 +90,27 @@ export function AuthPage() {
                         </>
                     )}
                     <input type="email" name="email" placeholder="E-mail" required onChange={handleChange} className="w-full bg-zinc-800 border border-zinc-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-amber-500" />
-                    <input type="password" name="password" placeholder="Senha" required onChange={handleChange} className="w-full bg-zinc-800 border border-zinc-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-amber-500" />
+                    
+                    <div className="relative">
+                        <input
+                            ref={passwordRef}
+                            type={showPassword ? 'text' : 'password'}
+                            name="password"
+                            placeholder="Senha"
+                            required
+                            onChange={handleChange}
+                            onFocus={handlePasswordFocus}
+                            className="w-full bg-zinc-800 border border-zinc-700 text-white rounded-lg px-4 py-3 pr-12 focus:outline-none focus:border-amber-500"
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-amber-500 transition-colors p-1"
+                            tabIndex={-1}
+                        >
+                            {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                        </button>
+                    </div>
 
                     <div className="flex justify-end">
                         <button

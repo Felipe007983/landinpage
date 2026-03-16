@@ -14,9 +14,13 @@ export const processPayment = async (req: Request, res: Response) => {
         const order = await prisma.order.findUnique({ where: { id: orderId }, include: { championship: true } });
         if (!order) return res.status(404).json({ error: 'Pedido não encontrado no ato do pagamento.' });
 
-        let accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN || DEFAULT_FED_ACCESS_TOKEN;
+        let accessToken: string;
         if (order.championship) {
-            accessToken = order.type === 'FEDERATION' ? ((order.championship as any).mpFedAccessToken || DEFAULT_FED_ACCESS_TOKEN) : (order.championship as any).mpAccessToken;
+            accessToken = order.type === 'FEDERATION'
+                ? ((order.championship as any).mpFedAccessToken || DEFAULT_FED_ACCESS_TOKEN)
+                : (order.championship as any).mpAccessToken;
+        } else {
+            accessToken = DEFAULT_FED_ACCESS_TOKEN;
         }
 
         if (!accessToken) {
