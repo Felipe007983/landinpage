@@ -386,7 +386,7 @@ export function AdminDashboard() {
                                                         
                                                         try {
                                                             toast.loading('Enviando imagem...', { id: 'upload' });
-                                                            const { data } = await api.post('/upload/banner', formData, {
+                                                            const { data } = await api.post('/uploads/banner', formData, {
                                                                 headers: { 'Content-Type': 'multipart/form-data' }
                                                             });
                                                             setForm({ ...form, banner: data.url });

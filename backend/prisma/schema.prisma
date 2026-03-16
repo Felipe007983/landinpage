@@ -96,3 +96,11 @@ model CreditCard {
   
   user         User     @relation(fields: [userId], references: [id])
 }
+
+model Upload {
+  id        String   @id @default(uuid())
+  filename  String
+  mimeType  String
+  data      Bytes
+  createdAt DateTime @default(now())
+}
