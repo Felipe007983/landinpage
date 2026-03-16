@@ -47,7 +47,7 @@ export class UploadController {
 
     static async serveImage(req: Request, res: Response) {
         try {
-            const { id } = req.params;
+            const id = req.params.id as string;
             const record = await prisma.upload.findUnique({ where: { id } });
 
             if (!record) {
