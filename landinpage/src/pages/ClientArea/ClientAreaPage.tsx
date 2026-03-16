@@ -108,7 +108,7 @@ export function ClientAreaPage() {
             const { data: orderData } = await api.post('/orders', {
                 type: 'FEDERATION',
                 paymentMethod: fedPaymentMethod,
-                championshipId: location.state?.targetChampId || undefined
+                championshipId: null
             });
 
             const orderId = orderData.order.id;

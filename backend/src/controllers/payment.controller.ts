@@ -15,10 +15,11 @@ export const processPayment = async (req: Request, res: Response) => {
         if (!order) return res.status(404).json({ error: 'Pedido não encontrado no ato do pagamento.' });
 
         let accessToken: string;
-        if (order.championship) {
-            accessToken = order.type === 'FEDERATION'
-                ? ((order.championship as any).mpFedAccessToken || DEFAULT_FED_ACCESS_TOKEN)
-                : (order.championship as any).mpAccessToken;
+        if (order.type === 'FEDERATION') {
+            // Federação sempre usa credenciais fixas
+            accessToken = DEFAULT_FED_ACCESS_TOKEN;
+        } else if (order.championship) {
+            accessToken = (order.championship as any).mpAccessToken;
         } else {
             accessToken = DEFAULT_FED_ACCESS_TOKEN;
         }
@@ -139,11 +140,14 @@ export const handleWebhook = async (req: Request, res: Response) => {
                 console.warn(`[Webhook] Campeonato ${champId} não encontrado no banco.`);
                 return res.status(404).json({ error: 'Campeonato não encontrado' });
             }
-            webhookSecret = isFedQuery ? ((championship as any).mpFedWebhookSecret || DEFAULT_FED_WEBHOOK_SECRET) : (championship as any).mpWebhookSecret;
-            webhookSecret = webhookSecret || process.env.MERCADOPAGO_WEBHOOK_SECRET || DEFAULT_FED_WEBHOOK_SECRET;
-            
-            accessToken = isFedQuery ? ((championship as any).mpFedAccessToken || DEFAULT_FED_ACCESS_TOKEN) : (championship as any).mpAccessToken;
-            accessToken = accessToken || process.env.MERCADOPAGO_ACCESS_TOKEN || DEFAULT_FED_ACCESS_TOKEN;
+            if (isFedQuery) {
+                // Federação sempre usa credenciais fixas
+                webhookSecret = DEFAULT_FED_WEBHOOK_SECRET;
+                accessToken = DEFAULT_FED_ACCESS_TOKEN;
+            } else {
+                webhookSecret = (championship as any).mpWebhookSecret || process.env.MERCADOPAGO_WEBHOOK_SECRET;
+                accessToken = (championship as any).mpAccessToken || process.env.MERCADOPAGO_ACCESS_TOKEN;
+            }
         }
 
         // 1. Extraindo headers de assinatura do MP

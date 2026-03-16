@@ -415,12 +415,9 @@ export function AdminDashboard() {
                                     </div>
 
                                     <div className="border border-amber-500/20 rounded-lg p-4 bg-black/20 space-y-3">
-                                        <h3 className="text-xs font-bold uppercase tracking-widest text-amber-500 mb-2">Credenciais Mercado Pago (Federação)</h3>
-                                        {editingId && <p className="text-[10px] text-gray-400 mb-2">Deixe em branco para manter as chaves atreladas atualmente.</p>}
+                                        <h3 className="text-xs font-bold uppercase tracking-widest text-amber-500 mb-2">Federação</h3>
                                         <input type="number" step="0.01" min="0" placeholder="Taxa de Federação (Ex: 50.00)" required value={form.federationFee} onChange={e => setForm({ ...form, federationFee: Number(e.target.value) })} className="w-full bg-zinc-900 border-zinc-700 border p-3 rounded text-amber-500 font-bold" />
-                                        <input type="text" placeholder="Public Key da Federação" value={form.mpFedPublicKey} onChange={e => setForm({ ...form, mpFedPublicKey: e.target.value })} className="w-full bg-zinc-900 border-zinc-700 border p-3 rounded" />
-                                        <input type="password" placeholder="Access Token da Federação" value={form.mpFedAccessToken} onChange={e => setForm({ ...form, mpFedAccessToken: e.target.value })} className="w-full bg-zinc-900 border-zinc-700 border p-3 rounded" />
-                                        <input type="password" placeholder="Webhook Secret da Federação" value={form.mpFedWebhookSecret} onChange={e => setForm({ ...form, mpFedWebhookSecret: e.target.value })} className="w-full bg-zinc-900 border-zinc-700 border p-3 rounded" />
+                                        <p className="text-[10px] text-gray-500">As credenciais de pagamento da federação são fixas e gerenciadas pelo sistema.</p>
                                     </div>
 
                                     <div className="border border-amber-500/20 rounded-lg p-4 bg-black/20 space-y-3">
