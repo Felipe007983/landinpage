@@ -51,11 +51,18 @@ export function ChampionshipsSection() {
             if (user && location.state?.champId) {
                 const targetChamp = res.data.find((c: any) => c.id === location.state.champId);
                 if (targetChamp) {
-                    setSelectedChamp(targetChamp);
-                    // Restaurar o fluxo de checkout automaticamente se houver uma ação salva no estado
-                    if (location.state.action) {
-                        setSelectedType(location.state.action);
-                        setPaymentStep(true);
+                    const isUserFederated = user?.federationYear === new Date().getFullYear();
+                    
+                    if (location.state.action === 'COMPETITOR' && !isUserFederated) {
+                        toast.error("Você precisa pagar a taxa de filiação da federação para poder competir.");
+                        navigate('/minha-conta', { state: { requiredFederation: true, targetChampId: targetChamp.id } });
+                    } else {
+                        setSelectedChamp(targetChamp);
+                        // Restaurar o fluxo de checkout automaticamente se houver uma ação salva no estado
+                        if (location.state.action) {
+                            setSelectedType(location.state.action);
+                            setPaymentStep(true);
+                        }
                     }
                 }
             }
@@ -63,7 +70,7 @@ export function ChampionshipsSection() {
             console.error('Failed to load championships', err);
             setChampionships([]);
         }).finally(() => setLoading(false));
-    }, [user, location.state]);
+    }, [user, location.state, navigate]);
 
     // Verificação de status do pedido em tempo real (Polling)
     useEffect(() => {

@@ -17,9 +17,17 @@ export function ChampionshipsPage() {
         }).finally(() => setLoading(false));
     }, []);
 
+    const isFederated = user?.federationYear === new Date().getFullYear();
+
     const handleAction = (c: any, type: 'COMPETITOR' | 'VISITOR') => {
         if (!user) {
-            navigate('/auth');
+            navigate('/auth', { state: { returnTo: '/campeonatos', champId: c.id, action: type } });
+            return;
+        }
+
+        if (type === 'COMPETITOR' && !isFederated) {
+            alert("Você precisa pagar a taxa de filiação da federação para poder competir.");
+            navigate('/minha-conta', { state: { requiredFederation: true, targetChampId: c.id } });
             return;
         }
         // Simple direct payment simulation for now wrapper... In a real scenario, this opens a checkout gateway.
