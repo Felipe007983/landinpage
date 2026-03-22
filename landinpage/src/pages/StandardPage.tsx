@@ -6,7 +6,7 @@ import { Footer } from '../components/Layout/Footer';
 import { PreFooter } from '../components/PreFooter';
 import { Mail, MessageSquare } from 'lucide-react';
 
-import { ImageCarousel } from '../components/ImageCarousel';
+import { InstructionCarousel } from '../components/InstructionCarousel';
 import { FixedContacts } from '../components/FixedContacts';
 import { ChampionshipsSection } from '../components/ChampionshipsSection';
 
@@ -313,14 +313,14 @@ export function StandardPage({ title, subtitle, image, video, products, mvv, con
     );
 
     const renderInfoImages = () => infoImages && infoImages.length > 0 && (
-        <section className="py-24 bg-zinc-900 relative z-10 border-t border-white/5">
+        <section className="py-24 bg-white relative z-10 border-t border-gray-100">
             <div className="container mx-auto px-6">
                 <div className="text-center mb-16">
                     <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-gray-400 mb-2">Informativo</h3>
-                    <h2 className="text-3xl md:text-5xl font-black text-white">Guia do Atleta & Evento</h2>
+                    <h2 className="text-3xl md:text-5xl font-black text-gray-900">Guia do Atleta & Evento</h2>
                 </div>
-                <div className="max-w-4xl mx-auto rounded-3xl overflow-hidden shadow-2xl border border-white/10">
-                    <ImageCarousel images={infoImages} color={color} />
+                <div className="max-w-5xl mx-auto">
+                    <InstructionCarousel images={infoImages} color={color} />
                 </div>
             </div>
         </section>
