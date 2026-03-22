@@ -91,7 +91,7 @@ export default function App() {
     ];
 
     const infoImages = [
-        Info1, Info2, Info3, Info4, Info5, Info6, Info7, Info8
+        Info2, Info1, Info7, Info3, Info4, Info6, Info5, Info8
     ];
 
     return (
