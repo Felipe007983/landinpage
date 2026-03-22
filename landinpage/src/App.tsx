@@ -115,68 +115,25 @@ export default function App() {
                                 { label: "Nomeação", file: Nomeacao2 }
                             ]}
                             qrCode={QrCode}
-                            history={`Alguns campeonatos nascem por oportunidade.
-Outros nascem por necessidade.
-O Zeus Evolution nasceu por decisão.
+                            history={`ZEUS. MAIS QUE UM EVENTO, UM SISTEMA.
 
-Tudo começou quando seu fundador subiu ao palco acreditando em um projeto. Ele confiava na proposta. Confiava na visão. Confiava no propósito.
-Mas, no decorrer da jornada, percebeu que aquilo já não representava o que ele defendia para o esporte.
+O Zeus nasce com um propósito claro: elevar o padrão do fisiculturismo nacional e mundial. 
+Somos um evento autossustentável, com estrutura própria e parcerias estratégicas que garantem qualidade, da produção dos troféus às camisetas, da capacitação da equipe à entrega final no palco.
+Criado, idealizado e fundado em Uberlândia  MG, por Luciano Gonzalez, embaixador da WPF Brasil, e com a Concessão do Ilmo Sr Reginaldo Gomes presidente da WBPF Brasil e levar a WBPF no seu lugar do cenário. 
+O Zeus não improvisa. Aqui, tudo é planejado e executado com excelência.
+Nosso modelo é simples e sólido: levamos uma estrutura completa, com equipe treinada.
+O parceiro local cuida da praça. O Zeus cuida do evento.
+Trabalhamos com transparência total: todos os custos operacionais são quitados, equipe, produção, premiação, estrutura, taxas e serviços. O investimento é respeitado. E o resultado é dividido de forma justa.
+O Zeus Evolution nasce para quebrar um padrão antigo onde o atleta paga caro, e recebe pouco.
+No Zeus, o atleta tem Premiações em dinheiro reais
+Inscrições acessíveis, 
+O campeão Overall do Zeus Evolution não leva apenas um troféu, ele garante vaga no Campeonato Brasileiro com inscrição e hospedagem custeadas pelo Zeus. E se consagrando novamente, no cenário nacional…
+O caminho se abre para o Mundial na Áustria
+Aqui, o atleta não aposenta no seu auge,  ele evolui.
 
-Naquele momento, uma escolha precisava ser feita.
-Aceitar o padrão…
-Ou criar um novo.
-Ele escolheu construir.
+O Zeus não segue o mercado.
 
-Sozinho, deu o primeiro passo. Conquistou a filiação da Federação. Recebeu o título de Embaixador. Ganhou a confiança para colocar suas ideias em prática em âmbito nacional.
-
-Mas o que realmente nasceu ali não foi apenas um campeonato.
-Foi um compromisso.
-O compromisso de criar um evento onde o atleta fosse respeitado.
-Onde o reconhecimento fosse real.
-Onde o profissionalismo deixasse de ser promessa e se tornasse padrão.
-Assim surgiu o Zeus Evolution.
-
-Muito além do palco
-Desde o início, nada foi pensado para ser comum.
-Cada troféu passou a ser exclusivo.
-Cada categoria, valorizada.
-Cada campeão overall, premiado em dinheiro.
-Cada atleta, independentemente da colocação, reconhecido com um troféu de participação — porque subir ao palco já é um ato de coragem.
-A pintura deixou de ser detalhe e se tornou parte da experiência, com estrutura profissional através da Dark Tan.
-Organização estratégica.
-Produção própria.
-Reinvestimento constante.
-
-Aqui, o atleta não é número.
-Ele é protagonista.
-
-Mentalidade de evolução
-O Zeus Evolution foi estruturado como marca.
-Como empresa.
-Como movimento.
-Produção própria de troféus.
-Controle de qualidade.
-Planejamento financeiro inteligente.
-Crescimento sustentável.
-
-Cada edição não é repetição.
-É evolução.
-
-Expansão e legado
-Com edições em diferentes estados, o Zeus Evolution se consolida como uma proposta ousada, profissional e respeitada.
-Não é apenas um campeonato.
-É posicionamento.
-É visão.
-É construção de legado.
-
-O que move o Zeus
-Valorizar o esforço.
-Premiar com respeito.
-Entregar excelência.
-Garantir que cada atleta saia do palco maior do que entrou.
-
-Zeus Evolution não é apenas sobre competir.
-É sobre evoluir.`}
+O Zeus cria um novo padrão.`}
                             color="#D4AF37"
                             secondaryColor="#000000"
                             variant="duelo"
