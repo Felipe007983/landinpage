@@ -16,14 +16,6 @@ interface ProductCatalogProps {
 export function ProductCatalog({ products, color, whatsappLink }: ProductCatalogProps) {
     return (
         <div className="container mx-auto px-6">
-            <div className="text-center mb-16">
-                <h3 className="text-sm font-black uppercase tracking-[0.3em] text-gray-400 mb-2">Exclusividade</h3>
-                <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-gray-900 mb-6">
-                    Catálogo de Troféus
-                </h2>
-                <div className="w-24 h-2 mx-auto rounded-full" style={{ backgroundColor: color }} />
-            </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                 {products.map((prod, idx) => (
                     <motion.div

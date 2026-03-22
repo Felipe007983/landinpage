@@ -6,6 +6,7 @@ import { Footer } from '../components/Layout/Footer';
 import { PreFooter } from '../components/PreFooter';
 import { Mail, MessageSquare } from 'lucide-react';
 
+import { ImageCarousel } from '../components/ImageCarousel';
 import { FixedContacts } from '../components/FixedContacts';
 import { ChampionshipsSection } from '../components/ChampionshipsSection';
 
@@ -49,9 +50,10 @@ interface StandardPageProps {
     qrCode?: string;
     variant?: 'default' | 'duelo';
     showPartnership?: boolean;
+    infoImages?: string[];
 }
 
-export function StandardPage({ title, subtitle, image, video, products, mvv, contacts, color, secondaryColor, history, secondaryVideo, historyTitle, team, documents, qrCode, variant = 'default', showPartnership = false }: StandardPageProps) {
+export function StandardPage({ title, subtitle, image, video, products, mvv, contacts, color, secondaryColor, history, secondaryVideo, historyTitle, team, documents, qrCode, variant = 'default', showPartnership = false, infoImages }: StandardPageProps) {
     const location = useLocation();
 
     const renderHero = () => (
@@ -310,6 +312,20 @@ export function StandardPage({ title, subtitle, image, video, products, mvv, con
         </section>
     );
 
+    const renderInfoImages = () => infoImages && infoImages.length > 0 && (
+        <section className="py-24 bg-zinc-900 relative z-10 border-t border-white/5">
+            <div className="container mx-auto px-6">
+                <div className="text-center mb-16">
+                    <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-gray-400 mb-2">Informativo</h3>
+                    <h2 className="text-3xl md:text-5xl font-black text-white">Guia do Atleta & Evento</h2>
+                </div>
+                <div className="max-w-4xl mx-auto rounded-3xl overflow-hidden shadow-2xl border border-white/10">
+                    <ImageCarousel images={infoImages} color={color} />
+                </div>
+            </div>
+        </section>
+    );
+
     const renderHeroTextMobile = () => (
         <section className="md:hidden px-6 py-12 bg-black border-b border-white/5">
             <motion.h1
@@ -339,6 +355,7 @@ export function StandardPage({ title, subtitle, image, video, products, mvv, con
             {variant === 'duelo' ? (
                 <>
                     <ChampionshipsSection />
+                    {renderInfoImages()}
                     {renderTeam()}
                     {renderDocuments()}
                     {renderVideo()}

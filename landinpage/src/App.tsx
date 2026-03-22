@@ -42,6 +42,15 @@ import Trofeu4 from './assets/images/tropy/trofeu4.jpeg';
 import Trofeu5 from './assets/images/tropy/trofeu5.jpeg';
 import Trofeu6 from './assets/images/tropy/trofeu6.jpeg';
 
+import Info1 from './assets/images/Info1.jpeg';
+import Info2 from './assets/images/Info2.jpeg';
+import Info3 from './assets/images/Info3.jpeg';
+import Info4 from './assets/images/Info4.jpeg';
+import Info5 from './assets/images/Info5.jpeg';
+import Info6 from './assets/images/Info6.jpeg';
+import Info7 from './assets/images/Info7.jpeg';
+import Info8 from './assets/images/Info8.jpeg';
+
 import ColabGoias from './assets/images/colaborador_zeus1.jpeg';
 import LeoPestana from './assets/images/Léo pestana.jpeg';
 import ReginaldoGomes from './assets/images/Reginaldo  Gomes.jpeg';
@@ -79,6 +88,10 @@ export default function App() {
         { image: Trofeu4, name: "Troféu Modelo Zeus Prata" },
         { image: Trofeu5, name: "Troféu Modelo Zeus Bronze" },
         { image: Trofeu6, name: "Ouro, Prata, Bronze e Participação" },
+    ];
+
+    const infoImages = [
+        Info1, Info2, Info3, Info4, Info5, Info6, Info7, Info8
     ];
 
     return (
@@ -137,6 +150,7 @@ O Zeus cria um novo padrão.`}
                             color="#D4AF37"
                             secondaryColor="#000000"
                             variant="duelo"
+                            infoImages={infoImages}
                         />} />
 
                         {/* New Core Routes */}
