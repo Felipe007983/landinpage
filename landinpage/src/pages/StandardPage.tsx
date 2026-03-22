@@ -1,11 +1,11 @@
 import { useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Carousel, Collaborator } from '../components/Carousel';
+import { ProductCatalog } from '../components/ProductCatalog';
 import { Footer } from '../components/Layout/Footer';
 import { PreFooter } from '../components/PreFooter';
 import { Mail, MessageSquare } from 'lucide-react';
 
-import { ImageCarousel } from '../components/ImageCarousel';
 import { FixedContacts } from '../components/FixedContacts';
 import { ChampionshipsSection } from '../components/ChampionshipsSection';
 
@@ -13,6 +13,11 @@ interface MVV {
     mission: string;
     vision: string;
     values: string;
+}
+interface Product {
+    image: string;
+    name?: string;
+    description?: string;
 }
 
 interface Contacts {
@@ -31,7 +36,7 @@ interface StandardPageProps {
     image: string;
     video?: string;
     events?: string[];
-    products?: string[];
+    products?: (string | Product)[];
     mvv?: MVV;
     contacts?: Contacts;
     color: string;
@@ -201,7 +206,11 @@ export function StandardPage({ title, subtitle, image, video, products, mvv, con
 
     const renderProducts = () => products && products.length > 0 && (
         <section className="py-24 bg-white relative z-10 border-t border-gray-100">
-            <ImageCarousel images={products} color={color} />
+            <ProductCatalog 
+                products={products.map(p => typeof p === 'string' ? { image: p } : p)} 
+                color={color} 
+                whatsappLink={contacts?.whatsapp} 
+            />
         </section>
     );
 

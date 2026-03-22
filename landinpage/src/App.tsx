@@ -35,10 +35,12 @@ import DarkTan1 from './assets/images/darktan/darktan-1.jpeg';
 import DarkTan2 from './assets/images/darktan/darktan-2.jpeg';
 import DarkTan3 from './assets/images/darktan/darktan-3.jpeg';
 
-import Trophy1 from './assets/images/tropy/trophy-1.jpeg';
-import Trophy2 from './assets/images/tropy/trophy-2.jpeg';
-import Trophy3 from './assets/images/tropy/trophy-3.jpeg';
-import Trophy4 from './assets/images/tropy/trophy-4.jpeg';
+import Trofeu1 from './assets/images/tropy/trofeu1.jpeg';
+import Trofeu2 from './assets/images/tropy/trofeu2.jpeg';
+import Trofeu3 from './assets/images/tropy/trofeu3.jpeg';
+import Trofeu4 from './assets/images/tropy/trofeu4.jpeg';
+import Trofeu5 from './assets/images/tropy/trofeu5.jpeg';
+import Trofeu6 from './assets/images/tropy/trofeu6.jpeg';
 
 import ColabGoias from './assets/images/colaborador_zeus1.jpeg';
 import LeoPestana from './assets/images/Léo pestana.jpeg';
@@ -71,7 +73,12 @@ export default function App() {
     ];
 
     const trophyProducts = [
-        Trophy1, Trophy2, Trophy3, Trophy4
+        { image: Trofeu1, name: "Troféu Padrão Feminino Ouro" },
+        { image: Trofeu2, name: "Troféu Padrão Masculino Ouro" },
+        { image: Trofeu3, name: "Troféu Modelo Zeus Ouro" },
+        { image: Trofeu4, name: "Troféu Modelo Zeus Prata" },
+        { image: Trofeu5, name: "Troféu Modelo Zeus Bronze" },
+        { image: Trofeu6, name: "Ouro, Prata, Bronze e Participação" },
     ];
 
     return (
