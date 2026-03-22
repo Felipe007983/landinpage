@@ -26,8 +26,8 @@ export function Footer() {
             whatsapp: 'https://wa.me/553492510023'
         },
         '/dark-tan': {
-            instagram: 'https://www.instagram.com/darktanpro?igsh=MXV5aGZnOHRpazdwaA==',
-            whatsapp: 'https://wa.me/553492354877'
+            instagram: 'https://www.instagram.com/darktanpro?utm_source=qr&igsh=MXgyNW1jM3A0dm5lZw==',
+            whatsapp: 'https://wa.me/5516997121563'
         }
     };
 

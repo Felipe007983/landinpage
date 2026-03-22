@@ -43,7 +43,7 @@ import Trophy4 from './assets/images/tropy/trophy-4.jpeg';
 import ColabGoias from './assets/images/colaborador_zeus1.jpeg';
 import LeoPestana from './assets/images/Léo pestana.jpeg';
 import ReginaldoGomes from './assets/images/Reginaldo  Gomes.jpeg';
-import CarolinaBarone from './assets/images/carolina barone.jpeg';
+// import CarolinaBarone from './assets/images/carolina barone.jpeg';
 import Nomeacao1 from './assets/images/nomeacao1.pdf';
 import Nomeacao2 from './assets/images/nomeacao2.pdf';
 import BrandLuciano from './assets/images/luciano.jpeg';
@@ -55,12 +55,10 @@ export default function App() {
         { id: 7, name: 'Reginaldo Gomes', role: 'Presidente WBPF Brasil / Presidente WBPF South America', image: ReginaldoGomes },
         { id: 6, name: 'Diego Maradona', role: 'Vice-Presidente WBPF Goiás / Representante Zeus Evolution Goiás', image: ColabGoias },
         { id: 8, name: 'Léo Pestana', role: 'Representante Zeus Evolution São Paulo', image: LeoPestana },
-        { id: 9, name: '**Russa** (Carolina Barone)', role: '•Diretora Oficial de Tanning – Zeus Evolution\n•Representante Oficial Dark Tan Brasil', image: CarolinaBarone, scale: 1.4 },
     ];
 
     const darkTanTeam = [
         dueloTeam[0], // Luciano
-        dueloTeam[4], // Carolina
     ];
     const clothingProducts = [
         Product1, Product2, Product3, Product4, Product5,
@@ -233,8 +231,8 @@ Zeus Evolution não é apenas sobre competir.
                                 values: "Excelência, Qualidade, Profissionalismo, Credibilidade, Segurança, Precisão, Inovação, Paixão pelo Fisiculturismo"
                             }}
                             contacts={{
-                                instagram: "https://www.instagram.com/darktanpro?igsh=MXV5aGZnOHRpazdwaA==",
-                                whatsapp: "https://wa.me/553492354877"
+                                instagram: "https://www.instagram.com/darktanpro?utm_source=qr&igsh=MXgyNW1jM3A0dm5lZw==",
+                                whatsapp: "https://wa.me/5516997121563"
                             }}
                             history={`A História da Dark Tan
 
