@@ -132,8 +132,14 @@ export const handleWebhook = async (req: Request, res: Response) => {
         const isFedQuery = req.query.orig === 'fed';
 
         if (champId === 'global') {
-            webhookSecret = process.env.MERCADOPAGO_WEBHOOK_SECRET;
-            console.log(`[Webhook] Processando notificação GLOBAL.`);
+            if (isFedQuery) {
+                webhookSecret = DEFAULT_FED_WEBHOOK_SECRET;
+                accessToken = DEFAULT_FED_ACCESS_TOKEN;
+                console.log(`[Webhook] Processando notificação GLOBAL de Federação.`);
+            } else {
+                webhookSecret = process.env.MERCADOPAGO_WEBHOOK_SECRET;
+                console.log(`[Webhook] Processando notificação GLOBAL.`);
+            }
         } else {
             championship = await prisma.championship.findUnique({ where: { id: champId } });
             if (!championship) {

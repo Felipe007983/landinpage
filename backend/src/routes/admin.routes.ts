@@ -23,6 +23,9 @@ router.get('/orders', requireRoles(['ADMIN', 'SUPPORT']), AdminController.listAl
 // Usuários
 router.get('/users', requireRoles(['ADMIN', 'SUPPORT']), AdminController.listUsers);
 router.post('/users', requireRoles(['ADMIN']), AdminController.createUser);
+router.put('/users/:id', requireRoles(['ADMIN']), AdminController.updateUser);
+router.delete('/users/:id', requireRoles(['ADMIN']), AdminController.deleteUser);
 router.patch('/users/:id/role', requireRoles(['ADMIN']), AdminController.changeUserRole);
+router.patch('/users/:id/federation', requireRoles(['ADMIN', 'SUPPORT']), AdminController.toggleUserFederation);
 
 export default router;

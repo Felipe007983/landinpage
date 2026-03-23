@@ -60,9 +60,10 @@ export function AdminDashboard() {
     const [isValidating, setIsValidating] = useState(false);
     const [showResultModal, setShowResultModal] = useState(false);
 
-    // Create User State
+    // Create / Edit User State
     const [showUserModal, setShowUserModal] = useState(false);
     const [newUser, setNewUser] = useState({ name: '', cpf: '', email: '', phone: '', password: '', role: 'USER' });
+    const [editingUserId, setEditingUserId] = useState<string | null>(null);
 
     // New Champ Form / Edit Form
     const [form, setForm] = useState({
@@ -155,22 +156,62 @@ export function AdminDashboard() {
         }
     };
 
-    const handleCreateUser = async (e: React.FormEvent) => {
+    const handleSaveUser = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await api.post('/admin/users', newUser);
-            alert('Usuário criado com sucesso!');
+            if (editingUserId) {
+                await api.put(`/admin/users/${editingUserId}`, newUser);
+                toast.success('Usuário atualizado com sucesso!');
+            } else {
+                await api.post('/admin/users', newUser);
+                toast.success('Usuário criado com sucesso!');
+            }
             setShowUserModal(false);
             setNewUser({ name: '', cpf: '', email: '', phone: '', password: '', role: 'USER' });
+            setEditingUserId(null);
             fetchUsers();
         } catch (err: any) {
-            alert(err.response?.data?.error || 'Erro ao criar usuário.');
+            toast.error(err.response?.data?.error || 'Erro ao salvar usuário.');
+        }
+    };
+
+    const handleEditUser = (u: any) => {
+        setNewUser({ 
+            name: u.name || '', 
+            cpf: u.cpf || '', 
+            email: u.email || '', 
+            phone: u.phone || '', 
+            password: '', 
+            role: u.role || 'USER' 
+        });
+        setEditingUserId(u.id);
+        setShowUserModal(true);
+    };
+
+    const handleDeleteUser = async (id: string) => {
+        if (!window.confirm('Tem certeza que deseja excluir este usuário?')) return;
+        try {
+            await api.delete(`/admin/users/${id}`);
+            toast.success('Usuário excluído com sucesso!');
+            fetchUsers();
+        } catch (err: any) {
+            toast.error(err.response?.data?.error || 'Erro ao excluir usuário.');
         }
     };
 
     const toggleStatus = async (id: string) => {
         await api.patch(`/admin/championships/${id}/status`);
         fetchChamps();
+    };
+
+    const handleToggleFederation = async (userId: string) => {
+        try {
+            await api.patch(`/admin/users/${userId}/federation`);
+            toast.success('Status da federação atualizado!');
+            fetchUsers();
+        } catch (err) {
+            toast.error('Erro ao atualizar status da federação.');
+        }
     };
 
     const handleCreateOrEditChamp = async (e: any) => {
@@ -746,7 +787,11 @@ export function AdminDashboard() {
                         {userRole === 'ADMIN' && (
                             <div className="flex justify-end mb-4">
                                 <button
-                                    onClick={() => setShowUserModal(true)}
+                                    onClick={() => {
+                                        setNewUser({ name: '', cpf: '', email: '', phone: '', password: '', role: 'USER' });
+                                        setEditingUserId(null);
+                                        setShowUserModal(true);
+                                    }}
                                     className="bg-amber-500 text-black px-4 py-2 font-bold rounded-lg hover:bg-amber-400 transition-colors flex items-center gap-2"
                                 >
                                     <Plus className="w-4 h-4" /> Novo Usuário
@@ -763,7 +808,8 @@ export function AdminDashboard() {
                                         <th className="p-4">Contato</th>
                                         <th className="p-4 text-center">Cadastro</th>
                                         <th className="p-4 rounded-tr-xl text-center">Status Federação</th>
-                                        {userRole === 'ADMIN' && <th className="p-4 rounded-tr-xl text-center">Perfil de Acesso</th>}
+                                        {userRole === 'ADMIN' && <th className="p-4 text-center">Perfil de Acesso</th>}
+                                        {userRole === 'ADMIN' && <th className="p-4 rounded-tr-xl text-center">Ações</th>}
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -784,9 +830,12 @@ export function AdminDashboard() {
                                                         {new Date(u.createdAt).toLocaleDateString('pt-BR')}
                                                     </td>
                                                     <td className="p-4 text-center">
-                                                        <span className={`text-[10px] font-black uppercase px-2 py-1 rounded border ${isFederated ? 'border-green-500 text-green-500 bg-green-500/10' : 'border-red-500 text-red-500 bg-red-500/10'}`}>
+                                                        <button 
+                                                            onClick={() => handleToggleFederation(u.id)}
+                                                            title="Alternar Status da Federação"
+                                                            className={`text-[10px] font-black uppercase px-2 py-1 rounded border transition-colors cursor-pointer hover:bg-white/10 ${isFederated ? 'border-green-500 text-green-500 bg-green-500/10' : 'border-red-500 text-red-500 bg-red-500/10'}`}>
                                                             {isFederated ? 'Ativo' : 'Inativo'}
-                                                        </span>
+                                                        </button>
                                                         {u.federationYear && (
                                                             <div className="text-[9px] text-gray-600 mt-1 uppercase tracking-tighter">Vigência: {u.federationYear}</div>
                                                         )}
@@ -803,6 +852,18 @@ export function AdminDashboard() {
                                                                 <option value="SUPPORT">Suporte Interno</option>
                                                                 <option value="ADMIN">Administrador VIP</option>
                                                             </select>
+                                                        </td>
+                                                    )}
+                                                    {userRole === 'ADMIN' && (
+                                                        <td className="p-4 text-center">
+                                                            <div className="flex gap-2 justify-center">
+                                                                <button onClick={() => handleEditUser(u)} className="p-2 bg-zinc-700 hover:bg-zinc-600 rounded-lg text-white transition-colors" title="Editar Usuário">
+                                                                    <Pencil className="w-4 h-4" />
+                                                                </button>
+                                                                <button onClick={() => handleDeleteUser(u.id)} className="p-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-lg transition-colors border border-red-500/20" title="Excluir Usuário">
+                                                                    <XCircle className="w-4 h-4" />
+                                                                </button>
+                                                            </div>
                                                         </td>
                                                     )}
                                                 </tr>
@@ -827,10 +888,11 @@ export function AdminDashboard() {
                             </button>
                             
                             <h2 className="text-2xl font-bold uppercase text-amber-500 mb-6 flex items-center gap-2">
-                                <Plus className="w-5 h-5" /> Criar Novo Usuário
+                                {editingUserId ? <Pencil className="w-5 h-5" /> : <Plus className="w-5 h-5" />} 
+                                {editingUserId ? 'Editar Usuário' : 'Criar Novo Usuário'}
                             </h2>
                             
-                            <form onSubmit={handleCreateUser} className="space-y-4">
+                            <form onSubmit={handleSaveUser} className="space-y-4">
                                 <div>
                                     <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Cpf</label>
                                     <input required type="text" value={newUser.cpf} onChange={e => setNewUser({...newUser, cpf: e.target.value})} className="w-full bg-zinc-800 border-zinc-700 border p-3 rounded" placeholder="Apenas números" />
@@ -850,7 +912,7 @@ export function AdminDashboard() {
                                     </div>
                                     <div className="col-span-2 sm:col-span-1">
                                         <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Senha de Acesso</label>
-                                        <input required type="password" value={newUser.password} onChange={e => setNewUser({...newUser, password: e.target.value})} className="w-full bg-zinc-800 border-zinc-700 border p-3 rounded" />
+                                        <input type="password" placeholder={editingUserId ? "Deixe em branco para não alterar" : ""} required={!editingUserId} value={newUser.password} onChange={e => setNewUser({...newUser, password: e.target.value})} className="w-full bg-zinc-800 border-zinc-700 border p-3 rounded" />
                                     </div>
                                     <div className="col-span-2 sm:col-span-1">
                                         <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Perfil de Acesso</label>
@@ -864,7 +926,7 @@ export function AdminDashboard() {
                                 </div>
                                 
                                 <button type="submit" className="w-full bg-amber-500 text-black py-4 rounded-xl font-black uppercase tracking-widest hover:bg-amber-400 transition-colors mt-6 text-lg">
-                                    Cadastrar Usuário
+                                    {editingUserId ? 'Salvar Alterações' : 'Cadastrar Usuário'}
                                 </button>
                             </form>
                         </div>

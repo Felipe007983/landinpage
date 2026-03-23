@@ -146,4 +146,69 @@ export class AdminController {
             res.status(500).json({ error: 'Erro ao criar usuário' });
         }
     }
+
+    static async toggleUserFederation(req: Request, res: Response) {
+        try {
+            const id = req.params.id as string;
+            const user = await prisma.user.findUnique({ where: { id } });
+
+            if (!user) return res.status(404).json({ error: 'Usuário não encontrado' });
+
+            const currentYear = new Date().getFullYear();
+            const isFederated = user.federationYear === currentYear;
+
+            const newYear = isFederated ? null : currentYear;
+
+            const updated = await prisma.user.update({
+                where: { id },
+                data: { federationYear: newYear }
+            });
+
+            res.json({ id: updated.id, name: updated.name, federationYear: updated.federationYear });
+        } catch (e) {
+            res.status(500).json({ error: 'Erro ao alternar status de federação' });
+        }
+    }
+
+    static async updateUser(req: Request, res: Response) {
+        try {
+            const id = req.params.id as string;
+            const { name, cpf, email, phone, password, role } = req.body;
+
+            const updateData: any = { name, cpf, email, phone, role };
+            
+            if (password && password.trim() !== '') {
+                updateData.password_hash = await bcrypt.hash(password, 10);
+            }
+
+            const updated = await prisma.user.update({
+                where: { id },
+                data: updateData
+            });
+
+            res.json({ id: updated.id, name: updated.name, email: updated.email, role: updated.role });
+        } catch (e) {
+            res.status(500).json({ error: 'Erro ao atualizar usuário' });
+        }
+    }
+
+    static async deleteUser(req: Request, res: Response) {
+        try {
+            const id = req.params.id as string;
+
+            const hasOrders = await prisma.order.findFirst({ where: { userId: id } });
+            if (hasOrders) {
+                return res.status(400).json({ error: 'Não é possível excluir um usuário que possui pedidos/vendas vinculadas.' });
+            }
+
+            // Also check for credit cards (we can delete them or block).
+            await prisma.creditCard.deleteMany({ where: { userId: id } });
+
+            await prisma.user.delete({ where: { id } });
+
+            res.json({ message: 'Usuário excluído com sucesso' });
+        } catch (e) {
+            res.status(500).json({ error: 'Erro ao excluir usuário' });
+        }
+    }
 }
